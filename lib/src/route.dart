@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:dartseid/src/request_context.dart';
+
 // ignore: library_private_types_in_public_api
 final List<_BaseRoute> routes = [];
 
-typedef RouteHandler<T> = T Function(HttpRequest request);
+typedef RouteHandler<T> = T Function(RequestContext context);
 
 enum HttpMethod {
   get('GET'),
