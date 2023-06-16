@@ -5,5 +5,8 @@ const exampleController = ExampleController();
 
 void defineRoutes() {
   Route.get('/', exampleController.index);
+
   Route.post('/', exampleController.post);
+
+  Route.get('/hello/:name', exampleController.hello);
 }

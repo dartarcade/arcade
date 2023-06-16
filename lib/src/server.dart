@@ -14,7 +14,7 @@ Future<void> runServer({required int port}) async {
   print('Server running');
 
   await for (final request in server) {
-    final HttpRequest(response: response) = request;
+    final HttpRequest(response: response, uri: uri) = request;
     final methodString = request.method;
 
     final method = HttpMethod.values.firstWhereOrNull(
@@ -28,11 +28,11 @@ Future<void> runServer({required int port}) async {
       continue;
     }
 
-    final context = _makeRequestContext(request);
+    final route = routes.firstWhereOrNull((route) =>
+        route.method == method &&
+        _routeMatchesPath(route.path ?? '', uri.path));
 
-    final route = routes.firstWhereOrNull(
-      (route) => route.method == method && route.path == context.path,
-    );
+    final context = _makeRequestContext(request, route as Route?);
 
     print('Request: $methodString ${context.path}');
 
@@ -75,12 +75,53 @@ Future<void> runServer({required int port}) async {
   }
 }
 
-RequestContext _makeRequestContext(HttpRequest request) {
+bool _routeMatchesPath(String routePath, String path) {
+  final routePathSegments = routePath.split('/');
+  final pathSegments = path.split('/');
+
+  if (routePathSegments.length != pathSegments.length) {
+    return false;
+  }
+
+  for (var i = 0; i < routePathSegments.length; i++) {
+    final routePathSegment = routePathSegments[i];
+    final pathSegment = pathSegments[i];
+
+    if (routePathSegment.startsWith(':')) {
+      continue;
+    }
+
+    if (routePathSegment != pathSegment) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+RequestContext _makeRequestContext(HttpRequest request, Route? route) {
   final HttpRequest(uri: uri, method: methodString) = request;
 
   final method = HttpMethod.values.firstWhere(
     (method) => method.methodString == methodString,
   );
+
+  Map<String, String> pathParameters = {};
+
+  if (route != null) {
+    final routePathSegments = route.path?.split('/') ?? [];
+    final pathSegments = uri.path.split('/');
+
+    for (var i = 0; i < routePathSegments.length; i++) {
+      final routePathSegment = routePathSegments[i];
+      final pathSegment = pathSegments[i];
+
+      if (routePathSegment.startsWith(':')) {
+        final key = routePathSegment.substring(1);
+        pathParameters[key] = pathSegment;
+      }
+    }
+  }
 
   final rawBody = request.toList();
 
@@ -88,6 +129,7 @@ RequestContext _makeRequestContext(HttpRequest request) {
     path: uri.path,
     method: method,
     headers: request.headers,
+    pathParameters: pathParameters,
     queryParameters: uri.queryParameters,
     body: rawBody,
   );

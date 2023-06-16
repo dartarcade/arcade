@@ -11,4 +11,9 @@ class ExampleController {
     final body = await context.json();
     return body;
   }
+
+  String hello(RequestContext context) {
+    final name = context.pathParameters['name'];
+    return 'Hello, $name!';
+  }
 }

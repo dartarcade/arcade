@@ -8,6 +8,7 @@ class RequestContext {
   final String _path;
   final HttpMethod _method;
   final HttpHeaders _headers;
+  final Map<String, String> _pathParameters;
   final Map<String, String> _queryParameters;
   final Future<List<Uint8List>> _body;
 
@@ -21,6 +22,7 @@ class RequestContext {
   })  : _path = path,
         _method = method,
         _headers = headers,
+        _pathParameters = pathParameters,
         _queryParameters = queryParameters,
         _body = body;
 
@@ -29,6 +31,8 @@ class RequestContext {
   HttpMethod get method => _method;
 
   HttpHeaders get headers => _headers;
+
+  Map<String, String> get pathParameters => _pathParameters;
 
   Map<String, String> get queryParameters => _queryParameters;
 
