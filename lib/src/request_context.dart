@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dartseid/src/body_parse_result.dart';
 import 'package:dartseid/src/route.dart';
 
 class RequestContext {
@@ -42,13 +43,31 @@ class RequestContext {
     return String.fromCharCodes(body.expand((e) => e));
   }
 
-  Future<Map<String, dynamic>> json() async {
-    return jsonDecode(await body());
+  /// Parses the body as JSON map
+  Future<BodyParseResult<Map<String, dynamic>>> jsonMap() async {
+    try {
+      return BodyParseSuccess(jsonDecode(await body()));
+    } catch (e) {
+      return BodyParseFailure(e);
+    }
   }
 
-  Future<T> parseJsonAs<T>(
+  /// Parses the body as JSON list
+  Future<BodyParseResult<List<dynamic>>> jsonList() async {
+    try {
+      return BodyParseSuccess(jsonDecode(await body()));
+    } catch (e) {
+      return BodyParseFailure(e);
+    }
+  }
+
+  /// Parses body as JSON map and converts it to the given type
+  Future<BodyParseResult<T>> parseJsonAs<T>(
     T Function(Map<String, dynamic> json) converter,
   ) async {
-    return converter(await json());
+    return switch (await jsonMap()) {
+      BodyParseSuccess(value: final json) => BodyParseSuccess(converter(json)),
+      BodyParseFailure(error: final error) => BodyParseFailure(error),
+    };
   }
 }

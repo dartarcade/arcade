@@ -8,7 +8,10 @@ class ExampleController {
   }
 
   Future<Map<String, dynamic>> post(RequestContext context) async {
-    final body = await context.json();
+    final body = switch (await context.jsonMap()) {
+      BodyParseSuccess(value: final json) => json,
+      _ => throw Exception('Invalid JSON'),
+    };
     return body;
   }
 

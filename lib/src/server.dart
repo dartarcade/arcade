@@ -18,7 +18,7 @@ Future<void> runServer({required int port}) async {
     final methodString = request.method;
 
     final method = HttpMethod.values.firstWhereOrNull(
-          (method) => method.methodString == methodString,
+      (method) => method.methodString == methodString,
     );
 
     if (method == null) {
@@ -29,8 +29,8 @@ Future<void> runServer({required int port}) async {
     }
 
     final route = routes.firstWhereOrNull(
-          (route) =>
-      route.method == method &&
+      (route) =>
+          route.method == method &&
           _routeMatchesPath(route.path ?? '', uri.path),
     );
 
@@ -40,13 +40,17 @@ Future<void> runServer({required int port}) async {
 
     if (route == null) {
       final notFoundRoute = routes.firstWhereOrNull(
-            (route) => route.notFoundHandler != null,
+        (route) => route.notFoundHandler != null,
       );
 
       response.statusCode = HttpStatus.notFound;
 
       if (notFoundRoute != null) {
-        response.write(notFoundRoute.notFoundHandler!(context));
+        try {
+          response.write(notFoundRoute.notFoundHandler!(context));
+        } catch (e) {
+          response.writeln('Not found');
+        }
       } else {
         response.writeln('Not found');
       }
@@ -55,25 +59,33 @@ Future<void> runServer({required int port}) async {
       continue;
     }
 
-    // TODO: handle exceptions
-    var result = route.handler!(context);
+    try {
+      var result = route.handler!(context);
 
-    if (result is Future) {
-      result = await result;
+      if (result is Future) {
+        result = await result;
+      }
+
+      if (result is String) {
+        response.headers.contentType = ContentType.html;
+      }
+
+      if (result is List || result is Map) {
+        result = jsonEncode(result);
+        response.headers.contentType = ContentType.json;
+      }
+
+      response.write(result);
+
+      response.close();
+    } catch (e, s) {
+      print('$e\n$s');
+
+      response.statusCode = HttpStatus.internalServerError;
+      response.writeln('Internal server error');
+      response.close();
+      continue;
     }
-
-    if (result is String) {
-      response.headers.contentType = ContentType.html;
-    }
-
-    if (result is List || result is Map) {
-      result = jsonEncode(result);
-      response.headers.contentType = ContentType.json;
-    }
-
-    response.write(result);
-
-    response.close();
   }
 }
 
@@ -105,7 +117,7 @@ RequestContext _makeRequestContext(HttpRequest request, Route? route) {
   final HttpRequest(uri: uri, method: methodString) = request;
 
   final method = HttpMethod.values.firstWhere(
-        (method) => method.methodString == methodString,
+    (method) => method.methodString == methodString,
   );
 
   Map<String, String> pathParameters = {};
