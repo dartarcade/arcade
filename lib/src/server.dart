@@ -18,7 +18,7 @@ Future<void> runServer({required int port}) async {
     final methodString = request.method;
 
     final method = HttpMethod.values.firstWhereOrNull(
-      (method) => method.methodString == methodString,
+          (method) => method.methodString == methodString,
     );
 
     if (method == null) {
@@ -28,9 +28,11 @@ Future<void> runServer({required int port}) async {
       continue;
     }
 
-    final route = routes.firstWhereOrNull((route) =>
-        route.method == method &&
-        _routeMatchesPath(route.path ?? '', uri.path));
+    final route = routes.firstWhereOrNull(
+          (route) =>
+      route.method == method &&
+          _routeMatchesPath(route.path ?? '', uri.path),
+    );
 
     final context = _makeRequestContext(request, route as Route?);
 
@@ -38,7 +40,7 @@ Future<void> runServer({required int port}) async {
 
     if (route == null) {
       final notFoundRoute = routes.firstWhereOrNull(
-        (route) => route.notFoundHandler != null,
+            (route) => route.notFoundHandler != null,
       );
 
       response.statusCode = HttpStatus.notFound;
@@ -103,7 +105,7 @@ RequestContext _makeRequestContext(HttpRequest request, Route? route) {
   final HttpRequest(uri: uri, method: methodString) = request;
 
   final method = HttpMethod.values.firstWhere(
-    (method) => method.methodString == methodString,
+        (method) => method.methodString == methodString,
   );
 
   Map<String, String> pathParameters = {};

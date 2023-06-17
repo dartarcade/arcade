@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -36,20 +37,18 @@ class RequestContext {
 
   Map<String, String> get queryParameters => _queryParameters;
 
-  Future<Map<String, dynamic>> json() async {
-    final body = await _body;
-    final bodyString = String.fromCharCodes(body.expand((e) => e));
-    return jsonDecode(bodyString);
-  }
-
-  Future<T> parseJsonAs<T>(T Function(Map<String, dynamic> json) converter) async {
-    final body = await _body;
-    final bodyString = String.fromCharCodes(body.expand((e) => e));
-    return converter(jsonDecode(bodyString));
-  }
-
   Future<String> body() async {
     final body = await _body;
     return String.fromCharCodes(body.expand((e) => e));
+  }
+
+  Future<Map<String, dynamic>> json() async {
+    return jsonDecode(await body());
+  }
+
+  Future<T> parseJsonAs<T>(
+    T Function(Map<String, dynamic> json) converter,
+  ) async {
+    return converter(await json());
   }
 }
