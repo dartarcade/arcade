@@ -6,12 +6,10 @@ part 'sample_dto.g.dart';
 class SampleDto {
   final String name;
   final int age;
-  final int? something;
 
   SampleDto({
     required this.name,
     required this.age,
-    this.something,
   });
 
   factory SampleDto.fromJson(Map<String, dynamic> json) =>
