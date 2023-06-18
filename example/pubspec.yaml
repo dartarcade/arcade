@@ -2,6 +2,7 @@ name: dartseid_example
 description: A sample command-line application.
 version: 1.0.0
 repository: https://github.com/exaby73/dartseid/tree/main/example
+publish_to: none
 
 environment:
   sdk: ^3.0.5

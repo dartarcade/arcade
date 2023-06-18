@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:dartseid/src/request_context.dart';
 
 // ignore: library_private_types_in_public_api
-final List<_BaseRoute> routes = [];
+final List<BaseRoute> routes = [];
 
 typedef RouteHandler<T> = T Function(RequestContext context);
 
@@ -21,7 +19,7 @@ enum HttpMethod {
   const HttpMethod(this.methodString);
 }
 
-abstract class _BaseRoute {
+abstract class BaseRoute {
   HttpMethod? get method;
 
   String? get path;
@@ -30,12 +28,14 @@ abstract class _BaseRoute {
 
   RouteHandler? get notFoundHandler;
 
-  _BaseRoute() {
+  List<RouteHandler> get middlewares;
+
+  BaseRoute() {
     routes.add(this);
   }
 }
 
-class Route extends _BaseRoute {
+class Route extends BaseRoute {
   @override
   final HttpMethod? method;
   @override
@@ -44,8 +44,11 @@ class Route extends _BaseRoute {
   final RouteHandler? handler;
   @override
   final RouteHandler? notFoundHandler;
+  @override
+  final List<RouteHandler> middlewares = [];
 
-  Route._(this.method, this.path, this.handler, [this.notFoundHandler]) : super();
+  Route._(this.method, this.path, this.handler, [this.notFoundHandler])
+      : super();
 
   factory Route.get(String path, RouteHandler handler) =>
       Route._(HttpMethod.get, path, handler);
@@ -70,4 +73,9 @@ class Route extends _BaseRoute {
 
   factory Route.notFound(RouteHandler handler) =>
       Route._(null, null, null, handler);
+
+  Route middleware(RouteHandler middleware) {
+    middlewares.add(middleware);
+    return this;
+  }
 }
