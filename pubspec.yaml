@@ -7,8 +7,10 @@ environment:
   sdk: ^3.0.5
 
 dependencies:
+  ansi_styles: ^0.3.2+1
   collection: ^1.17.2
   hotreloader: ^3.0.6
+  vm_service: ^11.7.1
 
 dev_dependencies:
   lints: ^2.0.0

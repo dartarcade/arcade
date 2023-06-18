@@ -1,10 +1,21 @@
 import 'package:dartseid/dartseid.dart';
 
+class SampleJson {
+  final String name;
+  final int age;
+
+  SampleJson({required this.name, required this.age});
+
+  Map<String, dynamic> toJson() {
+    return {'name': name, 'age': age};
+  }
+}
+
 class ExampleController {
   const ExampleController();
 
-  String index(RequestContext context) {
-    return 'Hello, world!';
+  SampleJson index(RequestContext context) {
+    return SampleJson(name: 'John Doe', age: 42);
   }
 
   Future<Map<String, dynamic>> post(RequestContext context) async {

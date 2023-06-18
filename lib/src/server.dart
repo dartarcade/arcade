@@ -1,48 +1,62 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:ansi_styles/extension.dart';
 import 'package:collection/collection.dart';
 import 'package:dartseid/dartseid.dart';
 import 'package:dartseid/src/route.dart';
 import 'package:hotreloader/hotreloader.dart';
+import 'package:vm_service/vm_service.dart';
 
 Future<void> runServer({required int port}) async {
+  // Set up hot reloader
   final hotreloader = await HotReloader.create(
     onBeforeReload: (ctx) {
-      print('----------------------------------------------------------------------');
+      print(
+        '----------------------------------------------------------------------',
+      );
       print('Reloading server...');
       return true;
     },
     onAfterReload: (ctx) {
       switch (ctx.result) {
         case HotReloadResult.Succeeded:
-          print('Reload succeeded');
+          print('Reload succeeded'.green);
         case HotReloadResult.PartiallySucceeded:
-          print('Reload partially succeeded');
+          print('Reload partially succeeded'.yellow);
+          _printReloadReports(ctx.reloadReports);
         case HotReloadResult.Skipped:
-          print('Reload skipped');
+          print('Reload skipped'.yellow);
+          _printReloadReports(ctx.reloadReports);
         case HotReloadResult.Failed:
-          print('Reload failed');
+          print('Reload failed'.red);
+          _printReloadReports(ctx.reloadReports);
       }
-      print('----------------------------------------------------------------------');
+
+      print(
+        '----------------------------------------------------------------------',
+      );
     },
   );
 
+  // Set up server
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,
     port,
   );
 
-  print('Server running');
-
+  // Close server and hot reloader when exiting
   ProcessSignal.sigint.watch().listen((_) async {
-    await closeServerExit(server, hotreloader);
+    await _closeServerExit(server, hotreloader);
   });
 
   ProcessSignal.sigterm.watch().listen((_) async {
-    await closeServerExit(server, hotreloader);
+    await _closeServerExit(server, hotreloader);
   });
 
+  print('Server running');
+
+  // Start listening
   await for (final request in server) {
     final HttpRequest(response: response, uri: uri) = request;
     final methodString = request.method;
@@ -98,9 +112,7 @@ Future<void> runServer({required int port}) async {
 
       if (result is String) {
         response.headers.contentType = ContentType.html;
-      }
-
-      if (result is List || result is Map) {
+      } else {
         result = jsonEncode(result);
         response.headers.contentType = ContentType.json;
       }
@@ -179,7 +191,34 @@ RequestContext _makeRequestContext(HttpRequest request, Route? route) {
   );
 }
 
-Future<void> closeServerExit(HttpServer server, HotReloader hotreloader) async {
+void _printReloadReports(Map<IsolateRef, ReloadReport> reloadReports) {
+  final failedReports = reloadReports.values.where(
+    (report) => report.success == false,
+  );
+  if (failedReports.isEmpty) return;
+
+  final List<String> messages = [];
+
+  for (final report in failedReports) {
+    final json = report.json;
+    final notices = json?['notices'];
+    if (json == null || notices is! List) continue;
+
+    final message = notices.firstWhereOrNull(
+      (notice) => notice['message'] != null,
+    )?['message'];
+
+    if (message == null) continue;
+
+    messages.add(message);
+  }
+
+  if (messages.isEmpty) return;
+  print('\n${messages.join('\n')}'.red);
+}
+
+Future<void> _closeServerExit(
+    HttpServer server, HotReloader hotreloader) async {
   print('Shutting down');
   await server.close();
   await hotreloader.stop();
