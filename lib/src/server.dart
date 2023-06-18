@@ -92,7 +92,8 @@ Future<void> runServer({required int port}) async {
       if (notFoundRoute != null) {
         try {
           response.write(notFoundRoute.notFoundHandler!(context));
-        } catch (e) {
+        } catch (e, s) {
+          print('$e\n$s');
           response.writeln('Not found');
         }
       } else {
