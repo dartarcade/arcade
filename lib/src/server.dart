@@ -4,14 +4,44 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:dartseid/dartseid.dart';
 import 'package:dartseid/src/route.dart';
+import 'package:hotreloader/hotreloader.dart';
 
 Future<void> runServer({required int port}) async {
+  final hotreloader = await HotReloader.create(
+    onBeforeReload: (ctx) {
+      print('----------------------------------------------------------------------');
+      print('Reloading server...');
+      return true;
+    },
+    onAfterReload: (ctx) {
+      switch (ctx.result) {
+        case HotReloadResult.Succeeded:
+          print('Reload succeeded');
+        case HotReloadResult.PartiallySucceeded:
+          print('Reload partially succeeded');
+        case HotReloadResult.Skipped:
+          print('Reload skipped');
+        case HotReloadResult.Failed:
+          print('Reload failed');
+      }
+      print('----------------------------------------------------------------------');
+    },
+  );
+
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,
     port,
   );
 
   print('Server running');
+
+  ProcessSignal.sigint.watch().listen((_) async {
+    await closeServerExit(server, hotreloader);
+  });
+
+  ProcessSignal.sigterm.watch().listen((_) async {
+    await closeServerExit(server, hotreloader);
+  });
 
   await for (final request in server) {
     final HttpRequest(response: response, uri: uri) = request;
@@ -147,4 +177,11 @@ RequestContext _makeRequestContext(HttpRequest request, Route? route) {
     queryParameters: uri.queryParameters,
     body: rawBody,
   );
+}
+
+Future<void> closeServerExit(HttpServer server, HotReloader hotreloader) async {
+  print('Shutting down');
+  await server.close();
+  await hotreloader.stop();
+  exit(0);
 }
