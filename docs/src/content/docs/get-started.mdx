@@ -73,16 +73,6 @@ Future<void> main() {
   // We define our routes here. The first argument is the path and the second is the handler.
   Route.get('/hello', (RequestContext context) => 'Hello World!');
 
-  Route.get('/hello/:message', (RequestContext context) {
-    final message = context.pathParameters['message'];
-    final time = DateTime.now().toIso8601String();
-
-    return {
-      'message': message,
-      'time': time,
-    };
-  });
-
   // We start the server on port 8080.
   return runServer(port: 8080);
 }
