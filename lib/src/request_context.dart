@@ -38,6 +38,8 @@ class RequestContext {
 
   Map<String, String> get queryParameters => _queryParameters;
 
+  Future<List<Uint8List>> get rawBody => _body;
+
   Future<String> body() async {
     final body = await _body;
     return String.fromCharCodes(body.expand((e) => e));

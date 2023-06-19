@@ -21,6 +21,19 @@ void internalServerError(HttpResponse response) {
   response.close();
 }
 
+Future runMiddleware(
+  RequestContext context,
+  BaseRoute route,
+) async {
+  var ctx = context;
+
+  for (final middleware in route.middlewares) {
+    ctx = await middleware(ctx);
+  }
+
+  return ctx;
+}
+
 void writeNotFoundResponse({
   required RequestContext context,
   required HttpResponse response,
@@ -46,7 +59,9 @@ Future<void> writeResponse({
   required HttpResponse response,
 }) async {
   try {
-    var result = route.handler!(context);
+    final ctx = await runMiddleware(context, route);
+
+    var result = route.handler!(ctx);
 
     if (result is Future) {
       result = await result;

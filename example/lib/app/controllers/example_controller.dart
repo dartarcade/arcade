@@ -1,4 +1,5 @@
 import 'package:dartseid/dartseid.dart';
+import 'package:dartseid_example/core/context/authed_request_context.dart';
 import 'package:dartseid_example/models/dtos/sample_dto.dart';
 
 class ExampleController {
@@ -8,7 +9,9 @@ class ExampleController {
     return SampleDto(name: 'John Doe', age: 42);
   }
 
-  Future<Map<String, dynamic>> post(RequestContext context) async {
+  Future<Map<String, dynamic>> post(
+    covariant AuthedRequestContext context,
+  ) async {
     final body = switch (await context.jsonMap()) {
       BodyParseSuccess(value: final json) => json,
       _ => throw Exception('Invalid JSON'),
