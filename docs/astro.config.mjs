@@ -5,22 +5,21 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
   integrations: [
     starlight({
-      title: 'My Docs',
+      title: 'Dartseid',
       social: {
-        github: 'https://github.com/withastro/starlight',
+        github: 'https://github.com/exaby73/dartseid',
       },
       sidebar: [
         {
-          label: 'Guides',
+          label: 'Documentation',
           items: [
-            // Each item here is one entry in the navigation menu.
-            { label: 'Example Guide', link: '/guides/example/' },
+            { label: 'Get Started', link: '/get-started' },
           ],
         },
-        {
-          label: 'Reference',
-          autogenerate: { directory: 'reference' },
-        },
+        // {
+        //   label: 'Reference',
+        //   autogenerate: { directory: 'reference' },
+        // },
       ],
     }),
   ],
