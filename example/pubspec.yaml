@@ -1,5 +1,5 @@
 name: dartseid_example
-description: A sample command-line application.
+description: A sample app showing how to use dartseid.
 version: 1.0.0
 repository: https://github.com/exaby73/dartseid/tree/main/example
 publish_to: none

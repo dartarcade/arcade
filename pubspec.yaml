@@ -1,6 +1,6 @@
 name: dartseid
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
+description: A no magic web framework for Dart.
+version: 0.0.1
 repository: https://github.com/exaby73/dartseid
 
 environment:

@@ -67,7 +67,7 @@ rmdir /s /q lib test
 In the `bin/my_app.dart` file, we can write the following code:
 
 ```dart
-import 'package:dartseid/dartseid.dart';
+import 'package:dartseid/dartseid_example.dart';
 
 Future<void> main() {
   // We define our routes here. The first argument is the path and the second is the handler.
@@ -85,13 +85,13 @@ The code we wrote simply defines a route that returns a string. We can run the s
 dart run --enable-vm-service
 ```
 
-The `--enable-vm-service` flag is required to enable hot reloading. Now visit `http://localhost:8080/hello` 
+The `--enable-vm-service` flag is required to enable hot reloading. Now visit `http://localhost:8080/hello`
 and you should see the string `Hello World!`.
 
 Let's modify our code to return a JSON response with the current time as well as echo a message passed via the path:
 
 ```dart
-import 'package:dartseid/dartseid.dart';
+import 'package:dartseid/dartseid_example.dart';
 
 Future<void> main() {
     Route.get('/hello', (RequestContext context) => 'Hello World!');
