@@ -1,12 +1,11 @@
 import 'package:dartseid/dartseid.dart';
 import 'package:dartseid_example/core/context/authed_request_context.dart';
-import 'package:dartseid_example/models/dtos/sample_dto.dart';
 
 class ExampleController {
   const ExampleController();
 
-  SampleDto index(RequestContext context) {
-    return SampleDto(name: 'John Doe', age: 42);
+  Map<String, dynamic> index(RequestContext context) {
+    return {'message': 'Hello, world!'};
   }
 
   Map<String, dynamic> get(RequestContext context) {
