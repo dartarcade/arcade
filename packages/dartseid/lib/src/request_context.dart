@@ -48,6 +48,7 @@ class RequestContext {
   /// Parses the body as JSON map
   Future<BodyParseResult<Map<String, dynamic>>> jsonMap() async {
     try {
+      // ignore: argument_type_not_assignable
       return BodyParseSuccess(jsonDecode(await body()));
     } catch (e) {
       return BodyParseFailure(e);
@@ -57,6 +58,7 @@ class RequestContext {
   /// Parses the body as JSON list
   Future<BodyParseResult<List<dynamic>>> jsonList() async {
     try {
+      // ignore: argument_type_not_assignable
       return BodyParseSuccess(jsonDecode(await body()));
     } catch (e) {
       return BodyParseFailure(e);

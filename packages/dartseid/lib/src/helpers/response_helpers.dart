@@ -3,21 +3,10 @@ import 'dart:io';
 
 import 'package:dartseid/dartseid.dart';
 
-void methodNotAllowed(HttpResponse response) {
-  response.statusCode = HttpStatus.methodNotAllowed;
-  response.writeln('Method not allowed');
-  response.close();
-}
-
-void notFound(HttpResponse response) {
-  response.statusCode = HttpStatus.notFound;
-  response.writeln('Not found');
-  response.close();
-}
-
-void internalServerError(HttpResponse response) {
-  response.statusCode = HttpStatus.internalServerError;
-  response.writeln('Internal server error');
+void sendErrorResponse(HttpResponse response, DartseidHttpException error) {
+  response.statusCode = error.statusCode;
+  response.headers.contentType = ContentType.json;
+  response.writeln(jsonEncode(error.toJson()));
   response.close();
 }
 
@@ -44,13 +33,16 @@ void writeNotFoundResponse({
   if (notFoundRouteHandler != null) {
     try {
       return response.write(notFoundRouteHandler(context));
+    } on DartseidHttpException catch (e, s) {
+      print('$e\n$s');
+      return sendErrorResponse(response, e);
     } catch (e, s) {
       print('$e\n$s');
-      return internalServerError(response);
+      return sendErrorResponse(response, const InternalServerErrorException());
     }
   }
 
-  return notFound(response);
+  return sendErrorResponse(response, const NotFoundException());
 }
 
 Future<void> writeResponse({
@@ -61,6 +53,7 @@ Future<void> writeResponse({
   try {
     final ctx = await runMiddleware(context, route);
 
+    // ignore: argument_type_not_assignable
     var result = route.handler!(ctx);
 
     if (result is Future) {
@@ -77,8 +70,11 @@ Future<void> writeResponse({
     response.write(result);
 
     response.close();
+  } on DartseidHttpException catch (e, s) {
+    print('$e\n$s');
+    return sendErrorResponse(response, e);
   } catch (e, s) {
     print('$e\n$s');
-    return internalServerError(response);
+    return sendErrorResponse(response, const InternalServerErrorException());
   }
 }

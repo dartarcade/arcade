@@ -70,13 +70,15 @@ void _printReloadReports(Map<IsolateRef, ReloadReport> reloadReports) {
     final notices = json?['notices'];
     if (json == null || notices is! List) continue;
 
+    // ignore: avoid_dynamic_calls
     final message = notices.firstWhereOrNull(
+      // ignore: avoid_dynamic_calls
       (notice) => notice['message'] != null,
     )?['message'];
 
     if (message == null) continue;
 
-    messages.add(message);
+    messages.add(message as String);
   }
 
   if (messages.isEmpty) return;

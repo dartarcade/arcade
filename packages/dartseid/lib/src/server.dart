@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dartseid/dartseid.dart';
 import 'package:dartseid/src/helpers/request_helpers.dart';
 import 'package:dartseid/src/helpers/response_helpers.dart';
 import 'package:dartseid/src/helpers/route_helpers.dart';
@@ -28,7 +29,7 @@ Future<void> handleRequest(HttpRequest request) async {
   final method = getHttpMethod(methodString);
 
   if (method == null) {
-    return methodNotAllowed(response);
+    return sendErrorResponse(response, const MethodNotAllowedException());
   }
 
   final (route, notFoundRoute) = findMatchingRouteAndNotFoundRoute(

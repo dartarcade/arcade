@@ -14,7 +14,7 @@ class ExampleController {
   ) async {
     final body = switch (await context.jsonMap()) {
       BodyParseSuccess(value: final json) => json,
-      _ => throw Exception('Invalid JSON'),
+      _ => throw const BadRequestException(message: 'Invalid input'),
     };
     return body;
   }
