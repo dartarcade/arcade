@@ -4,29 +4,43 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dartseid/src/body_parse_result.dart';
+import 'package:dartseid/src/helpers/request_helpers.dart';
+import 'package:dartseid/src/helpers/route_helpers.dart';
 import 'package:dartseid/src/route.dart';
 
 class RequestContext {
-  final String _path;
-  final HttpMethod _method;
-  final HttpHeaders _headers;
-  final Map<String, String> _pathParameters;
-  final Map<String, String> _queryParameters;
-  final Future<List<Uint8List>> _body;
+  late final HttpRequest _request;
+  late final BaseRoute? _route;
+  late final String _path;
+  late final HttpMethod _method;
+  late final HttpHeaders _headers;
+  late final Map<String, String> _pathParameters;
+  late final Map<String, String> _queryParameters;
 
   RequestContext({
-    required String path,
-    required HttpMethod method,
-    required HttpHeaders headers,
-    Map<String, String> pathParameters = const {},
-    Map<String, String> queryParameters = const {},
-    required Future<List<Uint8List>> body,
-  })  : _path = path,
-        _method = method,
-        _headers = headers,
-        _pathParameters = pathParameters,
-        _queryParameters = queryParameters,
-        _body = body;
+    BaseRoute? route,
+    required HttpRequest request,
+  }) {
+    final HttpRequest(uri: uri, method: methodString) = request;
+
+    final method = getHttpMethod(methodString)!;
+
+    final pathParameters = makePathParameters(route, uri);
+
+    _request = request;
+    _route = route;
+    _path = request.uri.path;
+    _method = method;
+    _headers = request.headers;
+    _pathParameters = pathParameters;
+    _queryParameters = request.uri.queryParameters;
+  }
+
+  HttpRequest get rawRequest => _request;
+
+  Future<List<Uint8List>> get rawBody => _request.toList();
+
+  BaseRoute? get route => _route;
 
   String get path => _path;
 
@@ -38,10 +52,8 @@ class RequestContext {
 
   Map<String, String> get queryParameters => _queryParameters;
 
-  Future<List<Uint8List>> get rawBody => _body;
-
   Future<String> body() async {
-    final body = await _body;
+    final body = await rawBody;
     return String.fromCharCodes(body.expand((e) => e));
   }
 

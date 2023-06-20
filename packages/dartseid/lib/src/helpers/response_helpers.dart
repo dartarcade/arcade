@@ -10,7 +10,7 @@ void sendErrorResponse(HttpResponse response, DartseidHttpException error) {
   response.close();
 }
 
-Future runMiddleware(
+Future<dynamic> runMiddleware(
   RequestContext context,
   BaseRoute route,
 ) async {

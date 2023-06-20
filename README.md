@@ -4,6 +4,10 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 
 ## TODO
 
+### Foundation tasks
+
+- [ ] dev and prod env (a way to disable the hotreloader)
+
 ### Essentials
 
 - [x] Parse path parameters
@@ -11,15 +15,16 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 - [x] Add support for hot reload
 - [x] Handle all errors defaulting to 500
 - [x] Add support for middlewares
-- [ ] Add support for cookies
-- [ ] Add support for `multipart/form-data`
+- [ ] Add support for cookies (cleaner API)
 - [ ] Add support for `application/x-www-form-urlencoded`
+- [ ] Add support for `multipart/form-data`
 - [ ] Add a logger
 - [ ] Add support for views. e.g. HTML views for websites
 
 ### Essential but not urgent
 
 - [ ] Add documentation
+- [ ] Add the raw request to context
 - [ ] Add support for HTTPS
 - [ ] Add support for web sockets
 

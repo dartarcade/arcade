@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:dartseid/dartseid.dart';
-import 'package:dartseid/src/helpers/request_helpers.dart';
 
 String _normalizePath(String path) {
   String p = path;
@@ -33,25 +30,6 @@ bool routeMatchesPath(String routePath, String path) {
   }
 
   return true;
-}
-
-RequestContext makeRequestContext(HttpRequest request, BaseRoute? route) {
-  final HttpRequest(uri: uri, method: methodString) = request;
-
-  final method = getHttpMethod(methodString)!;
-
-  final pathParameters = makePathParameters(route, uri);
-
-  final rawBody = request.toList();
-
-  return RequestContext(
-    path: uri.path,
-    method: method,
-    headers: request.headers,
-    pathParameters: pathParameters,
-    queryParameters: uri.queryParameters,
-    body: rawBody,
-  );
 }
 
 Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {

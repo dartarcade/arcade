@@ -4,12 +4,8 @@ class AuthedRequestContext extends RequestContext {
   final String userId;
 
   AuthedRequestContext({
-    required super.path,
-    required super.method,
-    required super.headers,
-    super.pathParameters,
-    super.queryParameters,
-    required super.body,
+    super.route,
+    required super.request,
     required this.userId,
   });
 }

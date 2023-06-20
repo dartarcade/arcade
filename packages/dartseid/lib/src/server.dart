@@ -38,7 +38,7 @@ Future<void> handleRequest(HttpRequest request) async {
     uri: uri,
   );
 
-  final context = makeRequestContext(request, route);
+  final context = RequestContext(request: request, route: route);
 
   print('Request: $methodString ${context.path}');
 

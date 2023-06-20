@@ -3,10 +3,8 @@ import 'package:dartseid_example/core/context/authed_request_context.dart';
 
 final checkAuthMiddleware = Middleware((RequestContext context) async {
   return AuthedRequestContext(
-    path: context.path,
-    method: context.method,
-    headers: context.headers,
-    body: context.rawBody,
+    request: context.rawRequest,
+    route: context.route,
     userId: 'Hello',
   );
 });
