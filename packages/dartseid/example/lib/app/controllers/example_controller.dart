@@ -9,6 +9,13 @@ class ExampleController {
     return SampleDto(name: 'John Doe', age: 42);
   }
 
+  Map<String, dynamic> get(RequestContext context) {
+    return {
+      'query': context.queryParameters,
+      'path': context.pathParameters,
+    };
+  }
+
   Future<Map<String, dynamic>> post(
     covariant AuthedRequestContext context,
   ) async {

@@ -3,9 +3,17 @@ import 'dart:io';
 import 'package:dartseid/dartseid.dart';
 import 'package:dartseid/src/helpers/request_helpers.dart';
 
+String _normalizePath(String path) {
+  String p = path;
+
+  p = p.replaceAll(RegExp('^/+'), '');
+  p = p.replaceAll(RegExp(r'/+$'), '');
+  return p;
+}
+
 bool routeMatchesPath(String routePath, String path) {
-  final routePathSegments = routePath.split('/');
-  final pathSegments = path.split('/');
+  final routePathSegments = _normalizePath(routePath).split('/');
+  final pathSegments = _normalizePath(path).split('/');
 
   if (routePathSegments.length != pathSegments.length) {
     return false;
@@ -32,7 +40,7 @@ RequestContext makeRequestContext(HttpRequest request, BaseRoute? route) {
 
   final method = getHttpMethod(methodString)!;
 
-  Map<String, String> pathParameters = makePathParameters(route, uri);
+  final pathParameters = makePathParameters(route, uri);
 
   final rawBody = request.toList();
 
@@ -59,7 +67,7 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
 
       if (routePathSegment.startsWith(':')) {
         final key = routePathSegment.substring(1);
-        pathParameters[key] = pathSegment;
+        pathParameters[key] = Uri.decodeFull(pathSegment);
       }
     }
   }
