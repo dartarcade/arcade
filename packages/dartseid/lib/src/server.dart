@@ -23,8 +23,8 @@ Future<void> runServer({required int port}) async {
 }
 
 Future<void> handleRequest(HttpRequest request) async {
-  final HttpRequest(response: response, uri: uri) = request;
-  final methodString = request.method;
+  final HttpRequest(response: response, uri: uri, method: methodString) =
+      request;
 
   final method = getHttpMethod(methodString);
 
@@ -43,6 +43,7 @@ Future<void> handleRequest(HttpRequest request) async {
   print('Request: $methodString ${context.path}');
 
   if (route == null) {
+    print('No matching route found');
     return writeNotFoundResponse(
       context: context,
       response: response,

@@ -32,7 +32,9 @@ void writeNotFoundResponse({
 
   if (notFoundRouteHandler != null) {
     try {
-      return response.write(notFoundRouteHandler(context));
+      response.write(notFoundRouteHandler(context));
+      response.close();
+      return;
     } on DartseidHttpException catch (e, s) {
       print('$e\n$s');
       return sendErrorResponse(response, e);

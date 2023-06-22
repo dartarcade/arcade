@@ -15,4 +15,6 @@ void defineRoutes() {
       .middleware(printUserIdMiddleware);
 
   Route.get('/hello/:name', exampleController.hello);
+
+  Route.notFound((context) => {'message': 'Not found'});
 }

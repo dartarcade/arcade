@@ -17,14 +17,15 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 - [x] Add support for middlewares
 - [ ] Add support for cookies (cleaner API)
 - [ ] Add support for `application/x-www-form-urlencoded`
-- [ ] Add support for `multipart/form-data`
+- [ ] Add support for `multipart/form-data` (File upload, etc.)
 - [ ] Add a logger
 - [ ] Add support for views. e.g. HTML views for websites
+- [ ] Static file serving
 
 ### Essential but not urgent
 
 - [ ] Add documentation
-- [ ] Add the raw request to context
+- [x] Add the raw request to context
 - [ ] Add support for HTTPS
 - [ ] Add support for web sockets
 
