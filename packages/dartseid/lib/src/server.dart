@@ -43,7 +43,6 @@ Future<void> handleRequest(HttpRequest request) async {
   print('Request: $methodString ${context.path}');
 
   if (route == null) {
-    print('No matching route found');
     return writeNotFoundResponse(
       context: context,
       response: response,
