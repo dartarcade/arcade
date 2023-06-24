@@ -8,7 +8,7 @@ class ExampleController {
     return {'message': 'Hello, world!'};
   }
 
-  Map<String, dynamic> get(RequestContext context) {
+  Map<String, dynamic> get(covariant AuthedRequestContext context) {
     return {
       'query': context.queryParameters,
       'path': context.pathParameters,

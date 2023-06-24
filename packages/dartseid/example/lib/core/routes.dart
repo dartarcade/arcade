@@ -7,8 +7,9 @@ const exampleController = ExampleController();
 void defineRoutes() {
   Route.get('/', exampleController.index);
 
-  Route.get('/get', exampleController.get);
-  Route.get('/get/:message', exampleController.get);
+  Route.get('/get', exampleController.get).middleware(checkAuthMiddleware);
+  Route.get('/get/:message', exampleController.get)
+      .middleware(checkAuthMiddleware);
 
   Route.post('/', exampleController.post)
       .middleware(checkAuthMiddleware)
