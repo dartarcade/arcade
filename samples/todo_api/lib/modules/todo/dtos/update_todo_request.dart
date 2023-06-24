@@ -15,7 +15,8 @@ class UpdateTodoRequest with _$UpdateTodoRequest {
   }) = _UpdateTodoRequest;
 
   static SchemaValidationResult<UpdateTodoRequest> validate(
-          Map<String, dynamic> json,) =>
+    Map<String, dynamic> json,
+  ) =>
       _$validate(json);
 
   factory UpdateTodoRequest.fromJson(Map<String, dynamic> json) =>

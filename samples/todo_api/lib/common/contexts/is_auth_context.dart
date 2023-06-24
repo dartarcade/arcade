@@ -5,7 +5,7 @@ class IsAuthContext extends RequestContext {
 
   IsAuthContext({
     required super.request,
-    super.route,
+    required super.route,
     required this.userId,
   });
 }

@@ -19,7 +19,7 @@ class TodoController {
       Route.get('/todos', getTodos),
       Route.get('/todos/:id', getTodoById),
       Route.post('/todos', createTodo),
-      Route.put('/todos/:id', updateTodoById),
+      Route.patch('/todos/:id', updateTodoById),
       Route.delete('/todos/:id', deleteTodoById),
     ];
 
@@ -69,7 +69,16 @@ class TodoController {
     };
   }
 
-  String deleteTodoById(covariant IsAuthContext context) {
-    return 'Delete todo by id: ${context.pathParameters['id']}';
+  Future<Todo> deleteTodoById(covariant IsAuthContext context) {
+    final rawId = context.pathParameters['id'];
+    final validationResult = l.int()
+        .required(message: 'Invalid id')
+        .validateValueWithFieldName('id', int.tryParse(rawId ?? ''));
+    return switch (validationResult) {
+      SingleValidationSuccess(data: final id) =>
+        _todoService.deleteById(id: id!),
+      SingleValidationError(errors: final errors) =>
+        throw BadRequestException(message: errors.first)
+    };
   }
 }

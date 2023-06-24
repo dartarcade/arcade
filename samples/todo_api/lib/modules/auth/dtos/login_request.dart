@@ -15,7 +15,8 @@ class LoginRequest with _$LoginRequest {
   }) = _LoginRequest;
 
   static SchemaValidationResult<LoginRequest> validate(
-          Map<String, dynamic> json,) =>
+    Map<String, dynamic> json,
+  ) =>
       _$validate(json);
 
   factory LoginRequest.fromJson(Map<String, dynamic> json) =>

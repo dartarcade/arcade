@@ -17,7 +17,8 @@ class AuthMiddleware {
         .lastOrNull;
     if (token == null) {
       throw const UnauthorizedException(
-          message: 'Authorization header missing',);
+        message: 'Authorization header missing',
+      );
     }
 
     final payload = _jwtService.verifyToken(token);

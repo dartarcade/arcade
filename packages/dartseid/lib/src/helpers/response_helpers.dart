@@ -43,8 +43,6 @@ void writeNotFoundResponse({
       return sendErrorResponse(response, const InternalServerErrorException());
     }
   }
-
-  return sendErrorResponse(response, const NotFoundException());
 }
 
 Future<void> writeResponse({

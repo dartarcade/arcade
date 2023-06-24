@@ -14,7 +14,8 @@ class TodoRequest with _$TodoRequest {
   }) = _TodoRequest;
 
   static SchemaValidationResult<TodoRequest> validate(
-          Map<String, dynamic> json,) =>
+    Map<String, dynamic> json,
+  ) =>
       _$validate(json);
 
   factory TodoRequest.fromJson(Map<String, dynamic> json) =>

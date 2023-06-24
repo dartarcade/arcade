@@ -38,17 +38,23 @@ Future<void> handleRequest(HttpRequest request) async {
     uri: uri,
   );
 
-  final context = RequestContext(request: request, route: route);
-
-  print('Request: $methodString ${context.path}');
+  print('Request: $methodString ${request.uri.path}');
 
   if (route == null) {
+    if (notFoundRoute == null) {
+      return sendErrorResponse(response, const NotFoundException());
+    }
+
+    final context = RequestContext(request: request, route: notFoundRoute);
+
     return writeNotFoundResponse(
       context: context,
       response: response,
-      notFoundRouteHandler: notFoundRoute?.notFoundHandler,
+      notFoundRouteHandler: notFoundRoute.notFoundHandler,
     );
   }
+
+  final context = RequestContext(request: request, route: route);
 
   await writeResponse(
     context: context,

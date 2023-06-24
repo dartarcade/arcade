@@ -60,4 +60,13 @@ class TodoService {
         )
         .then((value) => value!);
   }
+
+  Future<Todo> deleteById({required int id}) async {
+    final deletedTodo =
+        await prisma.todo.delete(where: TodoWhereUniqueInput(id: id));
+    if (deletedTodo == null) {
+      throw const NotFoundException(message: 'Todo not found');
+    }
+    return deletedTodo;
+  }
 }

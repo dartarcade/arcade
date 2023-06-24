@@ -10,7 +10,7 @@ import 'package:dartseid/src/route.dart';
 
 class RequestContext {
   late final HttpRequest _request;
-  late final BaseRoute? _route;
+  late final BaseRoute _route;
   late final String _path;
   late final HttpMethod _method;
   late final HttpHeaders _headers;
@@ -18,7 +18,7 @@ class RequestContext {
   late final Map<String, String> _queryParameters;
 
   RequestContext({
-    BaseRoute? route,
+    required BaseRoute route,
     required HttpRequest request,
   }) {
     final HttpRequest(uri: uri, method: methodString) = request;
@@ -40,7 +40,7 @@ class RequestContext {
 
   Future<List<Uint8List>> get rawBody => _request.toList();
 
-  BaseRoute? get route => _route;
+  BaseRoute get route => _route;
 
   String get path => _path;
 
