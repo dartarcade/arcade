@@ -29,4 +29,13 @@ class ExampleController {
     final name = context.pathParameters['name'];
     return 'Hello, $name!';
   }
+
+  Future<dynamic> printBodyAsString(RequestContext context) async {
+    final data = await context.formData();
+    return switch (data) {
+      BodyParseSuccess(value: final data) => data.files.first.path,
+      BodyParseFailure(error: final e) => throw e as Object? ??
+          const BadRequestException(message: 'Invalid input'),
+    };
+  }
 }

@@ -17,5 +17,7 @@ void defineRoutes() {
 
   Route.get('/hello/:name', exampleController.hello);
 
+  Route.post('/print-body', exampleController.printBodyAsString);
+
   Route.notFound((context) => {'message': 'Not found'});
 }
