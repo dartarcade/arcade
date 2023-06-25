@@ -15,12 +15,11 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 - [x] Add support for hot reload
 - [x] Handle all errors defaulting to 500
 - [x] Add support for middlewares
-- [ ] Add support for `multipart/form-data` (File upload, etc.)
-- [ ] Add support for `application/x-www-form-urlencoded`
+- [x] Add support for `multipart/form-data` (File upload, etc.)
+- [x] Add support for `application/x-www-form-urlencoded`
 - [ ] Add a logger
 - [ ] Static file serving
 - [ ] Add support for views. e.g. HTML views for websites
-- [ ] Add support for cookies (cleaner API)
 
 ### Essential but not urgent
 
@@ -28,6 +27,7 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
     - [x] Get started guide
         - Needs to be consistently updated
 - [x] Add the raw request to context
+- [ ] Add support for cookies (cleaner API)
 - [ ] Add support for HTTPS
 - [ ] Add support for web sockets
 
