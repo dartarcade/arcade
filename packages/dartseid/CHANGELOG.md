@@ -1,3 +1,10 @@
+## 0.0.3
+
+- Add file upload support
+- Add support for `multipart/form-data` requests
+- Add support for `application/x-www-form-urlencoded` requests
+- Add a sample todo API
+
 ## 0.0.2
 
 - Added `rawRequest` to `RequestContext` to allow access to the raw request object for advanced use cases.
