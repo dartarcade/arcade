@@ -10,6 +10,6 @@ final checkAuthMiddleware = Middleware((RequestContext context) async {
 });
 
 final printUserIdMiddleware = Middleware((AuthedRequestContext context) async {
-  print('User ID: ${context.userId}');
+  logger.log('User ID: ${context.userId}');
   return context;
 });

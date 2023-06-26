@@ -8,13 +8,15 @@ import 'package:dartseid/src/helpers/server_helpers.dart';
 import 'package:dartseid/src/route.dart';
 
 Future<void> runServer({required int port}) async {
+  await logger.init();
+
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,
     port,
   );
 
   server.listen(handleRequest);
-  print('Server running');
+  logger.log('Server running');
 
   final hotreloader = await createHotReloader();
 
@@ -38,7 +40,7 @@ Future<void> handleRequest(HttpRequest request) async {
     uri: uri,
   );
 
-  print('Request: $methodString ${request.uri.path}');
+  logger.log('Request: $methodString ${request.uri.path}');
 
   if (route == null) {
     if (notFoundRoute == null) {

@@ -136,7 +136,7 @@ class RequestContext {
       final formData = await _parseFormData(await rawBody, boundary);
       return BodyParseSuccess(formData);
     } catch (e, s) {
-      print('$e\n$s');
+      logger.error('$e\n$s');
       return BodyParseFailure(e);
     }
   }

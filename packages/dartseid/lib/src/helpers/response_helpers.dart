@@ -36,10 +36,10 @@ void writeNotFoundResponse({
       response.close();
       return;
     } on DartseidHttpException catch (e, s) {
-      print('$e\n$s');
+      logger.error('$e\n$s');
       return sendErrorResponse(response, e);
     } catch (e, s) {
-      print('$e\n$s');
+      logger.error('$e\n$s');
       return sendErrorResponse(response, const InternalServerErrorException());
     }
   }
@@ -71,10 +71,10 @@ Future<void> writeResponse({
 
     response.close();
   } on DartseidHttpException catch (e, s) {
-    print('$e\n$s');
+    logger.error('$e\n$s');
     return sendErrorResponse(response, e);
   } catch (e, s) {
-    print('$e\n$s');
+    logger.error('$e\n$s');
     return sendErrorResponse(response, const InternalServerErrorException());
   }
 }

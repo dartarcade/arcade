@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:ansi_styles/extension.dart';
 import 'package:collection/collection.dart';
+import 'package:dartseid/src/logger.dart';
 import 'package:hotreloader/hotreloader.dart';
 import 'package:vm_service/vm_service.dart';
 
@@ -9,7 +10,7 @@ Future<void> closeServerExit(
   HttpServer server,
   HotReloader hotreloader,
 ) async {
-  print('Shutting down');
+  logger.log('Shutting down');
   await server.close();
   await hotreloader.stop();
   exit(0);
@@ -29,28 +30,28 @@ Future<HotReloader> createHotReloader() {
   return HotReloader.create(
     debounceInterval: const Duration(milliseconds: 500),
     onBeforeReload: (ctx) {
-      print(
+      logger.log(
         '----------------------------------------------------------------------',
       );
-      print('Reloading server...');
+      logger.log('Reloading server...');
       return true;
     },
     onAfterReload: (ctx) {
       switch (ctx.result) {
         case HotReloadResult.Succeeded:
-          print('Reload succeeded'.green);
+          logger.log('Reload succeeded'.green);
         case HotReloadResult.PartiallySucceeded:
-          print('Reload partially succeeded'.yellow);
+          logger.log('Reload partially succeeded'.yellow);
           _printReloadReports(ctx.reloadReports);
         case HotReloadResult.Skipped:
-          print('Reload skipped'.yellow);
+          logger.log('Reload skipped'.yellow);
           _printReloadReports(ctx.reloadReports);
         case HotReloadResult.Failed:
-          print('Reload failed'.red);
+          logger.log('Reload failed'.red);
           _printReloadReports(ctx.reloadReports);
       }
 
-      print(
+      logger.log(
         '----------------------------------------------------------------------',
       );
     },
@@ -82,5 +83,5 @@ void _printReloadReports(Map<IsolateRef, ReloadReport> reloadReports) {
   }
 
   if (messages.isEmpty) return;
-  print('\n${messages.join('\n')}'.red);
+  logger.error('\n${messages.join('\n')}');
 }
