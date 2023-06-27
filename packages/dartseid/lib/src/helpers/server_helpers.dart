@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dartseid/src/logger.dart';
 
 Future<void> closeServerExit(HttpServer server) async {
-  logger.log(
+  Logger.root.log(
     const LogRecord(
       level: LogLevel.none,
       message: 'Shutting down',

@@ -5,9 +5,9 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:dartseid/dartseid.dart';
-import 'package:dartseid/src/http/form_data.dart';
 import 'package:dartseid/src/helpers/request_helpers.dart';
 import 'package:dartseid/src/helpers/route_helpers.dart';
+import 'package:dartseid/src/http/form_data.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:string_scanner/string_scanner.dart';
@@ -136,7 +136,7 @@ class RequestContext {
       final formData = await _parseFormData(await rawBody, boundary);
       return BodyParseSuccess(formData);
     } catch (e, s) {
-      logger.error('$e\n$s');
+      Logger.root.error('$e\n$s');
       return BodyParseFailure(e);
     }
   }

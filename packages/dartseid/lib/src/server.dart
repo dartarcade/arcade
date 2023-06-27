@@ -8,7 +8,7 @@ import 'package:dartseid/src/helpers/server_helpers.dart';
 import 'package:dartseid/src/http/route.dart';
 
 Future<void> runServer({required int port}) async {
-  await logger.init();
+  await Logger.init();
 
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,
@@ -16,7 +16,7 @@ Future<void> runServer({required int port}) async {
   );
 
   server.listen(handleRequest);
-  logger.log(
+  Logger.root.log(
     const LogRecord(
       level: LogLevel.none,
       message: 'Server running',
@@ -43,7 +43,7 @@ Future<void> handleRequest(HttpRequest request) async {
     uri: uri,
   );
 
-  logger.info('Request: $methodString ${request.uri.path}');
+  Logger.root.info('Request: $methodString ${request.uri.path}');
 
   if (route == null) {
     if (notFoundRoute == null) {

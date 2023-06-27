@@ -20,13 +20,17 @@ class LogRecord {
   });
 }
 
-class _Logger {
-  final ReceivePort _receivePort = ReceivePort();
-  late final SendPort _sendPort;
+class Logger {
+  final String _name;
 
-  Isolate? _isolate;
+  static final ReceivePort _receivePort = ReceivePort();
+  static late final SendPort _sendPort;
 
-  Future<void> init() async {
+  static Isolate? _isolate;
+
+  const Logger(this._name);
+
+  static Future<void> init() async {
     if (_isolate != null) {
       return;
     }
@@ -35,7 +39,7 @@ class _Logger {
   }
 
   void log(LogRecord record) {
-    _sendPort.send(record);
+    _sendPort.send({'name': _name, 'record': record});
   }
 
   void debug(String message) {
@@ -78,14 +82,17 @@ class _Logger {
     final rp = ReceivePort();
     sp.send(rp.sendPort);
 
-    await for (final record in rp) {
-      if (record is! LogRecord) continue;
+    await for (final data in rp) {
+      if (data is! Map) continue;
+      final {'name': name, 'record': record} = data;
+
+      if (name is! String || record is! LogRecord) continue;
       final message = switch (record.level) {
         LogLevel.none => record.message,
-        LogLevel.debug => '[DEBUG]: ${record.message}'.green,
-        LogLevel.info => '[INFO]: ${record.message}'.blue,
-        LogLevel.warning => '[WARNING]: ${record.message}'.yellow,
-        LogLevel.error => '[ERROR]: ${record.message}'.red,
+        LogLevel.debug => '[DEBUG]: $name: ${record.message}'.green,
+        LogLevel.info => '[INFO]: $name: ${record.message}'.blue,
+        LogLevel.warning => '[WARNING]: $name: ${record.message}'.yellow,
+        LogLevel.error => '[ERROR]: $name: ${record.message}'.red,
       };
       // ignore: avoid_print
       print(message);
@@ -96,6 +103,6 @@ class _Logger {
     _receivePort.close();
     _isolate?.kill();
   }
-}
 
-final logger = _Logger();
+  static const root = Logger('ROOT');
+}
