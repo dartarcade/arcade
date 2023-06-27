@@ -4,13 +4,18 @@ import 'package:ansi_styles/extension.dart';
 import 'package:collection/collection.dart';
 import 'package:dartseid/src/logger.dart';
 import 'package:hotreloader/hotreloader.dart';
-import 'package:vm_service/vm_service.dart';
+import 'package:vm_service/vm_service.dart' hide LogRecord;
 
 Future<void> closeServerExit(
   HttpServer server,
   HotReloader hotreloader,
 ) async {
-  logger.log('Shutting down');
+  logger.log(
+    const LogRecord(
+      level: LogLevel.none,
+      message: 'Shutting down',
+    ),
+  );
   await server.close();
   await hotreloader.stop();
   exit(0);
@@ -27,32 +32,65 @@ void setupProcessSignalWatchers(HttpServer server, HotReloader hotreloader) {
 }
 
 Future<HotReloader> createHotReloader() {
+  const separator =
+      '----------------------------------------------------------------------';
   return HotReloader.create(
     debounceInterval: const Duration(milliseconds: 500),
     onBeforeReload: (ctx) {
       logger.log(
-        '----------------------------------------------------------------------',
+        const LogRecord(
+          level: LogLevel.none,
+          message: separator,
+        ),
       );
-      logger.log('Reloading server...');
+      logger.log(
+        const LogRecord(
+          level: LogLevel.none,
+          message: 'Reloading server...',
+        ),
+      );
       return true;
     },
     onAfterReload: (ctx) {
       switch (ctx.result) {
         case HotReloadResult.Succeeded:
-          logger.log('Reload succeeded'.green);
+          logger.log(
+            LogRecord(
+              level: LogLevel.none,
+              message: 'Reload succeeded'.green,
+            ),
+          );
         case HotReloadResult.PartiallySucceeded:
-          logger.log('Reload partially succeeded'.yellow);
+          logger.log(
+            LogRecord(
+              level: LogLevel.none,
+              message: 'Reload partially succeeded'.yellow,
+            ),
+          );
           _printReloadReports(ctx.reloadReports);
         case HotReloadResult.Skipped:
-          logger.log('Reload skipped'.yellow);
+          logger.log(
+            LogRecord(
+              level: LogLevel.none,
+              message: 'Reload skipped'.yellow,
+            ),
+          );
           _printReloadReports(ctx.reloadReports);
         case HotReloadResult.Failed:
-          logger.log('Reload failed'.red);
+          logger.log(
+            LogRecord(
+              level: LogLevel.none,
+              message: 'Reload failed'.red,
+            ),
+          );
           _printReloadReports(ctx.reloadReports);
       }
 
       logger.log(
-        '----------------------------------------------------------------------',
+        const LogRecord(
+          level: LogLevel.none,
+          message: separator,
+        ),
       );
     },
   );

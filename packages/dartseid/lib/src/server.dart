@@ -16,7 +16,12 @@ Future<void> runServer({required int port}) async {
   );
 
   server.listen(handleRequest);
-  logger.log('Server running');
+  logger.log(
+    const LogRecord(
+      level: LogLevel.none,
+      message: 'Server running',
+    ),
+  );
 
   final hotreloader = await createHotReloader();
 
@@ -40,7 +45,7 @@ Future<void> handleRequest(HttpRequest request) async {
     uri: uri,
   );
 
-  logger.log('Request: $methodString ${request.uri.path}');
+  logger.info('Request: $methodString ${request.uri.path}');
 
   if (route == null) {
     if (notFoundRoute == null) {
