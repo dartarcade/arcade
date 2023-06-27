@@ -17,7 +17,7 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 - [x] Add support for middlewares
 - [x] Add support for `multipart/form-data` (File upload, etc.)
 - [x] Add support for `application/x-www-form-urlencoded`
-- [ ] Add a logger
+- [x] Add a logger
 - [ ] Static file serving
 - [ ] Add support for views. e.g. HTML views for websites
 

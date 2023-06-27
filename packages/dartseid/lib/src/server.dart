@@ -5,7 +5,7 @@ import 'package:dartseid/src/helpers/request_helpers.dart';
 import 'package:dartseid/src/helpers/response_helpers.dart';
 import 'package:dartseid/src/helpers/route_helpers.dart';
 import 'package:dartseid/src/helpers/server_helpers.dart';
-import 'package:dartseid/src/route.dart';
+import 'package:dartseid/src/http/route.dart';
 
 Future<void> runServer({required int port}) async {
   await logger.init();

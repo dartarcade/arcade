@@ -5,7 +5,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:dartseid/dartseid.dart';
-import 'package:dartseid/src/form_data.dart';
+import 'package:dartseid/src/http/form_data.dart';
 import 'package:dartseid/src/helpers/request_helpers.dart';
 import 'package:dartseid/src/helpers/route_helpers.dart';
 import 'package:mime/mime.dart';

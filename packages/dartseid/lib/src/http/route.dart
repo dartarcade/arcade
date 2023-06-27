@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dartseid/src/request_context.dart';
+import 'package:dartseid/src/http/request_context.dart';
 
 // ignore: library_private_types_in_public_api
 final List<BaseRoute> routes = [];
