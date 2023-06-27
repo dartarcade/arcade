@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dartseid/src/logger.dart';
+import 'package:dartseid/src/core/logger.dart';
 
 Future<void> closeServerExit(HttpServer server) async {
   Logger.root.log(

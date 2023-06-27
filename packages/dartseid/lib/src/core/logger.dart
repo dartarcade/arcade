@@ -1,6 +1,7 @@
 import 'dart:isolate';
 
 import 'package:ansi_styles/extension.dart';
+import 'package:dartseid/src/core/configuration.dart';
 
 enum LogLevel {
   none,
@@ -42,38 +43,38 @@ class Logger {
     _sendPort.send({'name': _name, 'record': record});
   }
 
-  void debug(String message) {
+  void debug(Object? message) {
     log(
       LogRecord(
         level: LogLevel.debug,
-        message: message,
+        message: message.toString(),
       ),
     );
   }
 
-  void info(String message) {
+  void info(Object? message) {
     log(
       LogRecord(
         level: LogLevel.info,
-        message: message,
+        message: message.toString(),
       ),
     );
   }
 
-  void warning(String message) {
+  void warning(Object? message) {
     log(
       LogRecord(
         level: LogLevel.warning,
-        message: message,
+        message: message.toString(),
       ),
     );
   }
 
-  void error(String message) {
+  void error(Object? message) {
     log(
       LogRecord(
         level: LogLevel.error,
-        message: message,
+        message: message.toString(),
       ),
     );
   }
@@ -104,5 +105,5 @@ class Logger {
     _isolate?.kill();
   }
 
-  static const root = Logger('ROOT');
+  static final root = Logger(DartseidConfiguration.rootLoggerName);
 }

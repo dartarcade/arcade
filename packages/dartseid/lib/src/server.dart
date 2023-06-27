@@ -6,9 +6,16 @@ import 'package:dartseid/src/helpers/response_helpers.dart';
 import 'package:dartseid/src/helpers/route_helpers.dart';
 import 'package:dartseid/src/helpers/server_helpers.dart';
 import 'package:dartseid/src/http/route.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart';
+
+late bool _canServeStaticFiles;
 
 Future<void> runServer({required int port}) async {
   await Logger.init();
+
+  _canServeStaticFiles =
+      await DartseidConfiguration.staticFilesDirectory.exists();
 
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,
@@ -46,6 +53,25 @@ Future<void> handleRequest(HttpRequest request) async {
   Logger.root.info('Request: $methodString ${request.uri.path}');
 
   if (route == null) {
+    if (_canServeStaticFiles) {
+      final fileName = uri.path.replaceAll(
+        RegExp(r'^\/|\/$'),
+        '',
+      );
+      final file = File(
+        join(
+          DartseidConfiguration.staticFilesDirectory.path,
+          fileName,
+        ),
+      );
+      if (await file.exists()) {
+        return serveStaticFile(
+          file: file,
+          response: response,
+        );
+      }
+    }
+
     if (notFoundRoute == null) {
       return sendErrorResponse(response, const NotFoundException());
     }
@@ -66,4 +92,18 @@ Future<void> handleRequest(HttpRequest request) async {
     route: route,
     response: response,
   );
+}
+
+Future<void> serveStaticFile({
+  required File file,
+  required HttpResponse response,
+}) async {
+  final mime = lookupMimeType(file.path) ?? 'text/plain';
+  response.headers.contentType = ContentType.parse(mime);
+
+  final length = await file.length();
+  response.headers.contentLength = length;
+
+  await file.openRead().pipe(response);
+  response.close();
 }
