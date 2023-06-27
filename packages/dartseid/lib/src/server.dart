@@ -23,10 +23,8 @@ Future<void> runServer({required int port}) async {
     ),
   );
 
-  final hotreloader = await createHotReloader();
-
   // Close server and hot reloader when exiting
-  setupProcessSignalWatchers(server, hotreloader);
+  setupProcessSignalWatchers(server);
 }
 
 Future<void> handleRequest(HttpRequest request) async {
