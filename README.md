@@ -19,9 +19,10 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 - [x] Add support for `application/x-www-form-urlencoded`
 - [x] Add a logger
 - [x] Static file serving
-- [ ] Add support for views. e.g. HTML views for websites
+- [ ] Add support for views
 - Global configuration
     - [x] Configure static file serving directory
+- [ ] CORS support
 
 ### Essential but not urgent
 
@@ -36,7 +37,7 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 ### Nice to haves
 
 - [ ] Use multi-threading to improve performance
-- [ ] Add default headers. e.g. `Cache-Control`, `X-Powered-By`, etc. Cache-Control should be configurable, and
+- [ ] Add default headers. e.g. `Cache-Control`, `X-Powered-By`, etc. `Cache-Control` should be configurable, and
   default to `no-cache` for API routes (JSON)
 - [ ] CLI for Dartseid
     - Commands
