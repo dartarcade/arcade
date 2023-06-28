@@ -11,6 +11,5 @@ import 'package:dartseid/dartseid.dart';
 import 'package:dartseid_example/core/routes.dart';
 
 Future<void> main(List<String> arguments) {
-  defineRoutes();
-  return runServer(port: 8080);
+  return runServer(port: 8080, init: defineRoutes);
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dartseid/dartseid.dart';
@@ -9,13 +10,20 @@ import 'package:dartseid/src/http/route.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 
+typedef InitApplication = FutureOr<void> Function();
+
 late bool _canServeStaticFiles;
 
-Future<void> runServer({required int port}) async {
+Future<void> runServer({
+  required int port,
+  required InitApplication init,
+}) async {
   await Logger.init();
 
   _canServeStaticFiles =
       await DartseidConfiguration.staticFilesDirectory.exists();
+
+  await init();
 
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,
@@ -30,8 +38,10 @@ Future<void> runServer({required int port}) async {
     ),
   );
 
+  final hotreloader = await createHotReloader(init);
+
   // Close server and hot reloader when exiting
-  setupProcessSignalWatchers(server);
+  setupProcessSignalWatchers(server, hotreloader);
 }
 
 Future<void> handleRequest(HttpRequest request) async {
