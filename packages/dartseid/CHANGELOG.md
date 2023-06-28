@@ -1,3 +1,9 @@
+## 0.0.4
+
+- Add a logger
+- Improve hot reloading. Now after reloading, the `init()` function is called again so that the application is
+  reinitialized. This allows routes to be redefined.
+
 ## 0.0.3
 
 - Add file upload support
