@@ -40,7 +40,8 @@ class NotFoundException extends DartseidHttpException {
 
 // 405
 class MethodNotAllowedException extends DartseidHttpException {
-  const MethodNotAllowedException({String? message, Map<String, dynamic>? errors})
+  const MethodNotAllowedException(
+      {String? message, Map<String, dynamic>? errors,})
       : super(message ?? 'Method not allowed', 405, errors: errors);
 }
 
@@ -58,18 +59,21 @@ class ImATeapotException extends DartseidHttpException {
 
 // 422
 class UnprocessableEntityException extends DartseidHttpException {
-  const UnprocessableEntityException({String? message, Map<String, dynamic>? errors})
+  const UnprocessableEntityException(
+      {String? message, Map<String, dynamic>? errors,})
       : super(message ?? 'Unprocessable entity', 422, errors: errors);
 }
 
 // 500
 class InternalServerErrorException extends DartseidHttpException {
-  const InternalServerErrorException({String? message, Map<String, dynamic>? errors})
+  const InternalServerErrorException(
+      {String? message, Map<String, dynamic>? errors,})
       : super(message ?? 'Internal server error', 500, errors: errors);
 }
 
 // 503
 class ServiceUnavailableException extends DartseidHttpException {
-  const ServiceUnavailableException({String? message, Map<String, dynamic>? errors})
+  const ServiceUnavailableException(
+      {String? message, Map<String, dynamic>? errors,})
       : super(message ?? 'Service unavailable', 503, errors: errors);
 }

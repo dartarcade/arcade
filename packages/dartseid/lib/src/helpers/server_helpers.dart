@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:ansi_styles/extension.dart';
 import 'package:collection/collection.dart';
 import 'package:dartseid/dartseid.dart';
-import 'package:dartseid/src/core/logger.dart';
 import 'package:dartseid/src/http/route.dart';
 import 'package:hotreloader/hotreloader.dart';
 import 'package:vm_service/vm_service.dart' hide LogRecord;
