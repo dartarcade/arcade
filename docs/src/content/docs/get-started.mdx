@@ -67,14 +67,14 @@ rmdir /s /q lib test
 In the `bin/my_app.dart` file, we can write the following code:
 
 ```dart
-import 'package:dartseid/dartseid_example.dart';
+import 'package:dartseid/dartseid.dart';
 
 Future<void> main() {
-  // We define our routes here. The first argument is the path and the second is the handler.
-  Route.get('/hello', (RequestContext context) => 'Hello World!');
-
   // We start the server on port 8080.
-  return runServer(port: 8080);
+  return runServer(port: 8080, init: () {
+    // We define our routes here. The first argument is the path and the second is the handler.
+    Route.get('/hello', (RequestContext context) => 'Hello World!');
+  });
 }
 
 ```
@@ -91,23 +91,23 @@ and you should see the string `Hello World!`.
 Let's modify our code to return a JSON response with the current time as well as echo a message passed via the path:
 
 ```dart
-import 'package:dartseid/dartseid_example.dart';
+import 'package:dartseid/dartseid.dart';
 
 Future<void> main() {
+  return runServer(port: 8080, init: () {
     Route.get('/hello', (RequestContext context) => 'Hello World!');
 
     // Add the following route
     Route.get('/hello/:message', (RequestContext context) {
-        final message = context.pathParameters['message'];
-        final time = DateTime.now().toIso8601String();
+      final message = context.pathParameters['message'];
+      final time = DateTime.now().toIso8601String();
 
-        return {
-            'message': message,
-            'time': time,
-        };
+      return {
+        'message': message,
+        'time': time,
+      };
     });
-
-    return runServer(port: 8080);
+  });
 }
 ```
 
