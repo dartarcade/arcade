@@ -1,3 +1,7 @@
+## 0.0.5
+
+- Add configuration for `dartseid_views` in `DartseidConfiguration` class
+
 ## 0.0.4
 
 - Add a logger
