@@ -84,10 +84,9 @@ packages:
   dartseid:
     dependency: "direct main"
     description:
-      name: dartseid
-      sha256: dcb44e29e1c73d80ed5666bf711ea87ae31461ce7d8781c0a4c1ffe54b353480
-      url: "https://pub.dev"
-    source: hosted
+      path: "../dartseid"
+      relative: true
+    source: path
     version: "0.0.4"
   file:
     dependency: transitive
