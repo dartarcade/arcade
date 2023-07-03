@@ -14,7 +14,7 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 - [x] Make `RequestContext.json` return a sealed class to wrap possible errors
 - [x] Add support for hot reload
 - [x] Handle all errors defaulting to 500
-- [x] Add support for middlewares
+- [x] Add support for hooks
 - [x] Add support for `multipart/form-data` (File upload, etc.)
 - [x] Add support for `application/x-www-form-urlencoded`
 - [x] Add a logger

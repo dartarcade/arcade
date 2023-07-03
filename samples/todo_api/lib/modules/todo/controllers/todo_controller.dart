@@ -15,17 +15,13 @@ class TodoController {
   final TodoService _todoService;
 
   TodoController(this._todoService) {
-    final routes = [
-      Route.get('/todos', getTodos),
-      Route.get('/todos/:id', getTodoById),
-      Route.post('/todos', createTodo),
-      Route.patch('/todos/:id', updateTodoById),
-      Route.delete('/todos/:id', deleteTodoById),
-    ];
+    final authHook = BeforeHook(getIt<AuthHook>().call);
 
-    for (final route in routes) {
-      route.middleware(Middleware(getIt<AuthMiddleware>()));
-    }
+    Route.get('/todos').before(authHook).handle(getTodos);
+    Route.get('/todos/:id').before(authHook).handle(getTodoById);
+    Route.post('/todos').before(authHook).handle(createTodo);
+    Route.patch('/todos/:id').before(authHook).handle(updateTodoById);
+    Route.delete('/todos/:id').before(authHook).handle(deleteTodoById);
   }
 
   Future<Iterable<Todo>> getTodos(covariant IsAuthContext context) {

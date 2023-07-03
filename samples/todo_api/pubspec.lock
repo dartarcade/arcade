@@ -228,11 +228,10 @@ packages:
   dartseid:
     dependency: "direct main"
     description:
-      name: dartseid
-      sha256: "53644770e40075f54d5c1f31b451995e54d9322463ab36ae33beaf98e649a777"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2"
+      path: "../../packages/dartseid"
+      relative: true
+    source: path
+    version: "0.0.5"
   ed25519_edwards:
     dependency: transitive
     description:

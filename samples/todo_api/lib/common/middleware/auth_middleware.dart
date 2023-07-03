@@ -6,13 +6,13 @@ import 'package:todo_api/common/contexts/is_auth_context.dart';
 import 'package:todo_api/common/services/jwt_service.dart';
 
 @singleton
-class AuthMiddleware {
+class AuthHook {
   final JwtService _jwtService;
 
-  const AuthMiddleware(this._jwtService);
+  const AuthHook(this._jwtService);
 
   IsAuthContext call(RequestContext context) {
-    final token = context.headers[HttpHeaders.authorizationHeader]?.firstOrNull
+    final token = context.requestHeaders[HttpHeaders.authorizationHeader]?.firstOrNull
         ?.split(' ')
         .lastOrNull;
     if (token == null) {

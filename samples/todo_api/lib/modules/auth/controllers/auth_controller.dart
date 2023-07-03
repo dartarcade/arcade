@@ -11,8 +11,8 @@ class AuthController {
   final AuthService _authService;
 
   AuthController(this._authService) {
-    Route.post('/auth/register', register);
-    Route.post('/auth/login', login);
+    Route.post('/auth/register').handle(register);
+    Route.post('/auth/login').handle(login);
   }
 
   Future<ResponseWithMessage> register(RequestContext context) async {
