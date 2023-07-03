@@ -34,9 +34,9 @@ abstract class BaseRoute<T extends RequestContext> {
 
   RouteHandler<T>? get notFoundHandler;
 
-  List<BeforeHook> get beforeHooks;
+  List<BeforeHookHandler> get beforeHooks;
 
-  List<AfterHook> get afterHooks;
+  List<AfterHookHandler> get afterHooks;
 
   @override
   String toString() {
@@ -54,9 +54,9 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
   @override
   RouteHandler<T>? notFoundHandler;
   @override
-  final List<BeforeHook> beforeHooks = [];
+  final List<BeforeHookHandler> beforeHooks = [];
   @override
-  final List<AfterHook> afterHooks = [];
+  final List<AfterHookHandler> afterHooks = [];
 
   Route._(this.method, this.path, {this.notFoundHandler});
 
@@ -113,20 +113,23 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
 }
 
 class BeforeRoute<T extends RequestContext> extends Route<T> {
-  BeforeRoute._(super.method, super.path, List<BeforeHook> beforeHooks)
+  BeforeRoute._(super.method, super.path, List<BeforeHookHandler> beforeHooks)
       : super._() {
     this.beforeHooks.addAll(beforeHooks);
   }
 
-  BeforeRoute<U> before<U extends RequestContext>(BeforeHook<T, U> hook) {
-    beforeHooks.add(hook);
+  BeforeRoute<U> before<U extends RequestContext>(
+      BeforeHookHandler<T, U> hook) {
+    // FIXME
+    beforeHooks.add((context) => hook(context as T));
     currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
       ..handler = handler as RouteHandler<RequestContext>?
       ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as BeforeRoute<U>;
   }
 
-  BeforeRoute<U> beforeAll<U extends RequestContext>(List<BeforeHook> hooks) {
+  BeforeRoute<U> beforeAll<U extends RequestContext>(
+      List<BeforeHookHandler> hooks) {
     beforeHooks.addAll(hooks);
     currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
       ..handler = handler as RouteHandler<RequestContext>?
@@ -147,28 +150,32 @@ class AfterRoute<T extends RequestContext> extends Route<T> {
   AfterRoute._(
     super.method,
     super.path,
-    List<BeforeHook> beforeHooks,
-    List<AfterHook> afterHooks,
+    List<BeforeHookHandler> beforeHooks,
+    List<AfterHookHandler> afterHooks,
   ) : super._() {
     this.beforeHooks.addAll(beforeHooks);
     this.afterHooks.addAll(afterHooks);
   }
 
   AfterRoute<U> after<U extends RequestContext, V, W>(
-    AfterHook<T, U, V, W> hook,
+    AfterHookHandler<T, U, V, W> hook,
   ) {
-    afterHooks.add(hook);
-    currentProcessingRoute = AfterRoute<U>._(method, path, beforeHooks, afterHooks)
-      ..handler = handler as RouteHandler<RequestContext>?
-      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    afterHooks
+        .add((context, handleResult) => hook(context as T, handleResult as V));
+    currentProcessingRoute =
+        AfterRoute<U>._(method, path, beforeHooks, afterHooks)
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as AfterRoute<U>;
   }
 
-  AfterRoute<U> afterAll<U extends RequestContext>(List<AfterHook> hooks) {
+  AfterRoute<U> afterAll<U extends RequestContext>(
+      List<AfterHookHandler> hooks) {
     afterHooks.addAll(hooks);
-    currentProcessingRoute = AfterRoute<U>._(method, path, beforeHooks, afterHooks)
-      ..handler = handler as RouteHandler<RequestContext>?
-      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    currentProcessingRoute =
+        AfterRoute<U>._(method, path, beforeHooks, afterHooks)
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as AfterRoute<U>;
   }
 }

@@ -20,11 +20,9 @@ void defineRoutes() {
       .before(printUserIdMiddleware)
       .handle(exampleController.post)
       .after(
-        AfterHook(
-          (context, handleResult) => (
-            context,
-            {...handleResult! as Map, 'time': DateTime.now().toIso8601String()},
-          ),
+        (context, handleResult) => (
+          context,
+          {...handleResult! as Map, 'time': DateTime.now().toIso8601String()},
         ),
       );
 
