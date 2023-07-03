@@ -19,7 +19,7 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 - [x] Add support for `application/x-www-form-urlencoded`
 - [x] Add a logger
 - [x] Static file serving
-- [ ] Add support for views
+- [x] Add support for views
 - Global configuration
     - [x] Configure static file serving directory
 - [ ] CORS support

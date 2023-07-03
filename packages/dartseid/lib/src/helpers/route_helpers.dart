@@ -1,4 +1,5 @@
 import 'package:dartseid/dartseid.dart';
+import 'package:dartseid/src/http/route.dart';
 
 String _normalizePath(String path) {
   String p = path;
@@ -78,4 +79,22 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
       return previousValue;
     },
   );
+}
+
+BaseRoute? currentProcessingRoute;
+
+void validatePreviousRouteHasHandler() {
+  if (currentProcessingRoute != null) {
+    routes.add(currentProcessingRoute!);
+    currentProcessingRoute = null;
+  }
+
+  final previousRoute = routes.lastOrNull;
+  if (previousRoute == null || previousRoute.notFoundHandler != null) return;
+
+  if (previousRoute.handler == null) {
+    throw StateError(
+      '${previousRoute.method!.name} ${previousRoute.path} must have a handler',
+    );
+  }
 }

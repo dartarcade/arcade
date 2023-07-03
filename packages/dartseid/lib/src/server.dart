@@ -24,6 +24,7 @@ Future<void> runServer({
       await DartseidConfiguration.staticFilesDirectory.exists();
 
   await init();
+  validatePreviousRouteHasHandler();
 
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,
@@ -64,15 +65,12 @@ Future<void> handleRequest(HttpRequest request) async {
 
   if (route == null) {
     if (_canServeStaticFiles) {
-      final fileName = uri.path.replaceAll(
-        RegExp(r'^\/|\/$'),
-        '',
-      );
+      final pathSegments = uri.pathSegments;
       final file = File(
-        join(
+        joinAll([
           DartseidConfiguration.staticFilesDirectory.path,
-          fileName,
-        ),
+          ...pathSegments,
+        ]),
       );
       if (await file.exists()) {
         return serveStaticFile(

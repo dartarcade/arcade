@@ -10,17 +10,33 @@ void sendErrorResponse(HttpResponse response, DartseidHttpException error) {
   response.close();
 }
 
-Future<dynamic> runMiddleware(
+Future<RequestContext> runBeforeHooks(
   RequestContext context,
   BaseRoute route,
 ) async {
   var ctx = context;
 
-  for (final middleware in route.middlewares) {
-    ctx = await middleware(ctx);
+  for (final hook in route.beforeHooks) {
+    ctx = await hook(ctx);
   }
 
   return ctx;
+}
+
+Future<({RequestContext context, Object? handleResult})> runAfterHooks(
+  RequestContext context,
+  BaseRoute route,
+  dynamic result,
+) async {
+  var (ctx, r) = (context, result);
+
+  for (final hook in route.afterHooks) {
+    final (newCtx, newR) = await hook(ctx, r);
+    ctx = newCtx;
+    r = newR;
+  }
+
+  return (context: ctx, handleResult: r);
 }
 
 void writeNotFoundResponse({
@@ -51,14 +67,19 @@ Future<void> writeResponse({
   required HttpResponse response,
 }) async {
   try {
-    final ctx = await runMiddleware(context, route);
+    var ctx = await runBeforeHooks(context, route);
 
     // ignore: argument_type_not_assignable
     var result = route.handler!(ctx);
-
     if (result is Future) {
       result = await result;
     }
+
+    final (context: newCtx, handleResult: newResult) =
+    await runAfterHooks(ctx, route, result);
+    ctx = newCtx;
+    result = newResult;
+
 
     if (result is String) {
       response.headers.contentType = ContentType.html;

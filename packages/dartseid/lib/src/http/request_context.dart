@@ -17,7 +17,8 @@ class RequestContext {
   late final BaseRoute _route;
   late final String _path;
   late final HttpMethod _method;
-  late final HttpHeaders _headers;
+  late final HttpHeaders _requestHeaders;
+  late final HttpHeaders _responseHeaders;
   late final Map<String, String> _pathParameters;
   late final Map<String, String> _queryParameters;
   late final List<File> _files;
@@ -36,7 +37,8 @@ class RequestContext {
     _route = route;
     _path = request.uri.path;
     _method = method;
-    _headers = request.headers;
+    _requestHeaders = request.headers;
+    _responseHeaders = request.response.headers;
     _pathParameters = pathParameters;
     _queryParameters = request.uri.queryParameters;
   }
@@ -51,7 +53,9 @@ class RequestContext {
 
   HttpMethod get method => _method;
 
-  HttpHeaders get headers => _headers;
+  HttpHeaders get requestHeaders => _requestHeaders;
+
+  HttpHeaders get responseHeaders => _responseHeaders;
 
   Map<String, String> get pathParameters => _pathParameters;
 
@@ -67,7 +71,7 @@ class RequestContext {
   /// Parses the body as JSON map
   Future<BodyParseResult<Map<String, dynamic>>> jsonMap() async {
     try {
-      final contentType = headers.contentType;
+      final contentType = requestHeaders.contentType;
       if (contentType == null) {
         return const BodyParseFailure(
           HttpException('Content-Type header is not set'),
@@ -109,7 +113,7 @@ class RequestContext {
   // Parsed body as FormData
   Future<BodyParseResult<FormData>> formData() async {
     try {
-      final contentType = headers.contentType;
+      final contentType = requestHeaders.contentType;
       if (contentType == null) {
         return const BodyParseFailure(
           BadRequestException(message: 'Content-Type header is not set'),

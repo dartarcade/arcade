@@ -1,25 +1,15 @@
 import 'dart:async';
 
+import 'package:dartseid/src/helpers/route_helpers.dart';
+import 'package:dartseid/src/http/hooks.dart';
 import 'package:dartseid/src/http/request_context.dart';
 
 // ignore: library_private_types_in_public_api
 final List<BaseRoute> routes = [];
 
 typedef RouteHandler<T extends RequestContext> = FutureOr<dynamic> Function(
-    T context,);
-
-typedef MiddlewareHandler<T extends RequestContext, U extends RequestContext>
-    = FutureOr<U> Function(T context);
-
-class Middleware<T extends RequestContext, U extends RequestContext> {
-  final MiddlewareHandler<T, U> handler;
-
-  const Middleware(this.handler);
-
-  FutureOr<U> call(T context) {
-    return handler(context);
-  }
-}
+  T context,
+);
 
 enum HttpMethod {
   get('GET'),
@@ -42,12 +32,15 @@ abstract class BaseRoute<T extends RequestContext> {
 
   RouteHandler<T>? get handler;
 
-  RouteHandler? get notFoundHandler;
+  RouteHandler<T>? get notFoundHandler;
 
-  List<Middleware> get middlewares;
+  List<BeforeHook> get beforeHooks;
 
-  BaseRoute() {
-    routes.add(this);
+  List<AfterHook> get afterHooks;
+
+  @override
+  String toString() {
+    return '$runtimeType(method: $method, path: $path)';
   }
 }
 
@@ -57,41 +50,125 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
   @override
   final String? path;
   @override
-  final RouteHandler<T>? handler;
+  RouteHandler<T>? handler;
   @override
-  final RouteHandler? notFoundHandler;
+  RouteHandler<T>? notFoundHandler;
   @override
-  final List<Middleware> middlewares = [];
+  final List<BeforeHook> beforeHooks = [];
+  @override
+  final List<AfterHook> afterHooks = [];
 
-  Route._(this.method, this.path, this.handler, [this.notFoundHandler])
-      : super();
+  Route._(this.method, this.path, {this.notFoundHandler});
 
-  factory Route.get(String path, RouteHandler<T> handler) =>
-      Route._(HttpMethod.get, path, handler);
+  static BeforeRoute get(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = BeforeRoute._(HttpMethod.get, path, []);
+    return currentProcessingRoute! as BeforeRoute;
+  }
 
-  factory Route.post(String path, RouteHandler<T> handler) =>
-      Route._(HttpMethod.post, path, handler);
+  static BeforeRoute post(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = BeforeRoute._(HttpMethod.post, path, []);
+    return currentProcessingRoute! as BeforeRoute;
+  }
 
-  factory Route.put(String path, RouteHandler<T> handler) =>
-      Route._(HttpMethod.put, path, handler);
+  static BeforeRoute put(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = BeforeRoute._(HttpMethod.put, path, []);
+    return currentProcessingRoute! as BeforeRoute;
+  }
 
-  factory Route.delete(String path, RouteHandler<T> handler) =>
-      Route._(HttpMethod.delete, path, handler);
+  static BeforeRoute delete(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = BeforeRoute._(HttpMethod.delete, path, []);
+    return currentProcessingRoute! as BeforeRoute;
+  }
 
-  factory Route.patch(String path, RouteHandler<T> handler) =>
-      Route._(HttpMethod.patch, path, handler);
+  static BeforeRoute patch(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = BeforeRoute._(HttpMethod.patch, path, []);
+    return currentProcessingRoute! as BeforeRoute;
+  }
 
-  factory Route.head(String path, RouteHandler<T> handler) =>
-      Route._(HttpMethod.head, path, handler);
+  static BeforeRoute head(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = BeforeRoute._(HttpMethod.head, path, []);
+    return currentProcessingRoute! as BeforeRoute;
+  }
 
-  factory Route.options(String path, RouteHandler<T> handler) =>
-      Route._(HttpMethod.options, path, handler);
+  static BeforeRoute options(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = BeforeRoute._(HttpMethod.options, path, []);
+    return currentProcessingRoute! as BeforeRoute;
+  }
 
-  factory Route.notFound(RouteHandler handler) =>
-      Route._(null, null, null, handler);
+  static AfterRoute notFound<T extends RequestContext>(
+    RouteHandler<T> handler,
+  ) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = AfterRoute<T>._(null, null, [], [])
+      ..notFoundHandler = handler;
+    return currentProcessingRoute! as AfterRoute;
+  }
+}
 
-  Route middleware(Middleware middleware) {
-    middlewares.add(middleware);
-    return this;
+class BeforeRoute<T extends RequestContext> extends Route<T> {
+  BeforeRoute._(super.method, super.path, List<BeforeHook> beforeHooks)
+      : super._() {
+    this.beforeHooks.addAll(beforeHooks);
+  }
+
+  BeforeRoute<U> before<U extends RequestContext>(BeforeHook<T, U> hook) {
+    beforeHooks.add(hook);
+    currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
+      ..handler = handler as RouteHandler<RequestContext>?
+      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as BeforeRoute<U>;
+  }
+
+  BeforeRoute<U> beforeAll<U extends RequestContext>(List<BeforeHook> hooks) {
+    beforeHooks.addAll(hooks);
+    currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
+      ..handler = handler as RouteHandler<RequestContext>?
+      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as BeforeRoute<U>;
+  }
+
+  AfterRoute<T> handle(RouteHandler<T> handler) {
+    this.handler = handler;
+    currentProcessingRoute = AfterRoute<T>._(method, path, beforeHooks, [])
+      ..handler = handler as RouteHandler<RequestContext>?
+      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as AfterRoute<T>;
+  }
+}
+
+class AfterRoute<T extends RequestContext> extends Route<T> {
+  AfterRoute._(
+    super.method,
+    super.path,
+    List<BeforeHook> beforeHooks,
+    List<AfterHook> afterHooks,
+  ) : super._() {
+    this.beforeHooks.addAll(beforeHooks);
+    this.afterHooks.addAll(afterHooks);
+  }
+
+  AfterRoute<U> after<U extends RequestContext, V, W>(
+    AfterHook<T, U, V, W> hook,
+  ) {
+    afterHooks.add(hook);
+    currentProcessingRoute = AfterRoute<U>._(method, path, beforeHooks, afterHooks)
+      ..handler = handler as RouteHandler<RequestContext>?
+      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as AfterRoute<U>;
+  }
+
+  AfterRoute<U> afterAll<U extends RequestContext>(List<AfterHook> hooks) {
+    afterHooks.addAll(hooks);
+    currentProcessingRoute = AfterRoute<U>._(method, path, beforeHooks, afterHooks)
+      ..handler = handler as RouteHandler<RequestContext>?
+      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as AfterRoute<U>;
   }
 }
