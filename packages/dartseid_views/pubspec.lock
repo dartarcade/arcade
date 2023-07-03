@@ -85,10 +85,10 @@ packages:
     dependency: "direct main"
     description:
       name: dartseid
-      sha256: "553d48c5061e3ac595c04cbe5b81b58124257cf28ddfc8d2f99541c1108d37ac"
+      sha256: f337cd754c22dea3cce9528dae2129ffa7bdb27b41cf683ad138df756057cd23
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.5"
+    version: "0.0.6"
   file:
     dependency: transitive
     description:

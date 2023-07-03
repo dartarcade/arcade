@@ -7,7 +7,9 @@ import 'package:test/test.dart';
 void main() {
   group('view', () {
     tearDown(() {
-      DartseidConfiguration.viewsDirectory = Directory('views');
+      DartseidConfiguration.override(
+        viewsDirectory: Directory('views'),
+      );
     });
 
     test('should return a string', () async {
@@ -23,7 +25,9 @@ void main() {
 
     test('should throw an exception if the views directory does not exist',
         () async {
-      DartseidConfiguration.viewsDirectory = Directory('nonexistent');
+      DartseidConfiguration.override(
+        viewsDirectory: Directory('nonexistent'),
+      );
       expect(() => view('index'), throwsException);
     });
 
