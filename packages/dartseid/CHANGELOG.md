@@ -1,3 +1,8 @@
+## 0.0.6
+
+- Introduce a new routing API based on hooks. This allows for more flexibility in defining routes.
+- Multiple bug fixes
+
 ## 0.0.5
 
 - Add configuration for `dartseid_views` in `DartseidConfiguration` class

@@ -1,4 +1,3 @@
-import 'package:dartseid/dartseid.dart';
 import 'package:dartseid/src/http/route.dart';
 
 String _normalizePath(String path) {
