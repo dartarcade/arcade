@@ -1,6 +1,6 @@
 name: dartseid_views
 description: Add views to your Dartseid application
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/exaby73/dartseid/tree/master/packages/dartseid_views
 
 environment:
