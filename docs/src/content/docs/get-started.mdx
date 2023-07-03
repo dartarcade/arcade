@@ -73,7 +73,7 @@ Future<void> main() {
   // We start the server on port 8080.
   return runServer(port: 8080, init: () {
     // We define our routes here. The first argument is the path and the second is the handler.
-    Route.get('/hello', (RequestContext context) => 'Hello World!');
+    Route.get('/hello').handle((RequestContext context) => 'Hello World!');
   });
 }
 
@@ -95,10 +95,10 @@ import 'package:dartseid/dartseid.dart';
 
 Future<void> main() {
   return runServer(port: 8080, init: () {
-    Route.get('/hello', (RequestContext context) => 'Hello World!');
+    Route.get('/hello').handle((RequestContext context) => 'Hello World!');
 
     // Add the following route
-    Route.get('/hello/:message', (RequestContext context) {
+    Route.get('/hello/:message').handle((RequestContext context) {
       final message = context.pathParameters['message'];
       final time = DateTime.now().toIso8601String();
 
