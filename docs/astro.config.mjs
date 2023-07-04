@@ -6,6 +6,9 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Dartseid',
+      logo: {
+        src: '/src/assets/logo.png',
+      },
       social: {
         github: 'https://github.com/exaby73/dartseid',
       },

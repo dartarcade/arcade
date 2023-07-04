@@ -119,8 +119,8 @@ class BeforeRoute<T extends RequestContext> extends Route<T> {
   }
 
   BeforeRoute<U> before<U extends RequestContext>(
-      BeforeHookHandler<T, U> hook) {
-    // FIXME
+    BeforeHookHandler<T, U> hook,
+  ) {
     beforeHooks.add((context) => hook(context as T));
     currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
       ..handler = handler as RouteHandler<RequestContext>?
@@ -129,7 +129,8 @@ class BeforeRoute<T extends RequestContext> extends Route<T> {
   }
 
   BeforeRoute<U> beforeAll<U extends RequestContext>(
-      List<BeforeHookHandler> hooks) {
+    List<BeforeHookHandler> hooks,
+  ) {
     beforeHooks.addAll(hooks);
     currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
       ..handler = handler as RouteHandler<RequestContext>?
@@ -170,7 +171,8 @@ class AfterRoute<T extends RequestContext> extends Route<T> {
   }
 
   AfterRoute<U> afterAll<U extends RequestContext>(
-      List<AfterHookHandler> hooks) {
+    List<AfterHookHandler> hooks,
+  ) {
     afterHooks.addAll(hooks);
     currentProcessingRoute =
         AfterRoute<U>._(method, path, beforeHooks, afterHooks)

@@ -69,7 +69,6 @@ Future<void> writeResponse({
   try {
     var ctx = await runBeforeHooks(context, route);
 
-    // ignore: argument_type_not_assignable
     var result = route.handler!(ctx);
     if (result is Future) {
       result = await result;
