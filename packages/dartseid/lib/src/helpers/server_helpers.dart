@@ -9,7 +9,7 @@ import 'package:vm_service/vm_service.dart' hide LogRecord;
 
 Future<void> closeServerExit(
   HttpServer server,
-  HotReloader hotreloader,
+  HotReloader? hotreloader,
 ) async {
   Logger.root.log(
     const LogRecord(
@@ -18,11 +18,11 @@ Future<void> closeServerExit(
     ),
   );
   await server.close();
-  await hotreloader.stop();
+  await hotreloader?.stop();
   exit(0);
 }
 
-void setupProcessSignalWatchers(HttpServer server, HotReloader hotreloader) {
+void setupProcessSignalWatchers(HttpServer server, HotReloader? hotreloader) {
   ProcessSignal.sigint.watch().listen((_) async {
     await closeServerExit(server, hotreloader);
   });
