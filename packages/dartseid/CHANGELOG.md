@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Allow for compiling by disabling hot reloading when compiling for production using `dart compile exe`.
+
 ## 0.0.6
 
 - Introduce a new routing API based on hooks. This allows for more flexibility in defining routes.
