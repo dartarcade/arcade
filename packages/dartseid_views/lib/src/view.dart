@@ -32,6 +32,7 @@ Template _partialResolver(String name, [Directory? currentDirectory]) {
   final content = file.readAsStringSync();
   return Template(
     content,
+    lenient: true,
     partialResolver: (name) => _partialResolver(name, file.parent),
   );
 }
