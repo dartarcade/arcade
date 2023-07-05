@@ -1,4 +1,5 @@
 name: dartseid
+repository: https://github.com/dartseid/dartseid
 
 packages:
   - packages/*
