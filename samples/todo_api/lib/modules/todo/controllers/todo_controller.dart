@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:luthor/luthor.dart';
 import 'package:todo_api/common/contexts/is_auth_context.dart';
 import 'package:todo_api/common/extensions/parse_with_luthor.dart';
-import 'package:todo_api/common/middleware/auth_middleware.dart';
+import 'package:todo_api/common/hooks/auth_hook.dart';
 import 'package:todo_api/config/injection.dart';
 import 'package:todo_api/core/orm/prisma_client.dart';
 import 'package:todo_api/modules/todo/dtos/todo_request.dart';
@@ -15,7 +15,7 @@ class TodoController {
   final TodoService _todoService;
 
   TodoController(this._todoService) {
-    final authHook = BeforeHook(getIt<AuthHook>().call);
+    final authHook = getIt<AuthHook>().hook;
 
     Route.get('/todos').before(authHook).handle(getTodos);
     Route.get('/todos/:id').before(authHook).handle(getTodoById);

@@ -6,7 +6,7 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 
 ### Foundation tasks
 
-- [ ] dev and prod env (a way to disable the hotreloader)
+- [x] dev and prod env (a way to disable the hotreloader)
 
 ### Essentials
 
@@ -37,6 +37,8 @@ See the [documentation](https://dartseid.ex3.dev) for more information.
 ### Nice to haves
 
 - [ ] Use multi-threading to improve performance
+    - Might not implement this as keeping it single threaded might be useful for 
+    horizontally scaling the app. I will revisit this topic later.
 - [ ] Add default headers. e.g. `Cache-Control`, `X-Powered-By`, etc. `Cache-Control` should be configurable, and
   default to `no-cache` for API routes (JSON)
 - [ ] CLI for Dartseid

@@ -11,7 +11,7 @@ class AuthHook {
 
   const AuthHook(this._jwtService);
 
-  IsAuthContext call(RequestContext context) {
+  IsAuthContext hook(RequestContext context) {
     final token = context.requestHeaders[HttpHeaders.authorizationHeader]?.firstOrNull
         ?.split(' ')
         .lastOrNull;
