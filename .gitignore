@@ -1,4 +1,5 @@
 .dart_tool/
 .idea
+.nvimrc
 pubspec_overrides.yaml
 melos_dartseid.iml
