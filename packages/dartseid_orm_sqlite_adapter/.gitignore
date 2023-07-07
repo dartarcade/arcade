@@ -6,8 +6,4 @@
 # https://dart.dev/guides/libraries/private-files#pubspeclock.
 pubspec.lock
 
-.idea/
-
-melos_dartseid.iml
-# Generated files in example
-example/**/*.g.dart
+melos_dartseid_orm_sqlite_adapter.iml
