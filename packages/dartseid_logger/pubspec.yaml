@@ -1,6 +1,6 @@
 name: dartseid_logger
 description: A logger for Dartseid
-version: 1.0.0
+version: 0.0.1
 repository: https://github.com/dartseid/dartsied/tree/main/packages/dartseid_logger
 
 environment:
