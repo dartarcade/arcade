@@ -1,5 +1,5 @@
 name: dartseid_logger
-description: A sample command-line application.
+description: A logger for Dartseid
 version: 1.0.0
 repository: https://github.com/dartseid/dartsied/tree/main/packages/dartseid_logger
 
@@ -7,7 +7,8 @@ environment:
   sdk: ^3.0.5
 
 dependencies:
-  # path: ^1.8.0
+  ansi_styles: ^0.3.2+1
+  dartseid: ^0.0.7
 
 dev_dependencies:
   lint: ^2.1.2
