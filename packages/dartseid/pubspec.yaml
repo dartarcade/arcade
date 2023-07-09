@@ -9,6 +9,7 @@ environment:
 dependencies:
   ansi_styles: ^0.3.2+1
   collection: ^1.17.2
+  dartseid_logger: ^0.0.1
   hotreloader: ^3.0.6
   mime: ^1.0.4
   path: ^1.8.3
