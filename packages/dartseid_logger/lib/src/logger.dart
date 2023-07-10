@@ -1,7 +1,7 @@
 import 'dart:isolate';
 
 import 'package:ansi_styles/extension.dart';
-import 'package:dartseid/src/core/configuration.dart';
+import 'package:dartseid/dartseid.dart';
 
 enum LogLevel {
   none,
