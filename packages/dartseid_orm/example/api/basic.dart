@@ -77,6 +77,9 @@ Future<dynamic> dorming() async {
   final data = await t.transaction().start(
     (trx) async {
       final r = t.findOne(transaction: trx)
+        ..where({
+          "id": array([1, 2, 4])
+        })
         ..where({"id": eq(10)})
         ..where(
           and([
@@ -102,6 +105,7 @@ Future<dynamic> dorming() async {
           "avg": avg("name"),
           "count": count("name"),
           "countD": count("DISTINCT(name)"),
+          "countD2": countDistinct("name"),
           "x": distinct("name"),
           "max": max("name"),
         })

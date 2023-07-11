@@ -4,34 +4,125 @@ import 'package:dartseid_orm/src/adapter.dart';
 import 'package:dartseid_orm/src/core.dart';
 import 'package:dartseid_orm/src/table.dart';
 
-Map<String, WhereParam> and(List<Map<String, WhereParam>> value) {
-  final Map<String, WhereParam> mergedMap = {};
+const dAnd = r'$__AND';
+const dOr = r'$__OR';
+
+Map<String, MultipleWhereParam> and(List<Map<String, SingleWhereParam>> value) {
+  final List<Map<String, WhereParam>> whereParamList = [];
   for (final element in value) {
     element.forEach((key, _) {
-      element[key]?.isAnd = true;
-      element[key]?.isOr = false;
+      if (element[key] != null) {
+        element[key]!.param.isAnd = true;
+        element[key]!.param.isOr = false;
+        whereParamList.add({key: element[key]!.param});
+      }
     });
-    mergedMap.addAll(element);
   }
-  return mergedMap;
+  return {dAnd: MultipleWhereParam(whereParamList)};
 }
 
-Map<String, WhereParam> or(List<Map<String, WhereParam>> value) {
-  final Map<String, WhereParam> mergedMap = {};
+Map<String, MultipleWhereParam> or(List<Map<String, SingleWhereParam>> value) {
+  final List<Map<String, WhereParam>> whereParamList = [];
   for (final element in value) {
     element.forEach((key, _) {
-      element[key]?.isOr = true;
-      element[key]?.isAnd = false;
+      if (element[key] != null) {
+        element[key]!.param.isAnd = false;
+        element[key]!.param.isOr = true;
+        whereParamList.add({key: element[key]!.param});
+      }
     });
-    mergedMap.addAll(element);
   }
-  return mergedMap;
+  return {dOr: MultipleWhereParam(whereParamList)};
 }
 
-WhereParam array<T>(T value) {
-  return WhereParam(
-    operator: WhereOperator.array,
-    value: value,
+SingleWhereParam array<T>(T value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.array,
+      value: value,
+    ),
+  );
+}
+
+SingleWhereParam between<T>(T start, T end) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.between,
+      start: start,
+      end: end,
+    ),
+  );
+}
+
+SingleWhereParam eq<T>(T value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.eq,
+      value: value,
+    ),
+  );
+}
+
+SingleWhereParam gt<T>(T value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.gt,
+      value: value,
+    ),
+  );
+}
+
+SingleWhereParam gte<T>(T value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.gte,
+      value: value,
+    ),
+  );
+}
+
+SingleWhereParam like(String value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.like,
+      value: value,
+    ),
+  );
+}
+
+SingleWhereParam lt<T>(T value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.lt,
+      value: value,
+    ),
+  );
+}
+
+SingleWhereParam lte<T>(T value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.lte,
+      value: value,
+    ),
+  );
+}
+
+SingleWhereParam notInArray<T>(T value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.notInArray,
+      value: value,
+    ),
+  );
+}
+
+SingleWhereParam notEq<T>(T value) {
+  return SingleWhereParam(
+    WhereParam(
+      operator: WhereOperator.notEq,
+      value: value,
+    ),
   );
 }
 
@@ -39,14 +130,6 @@ SelectParam avg(String value) {
   return SelectParam(
     operator: SelectAggregationOperator.avg,
     fieldAs: value,
-  );
-}
-
-WhereParam between<T>(T start, T end) {
-  return WhereParam(
-    operator: WhereOperator.between,
-    start: start,
-    end: end,
   );
 }
 
@@ -71,13 +154,6 @@ SelectParam distinct(String value) {
   );
 }
 
-WhereParam eq<T>(T value) {
-  return WhereParam(
-    operator: WhereOperator.eq,
-    value: value,
-  );
-}
-
 SelectParam field(String value) {
   return SelectParam(
     operator: SelectAggregationOperator.show,
@@ -85,44 +161,9 @@ SelectParam field(String value) {
   );
 }
 
-WhereParam gt<T>(T value) {
-  return WhereParam(
-    operator: WhereOperator.gt,
-    value: value,
-  );
-}
-
-WhereParam gte<T>(T value) {
-  return WhereParam(
-    operator: WhereOperator.gte,
-    value: value,
-  );
-}
-
 SelectParam hide() {
   return SelectParam(
     operator: SelectAggregationOperator.hide,
-  );
-}
-
-WhereParam like(String value) {
-  return WhereParam(
-    operator: WhereOperator.like,
-    value: value,
-  );
-}
-
-WhereParam lt<T>(T value) {
-  return WhereParam(
-    operator: WhereOperator.lt,
-    value: value,
-  );
-}
-
-WhereParam lte<T>(T value) {
-  return WhereParam(
-    operator: WhereOperator.lte,
-    value: value,
   );
 }
 
@@ -140,20 +181,6 @@ SelectParam min(String value) {
   );
 }
 
-WhereParam notEq<T>(T value) {
-  return WhereParam(
-    operator: WhereOperator.notEq,
-    value: value,
-  );
-}
-
-WhereParam notInArray<T>(T value) {
-  return WhereParam(
-    operator: WhereOperator.notInArray,
-    value: value,
-  );
-}
-
 SelectParam show() {
   return SelectParam(
     operator: SelectAggregationOperator.show,
@@ -165,6 +192,135 @@ SelectParam sum(String value) {
     operator: SelectAggregationOperator.sum,
     fieldAs: value,
   );
+}
+
+class DormTableFindOperator {
+  final Dorm _dorm;
+  final TableOperator _operator;
+  final DormTableConverter _baseConverter;
+  final DormTransaction? _transaction;
+
+  final List<Map<String, WhereParam>> _whereParams = [];
+  final List<Map<String, WhereParam>> _havingParams = [];
+  final List<IncludeParam> _includeParams = [];
+  final List<String> _groupParams = [];
+  final List<Map<String, int>> _sortParams = [];
+  final List<Map<String, SelectParam>> _selectParams = [];
+
+  int? _limit;
+  int? _skip;
+
+  bool _isExplain = false;
+
+  DormTableFindOperator({
+    required Dorm dorm,
+    required TableOperator operator,
+    required ({
+      FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
+      FutureOr<Map<String, dynamic>> Function() toJson
+    }) baseConverter,
+    DormTransaction? transaction,
+  })  : _transaction = transaction,
+        _baseConverter = baseConverter,
+        _operator = operator,
+        _dorm = dorm;
+
+  Future<ExecResult> exec<T>({
+    DormTableFromConverter<T>? converter,
+  }) async {
+    try {
+      final execConverter =
+          converter != null ? converter.fromJson : _baseConverter.fromJson;
+
+      final data = await _dorm.adapter.operate(
+        isExplain: _isExplain,
+        operator: _operator,
+        transaction: _transaction,
+        whereParams: _whereParams,
+        includeParams: _includeParams,
+        selectParams: _selectParams,
+        havingParams: _havingParams,
+        groupParams: _groupParams,
+        sortParams: _sortParams,
+        limit: _limit,
+        skip: _skip,
+      );
+
+      final convertedData = await execConverter(data);
+
+      return ExecResultData(convertedData);
+    } on DormException catch (e) {
+      return ExecResultFailure(e);
+    } catch (e) {
+      return ExecResultFailure(
+        DormException(originalError: e, message: "Unknown Error"),
+      );
+    }
+  }
+
+  void explain() {
+    _isExplain = true;
+  }
+
+  void group(String column) {
+    _groupParams.add(column);
+  }
+
+  void having(Map<String, WhereParamBuilder> map) {
+    _whereParams.add(WhereParam.evaluateWhereParams(map));
+  }
+
+  void include(
+    String tableName, {
+    String? on,
+    Map<String, WhereParamBuilder>? where,
+    JoinOperation joinType = JoinOperation.inner,
+  }) {
+    _includeParams.add(
+      IncludeParam(
+        tableName,
+        on: on,
+        where: where,
+        joinType: joinType,
+      ),
+    );
+  }
+
+  /// Set the number of results to return. Cannot be less than 1.
+  void limit(int limit) {
+    if (limit <= 0) {
+      throw DormException(
+        message: "limit cannot be less then 1",
+        originalError: null,
+      );
+    }
+    _limit = limit;
+  }
+
+  void select(Map<String, SelectParam> value) {
+    _selectParams.add(value);
+  }
+
+  /// Set the number of results skipped. Cannot be less than 0.
+  void skip(int skip) {
+    if (skip < 0) {
+      throw DormException(
+        message: "skip cannot be less then 0",
+        originalError: null,
+      );
+    }
+    _skip = skip;
+  }
+
+  void sort(Map<String, int> sortBy) {
+    final Map<String, int> sortValue =
+        sortBy.map((key, value) => MapEntry(key, value > 0 ? 1 : -1));
+    _sortParams.add(sortValue);
+  }
+
+  void where(Map<String, WhereParamBuilder> map) {
+    _whereParams.add(WhereParam.evaluateWhereParams(map));
+  }
 }
 
 class DormTableCreateOperator {
@@ -283,7 +439,7 @@ class DormTableDeleteOperator {
   void include(
     String tableName, {
     String? on,
-    Map<String, WhereParam>? where,
+    Map<String, WhereParamBuilder>? where,
     JoinOperation joinType = JoinOperation.inner,
   }) {
     _includeParams.add(
@@ -296,137 +452,8 @@ class DormTableDeleteOperator {
     );
   }
 
-  void where(Map<String, WhereParam> value) {
-    _whereParams.add(value);
-  }
-}
-
-class DormTableFindOperator {
-  final Dorm _dorm;
-  final TableOperator _operator;
-  final DormTableConverter _baseConverter;
-  final DormTransaction? _transaction;
-
-  final List<Map<String, WhereParam>> _whereParams = [];
-  final List<Map<String, WhereParam>> _havingParams = [];
-  final List<IncludeParam> _includeParams = [];
-  final List<String> _groupParams = [];
-  final List<Map<String, int>> _sortParams = [];
-  final List<Map<String, SelectParam>> _selectParams = [];
-
-  int? _limit;
-  int? _skip;
-
-  bool _isExplain = false;
-
-  DormTableFindOperator({
-    required Dorm dorm,
-    required TableOperator operator,
-    required ({
-      FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
-      FutureOr<Map<String, dynamic>> Function() toJson
-    }) baseConverter,
-    DormTransaction? transaction,
-  })  : _transaction = transaction,
-        _baseConverter = baseConverter,
-        _operator = operator,
-        _dorm = dorm;
-
-  Future<ExecResult> exec<T>({
-    DormTableFromConverter<T>? converter,
-  }) async {
-    try {
-      final execConverter =
-          converter != null ? converter.fromJson : _baseConverter.fromJson;
-
-      final data = await _dorm.adapter.operate(
-        isExplain: _isExplain,
-        operator: _operator,
-        transaction: _transaction,
-        whereParams: _whereParams,
-        includeParams: _includeParams,
-        selectParams: _selectParams,
-        havingParams: _havingParams,
-        groupParams: _groupParams,
-        sortParams: _sortParams,
-        limit: _limit,
-        skip: _skip,
-      );
-
-      final convertedData = await execConverter(data);
-
-      return ExecResultData(convertedData);
-    } on DormException catch (e) {
-      return ExecResultFailure(e);
-    } catch (e) {
-      return ExecResultFailure(
-        DormException(originalError: e, message: "Unknown Error"),
-      );
-    }
-  }
-
-  void explain() {
-    _isExplain = true;
-  }
-
-  void group(String column) {
-    _groupParams.add(column);
-  }
-
-  void having(Map<String, WhereParam> value) {
-    _havingParams.add(value);
-  }
-
-  void include(
-    String tableName, {
-    String? on,
-    Map<String, WhereParam>? where,
-    JoinOperation joinType = JoinOperation.inner,
-  }) {
-    _includeParams.add(
-      IncludeParam(
-        tableName,
-        on: on,
-        where: where,
-        joinType: joinType,
-      ),
-    );
-  }
-
-  /// Set the number of results to return. Cannot be less than 1.
-  void limit(int limit) {
-    if (limit <= 0) {
-      throw DormException(
-        message: "limit cannot be less then 1",
-        originalError: null,
-      );
-    }
-    _limit = limit;
-  }
-
-  void select(Map<String, SelectParam> value) {
-    _selectParams.add(value);
-  }
-
-  /// Set the number of results skipped. Cannot be less than 0.
-  void skip(int skip) {
-    if (skip < 0) {
-      throw DormException(
-        message: "skip cannot be less then 0",
-        originalError: null,
-      );
-    }
-    _skip = skip;
-  }
-
-  void sort(Map<String, int> sortBy) {
-    final Map<String, int> sortValue =
-        sortBy.map((key, value) => MapEntry(key, value > 0 ? 1 : -1));
-    _sortParams.add(sortValue);
-  }
-
-  void where(Map<String, WhereParam> value) {
-    _whereParams.add(value);
+  void where(Map<String, WhereParamBuilder> map) {
+    _whereParams.add(WhereParam.evaluateWhereParams(map));
   }
 }
 
@@ -555,8 +582,8 @@ class DormTableUpdateOperator {
     _updateWithParams.add(value);
   }
 
-  void where(Map<String, WhereParam> value) {
-    _whereParams.add(value);
+  void where(Map<String, WhereParamBuilder> map) {
+    _whereParams.add(WhereParam.evaluateWhereParams(map));
   }
 }
 
@@ -582,9 +609,15 @@ class IncludeParam {
   IncludeParam(
     this.tableName, {
     this.on,
-    this.where,
     this.joinType = JoinOperation.inner,
-  });
+    Map<String, WhereParamBuilder>? where,
+  }) {
+    Map<String, WhereParam>? value;
+    if (where != null) {
+      value = WhereParam.evaluateWhereParams(where);
+    }
+    this.where = value;
+  }
 }
 
 enum JoinOperation {
@@ -641,6 +674,20 @@ enum WhereOperator {
   or,
 }
 
+sealed class WhereParamBuilder<T> {}
+
+class SingleWhereParam<T> extends WhereParamBuilder<T> {
+  final WhereParam param;
+
+  SingleWhereParam(this.param);
+}
+
+class MultipleWhereParam<T> extends WhereParamBuilder<T> {
+  final List<Map<String, WhereParam>> param;
+
+  MultipleWhereParam(this.param);
+}
+
 class WhereParam<T> {
   final WhereOperator operator;
   final T? value;
@@ -655,4 +702,28 @@ class WhereParam<T> {
     this.start,
     this.end,
   });
+
+  static Map<String, WhereParam> evaluateWhereParams(
+    Map<String, WhereParamBuilder> map,
+  ) {
+    Map<String, WhereParam> value = {};
+
+    if (map.containsKey(dAnd)) {
+      final multiple = map[dAnd]! as MultipleWhereParam;
+      for (final element in multiple.param) {
+        value = element;
+      }
+    } else if (map.containsKey(dOr)) {
+      final multiple = map[dOr]! as MultipleWhereParam;
+      for (final element in multiple.param) {
+        value = element;
+      }
+    } else {
+      value = map.map(
+        (key, v) => MapEntry(key, (v as SingleWhereParam).param),
+      );
+    }
+
+    return value;
+  }
 }
