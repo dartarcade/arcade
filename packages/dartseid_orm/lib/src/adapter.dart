@@ -2,13 +2,17 @@ import 'dart:async';
 
 import 'package:dartseid_orm/src/core.dart';
 import 'package:dartseid_orm/src/query.dart';
+import 'package:meta/meta.dart';
 
 abstract interface class DormAdapterBase {
-  final dynamic _connection;
+  @protected
+  final dynamic connection;
+  @protected
+  late Dorm dorm;
 
   DormAdapterBase({
-    required dynamic connection,
-  }) : _connection = connection;
+    required this.connection,
+  });
 
   Future<void> init();
   Future<Map<String, dynamic>> operate({
@@ -28,6 +32,9 @@ abstract interface class DormAdapterBase {
     int? limit,
     int? skip,
   });
+
+  void setDormInstance(Dorm dorm);
+
   DormTransaction transaction();
 }
 
@@ -37,47 +44,13 @@ abstract class DormTransaction {
   bool isRolledBack = false;
 
   Future<void> commit() async {
-    if (!isStarted) {
-      throw DormException(
-        message: "Cannot Commit a transaction that has not been started",
-        originalError: null,
-      );
-    }
-    if (isCommitted) {
-      throw DormException(
-        message: "Cannot Commit a transaction that is already committed",
-        originalError: null,
-      );
-    }
-    if (isRolledBack) {
-      throw DormException(
-        message: "Cannot Commit a transaction that has been rolled back",
-        originalError: null,
-      );
-    }
+    _checkPrecondition("Commit");
     await _commit();
     isCommitted = true;
   }
 
   Future<void> rollback() async {
-    if (!isStarted) {
-      throw DormException(
-        message: "Cannot Rollback a transaction that has not been started",
-        originalError: null,
-      );
-    }
-    if (isCommitted) {
-      throw DormException(
-        message: "Cannot Rollback a transaction that is already committed",
-        originalError: null,
-      );
-    }
-    if (isRolledBack) {
-      throw DormException(
-        message: "Cannot Rollback a transaction that is already rolled back",
-        originalError: null,
-      );
-    }
+    _checkPrecondition("Rollback");
     await _rollback();
     isRolledBack = true;
   }
@@ -86,6 +59,7 @@ abstract class DormTransaction {
     FutureOr<T> Function(DormTransaction trx)? callback,
   ]) async {
     try {
+      _checkStartPreCondition();
       await _start();
       isStarted = true;
       if (callback == null) {
@@ -107,4 +81,40 @@ abstract class DormTransaction {
   Future<void> _rollback();
 
   Future<void> _start();
+
+  void _checkStartPreCondition() {
+    if (isCommitted) {
+      throw DormException(
+        message: "Cannot Start a transaction that is already committed",
+        originalError: null,
+      );
+    }
+    if (isRolledBack) {
+      throw DormException(
+        message: "Cannot Start a transaction that is already rolled back",
+        originalError: null,
+      );
+    }
+  }
+
+  void _checkPrecondition(String op) {
+    if (!isStarted) {
+      throw DormException(
+        message: "Cannot $op a transaction that has not been started",
+        originalError: null,
+      );
+    }
+    if (isCommitted) {
+      throw DormException(
+        message: "Cannot $op a transaction that is already committed",
+        originalError: null,
+      );
+    }
+    if (isRolledBack) {
+      throw DormException(
+        message: "Cannot $op a transaction that has been rolled back",
+        originalError: null,
+      );
+    }
+  }
 }

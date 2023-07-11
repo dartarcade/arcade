@@ -33,7 +33,9 @@ class Dorm with DormTable {
     String? name,
   }) async {
     await adapter.init();
-    return Dorm._(adapter: adapter, name: name);
+    final dorm = Dorm._(adapter: adapter, name: name);
+    adapter.setDormInstance(dorm);
+    return dorm;
   }
 }
 

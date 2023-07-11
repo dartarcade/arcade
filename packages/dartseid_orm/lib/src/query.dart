@@ -9,6 +9,7 @@ Map<String, WhereParam> and(List<Map<String, WhereParam>> value) {
   for (final element in value) {
     element.forEach((key, _) {
       element[key]?.isAnd = true;
+      element[key]?.isOr = false;
     });
     mergedMap.addAll(element);
   }
@@ -20,6 +21,7 @@ Map<String, WhereParam> or(List<Map<String, WhereParam>> value) {
   for (final element in value) {
     element.forEach((key, _) {
       element[key]?.isOr = true;
+      element[key]?.isAnd = false;
     });
     mergedMap.addAll(element);
   }

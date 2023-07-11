@@ -1,11 +1,14 @@
 import 'package:dartseid_orm/dartseid_orm.dart';
 
 class DormMockAdapter implements DormAdapterBase {
-  final dynamic _connection;
+  @override
+  late Dorm dorm;
+  @override
+  final dynamic connection;
 
   DormMockAdapter({
-    required dynamic connection,
-  }) : _connection = connection;
+    required this.connection,
+  });
 
   @override
   Future<void> init() {
@@ -39,6 +42,11 @@ class DormMockAdapter implements DormAdapterBase {
     // TODO: implement transaction
     throw UnimplementedError();
   }
+
+  @override
+  void setDormInstance(Dorm dorm) {
+    this.dorm = dorm;
+  }
 }
 
 Future<dynamic> dorming() async {
@@ -49,8 +57,9 @@ Future<dynamic> dorming() async {
   final t = a.table(
     "users",
     {
-      "id": ColumnInt(),
+      "id": ColumnInt()..nullable(),
       "name": ColumnString(),
+      "json": ColumnJson(),
     },
     converter: (
       fromJson: (Map<String, dynamic> j) {},
@@ -68,6 +77,7 @@ Future<dynamic> dorming() async {
   final data = await t.transaction().start(
     (trx) async {
       final r = t.findOne(transaction: trx)
+        ..where({"id": eq(10)})
         ..where(
           and([
             {
@@ -104,6 +114,9 @@ Future<dynamic> dorming() async {
           ]),
           joinType: JoinOperation.left,
         )
+        ..group("id")
+        ..sort({"name": 1})
+        ..having(and([]))
         ..limit(10)
         ..skip(0);
 

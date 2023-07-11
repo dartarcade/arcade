@@ -122,43 +122,49 @@ class DormTableSchema {
   }
 }
 
-abstract class ColumnMeta {}
+class ColumnMeta {
+  void nullable() {
+    // do something
+  }
+}
 
-class ColumnInt implements ColumnMeta {}
+class ColumnInt extends ColumnMeta {}
 
-class ColumnIntRange implements ColumnMeta {}
+class ColumnIntRange extends ColumnMeta {}
 
-class ColumnFloat implements ColumnMeta {}
+class ColumnFloat extends ColumnMeta {}
 
-class ColumnBool implements ColumnMeta {}
+class ColumnBool extends ColumnMeta {}
 
-class ColumnString implements ColumnMeta {
+class ColumnString extends ColumnMeta {
   final dynamic search;
 
   ColumnString({this.search});
 }
 
-class ColumnStringEnum implements ColumnMeta {}
+class ColumnStringEnum extends ColumnMeta {}
 
-class ColumnStringSet implements ColumnMeta {}
+class ColumnStringSet extends ColumnMeta {}
 
-class ColumnBinary implements ColumnMeta {}
+class ColumnBinary extends ColumnMeta {}
 
-class ColumnDate implements ColumnMeta {}
+class ColumnDate extends ColumnMeta {}
 
-class ColumnDateRange implements ColumnMeta {}
+class ColumnDateRange extends ColumnMeta {}
 
-class ColumnJson implements ColumnMeta {}
+class ColumnJson extends ColumnMeta {}
 
-class ColumnComposite implements ColumnMeta {}
+class ColumnComposite extends ColumnMeta {}
 
-class ColumnGeoJson implements ColumnMeta {}
+class ColumnGeoJson extends ColumnMeta {}
 
-class ColumnArray implements ColumnMeta {}
+class ColumnObjectId extends ColumnMeta {}
 
-abstract interface class ColumnCustomDomain implements ColumnMeta {}
+class ColumnArray extends ColumnMeta {}
 
-class ColumnCustom implements ColumnMeta {
+abstract interface class ColumnCustomDomain extends ColumnMeta {}
+
+class ColumnCustom extends ColumnMeta {
   final String raw;
 
   ColumnCustom({required this.raw});
