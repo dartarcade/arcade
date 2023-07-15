@@ -1,5 +1,5 @@
 name: dartseid_config
-description: A sample command-line application.
+description: Configuration for your Dartseid app
 version: 0.0.1
 repository: https://github.com/dartseid/dartseid/tree/main/packages/dartsied_config
 
