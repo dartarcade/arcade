@@ -1,4 +1,3 @@
-export 'src/core/configuration.dart';
 export 'src/core/exceptions.dart';
 export 'src/core/logger.dart';
 export 'src/http/body_parse_result.dart';
