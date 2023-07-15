@@ -7,7 +7,7 @@ environment:
   sdk: ^3.0.5
 
 dependencies:
-  dartseid: ^0.0.9
+  dartseid_config: ^0.0.2
   mustache_template: ^2.0.0
   path: ^1.8.3
 

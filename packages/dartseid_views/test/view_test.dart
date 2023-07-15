@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dartseid/dartseid.dart';
+import 'package:dartseid_config/dartseid_config.dart';
 import 'package:dartseid_views/dartseid_views.dart';
 import 'package:test/test.dart';
 
