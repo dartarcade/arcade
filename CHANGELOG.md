@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`dartseid` - `v0.0.9+1`](#dartseid---v0091)
+
+---
+
+#### `dartseid` - `v0.0.9+1`
+
+ - **FIX**(dartseid): update imports for config dependency.
+
+
+## 2023-07-15
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`dartseid` - `v0.0.9`](#dartseid---v009)
  - [`dartseid_config` - `v0.0.2`](#dartseid_config---v002)
  - [`dartseid_views` - `v0.0.4`](#dartseid_views---v004)

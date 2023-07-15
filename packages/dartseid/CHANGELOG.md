@@ -1,3 +1,7 @@
+## 0.0.9+1
+
+ - **FIX**(dartseid): update imports for config dependency.
+
 ## 0.0.9
 
  - **FEAT**(config): new configuration package.
