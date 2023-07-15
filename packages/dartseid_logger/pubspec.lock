@@ -89,13 +89,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.8"
-  dartseid:
+  dartseid_config:
     dependency: "direct main"
     description:
-      path: "../dartseid"
+      path: "../dartseid_config"
       relative: true
     source: path
-    version: "0.0.7"
+    version: "0.0.2"
   file:
     dependency: transitive
     description:
@@ -120,14 +120,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
-  hotreloader:
-    dependency: transitive
-    description:
-      name: hotreloader
-      sha256: "728c0613556c1d153f7e7f4a367cffacc3f5a677d7f6497a1c2b35add4e6dacf"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.6"
   http_multi_server:
     dependency: transitive
     description:
@@ -312,14 +304,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
-  stream_transform:
-    dependency: transitive
-    description:
-      name: stream_transform
-      sha256: "14a00e794c7c11aa145a170587321aedce29769c08d7f58b1d141da75e3b1c6f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   string_scanner:
     dependency: transitive
     description:

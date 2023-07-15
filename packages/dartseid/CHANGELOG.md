@@ -1,3 +1,8 @@
+## 0.0.9+2
+
+ - **FIX**(core): updated to logger dependencies. Need to solve cyclic deps.
+ - **FIX**(all): Licenses copyright.
+
 ## 0.0.9+1
 
  - **FIX**(dartseid): update imports for config dependency.

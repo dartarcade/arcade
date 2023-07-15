@@ -15,6 +15,35 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`dartseid` - `v0.0.9+2`](#dartseid---v0092)
+ - [`dartseid_logger` - `v0.0.2`](#dartseid_logger---v002)
+
+---
+
+#### `dartseid` - `v0.0.9+2`
+
+ - **FIX**(core): updated to logger dependencies. Need to solve cyclic deps.
+ - **FIX**(all): Licenses copyright.
+
+#### `dartseid_logger` - `v0.0.2`
+
+ - **FIX**(all): Licenses copyright.
+ - **FEAT**(logger): copy logger code to new package.
+ - **FEAT**(logger): Initial commit.
+
+
+## 2023-07-15
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`dartseid` - `v0.0.9+1`](#dartseid---v0091)
 
 ---
