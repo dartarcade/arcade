@@ -8,6 +8,7 @@ import 'package:dartseid/src/helpers/route_helpers.dart';
 import 'package:dartseid/src/helpers/server_helpers.dart';
 import 'package:dartseid/src/http/route.dart';
 import 'package:dartseid_config/dartseid_config.dart';
+import 'package:dartseid_logger/dartseid_logger.dart';
 import 'package:hotreloader/hotreloader.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';

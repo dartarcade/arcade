@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartseid/dartseid.dart';
+import 'package:dartseid_logger/dartseid_logger.dart';
 
 void sendErrorResponse(HttpResponse response, DartseidHttpException error) {
   response.statusCode = error.statusCode;
