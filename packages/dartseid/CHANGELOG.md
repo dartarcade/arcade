@@ -1,3 +1,16 @@
+## 0.0.8
+
+ - **FIX**: hot reloading now initializes the application.
+ - **FIX**: not found route not closed.
+ - **FIX**: normalized routes when matching, decode path params during construction of context.pathParameters.
+ - **FEAT**: detect prod (compiled) or dev (JIT) environment.
+ - **FEAT**: add before and after hooks, and remove middleware. Before hooks are a replacement for middlewares, separate request and response headers in RequestContext.
+ - **FEAT**: add records and levels to logging.
+ - **FEAT**: add a rudimentary logger that uses a separate isolate to log.
+ - **FEAT**: add file upload support.
+ - **FEAT**: add todo API sample.
+ - **FEAT**: add support for custom exceptions.
+
 ## 0.0.7
 
 - Allow for compiling by disabling hot reloading when compiling for production using `dart compile exe`.
