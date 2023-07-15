@@ -1,3 +1,11 @@
+## 0.0.4
+
+ - **FEAT**(config): new configuration package.
+
+## 0.0.3+1
+
+ - Update a dependency to the latest release.
+
 ## 0.0.3
 
 - Lenient mode enabled for templates, meaning nested partials can be used.

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dartseid/dartseid.dart';
+import 'package:dartseid_config/dartseid_config.dart';
 import 'package:mustache_template/mustache_template.dart';
 import 'package:path/path.dart';
 

@@ -1,5 +1,6 @@
 import 'package:dartseid/dartseid.dart';
 import 'package:dartseid_example/core/context/authed_request_context.dart';
+import 'package:dartseid_logger/dartseid_logger.dart';
 
 Future<AuthedRequestContext> checkAuthMiddleware(RequestContext context) async {
   return AuthedRequestContext(

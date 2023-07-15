@@ -3,3 +3,7 @@ repository: https://github.com/dartseid/dartseid
 
 packages:
   - packages/*
+
+scripts:
+  analyze:
+    run: dart analyze
