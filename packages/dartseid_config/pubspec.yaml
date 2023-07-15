@@ -1,6 +1,6 @@
 name: dartseid_config
 description: Configuration for your Dartseid app
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/dartseid/dartseid/tree/main/packages/dartsied_config
 
 environment:

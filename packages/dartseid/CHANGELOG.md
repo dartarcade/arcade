@@ -1,3 +1,7 @@
+## 0.0.9
+
+ - **FEAT**(config): new configuration package.
+
 ## 0.0.8
 
  - **FIX**: hot reloading now initializes the application.

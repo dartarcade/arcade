@@ -15,6 +15,39 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`dartseid` - `v0.0.9`](#dartseid---v009)
+ - [`dartseid_config` - `v0.0.2`](#dartseid_config---v002)
+ - [`dartseid_views` - `v0.0.4`](#dartseid_views---v004)
+
+---
+
+#### `dartseid` - `v0.0.9`
+
+ - **FEAT**(config): new configuration package.
+
+#### `dartseid_config` - `v0.0.2`
+
+ - **FIX**(config): description, update(melos): bootstrap with new package.
+ - **FIX**(config): rename package.
+ - **FEAT**(config): new configuration package.
+
+#### `dartseid_views` - `v0.0.4`
+
+ - **FEAT**(config): new configuration package.
+
+
+## 2023-07-15
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`dartseid` - `v0.0.8`](#dartseid---v008)
  - [`dartseid_views` - `v0.0.3+1`](#dartseid_views---v0031)
 
