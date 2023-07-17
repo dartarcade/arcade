@@ -8,6 +8,10 @@ import 'package:dartseid_example/core/middlewares.dart';
 const exampleController = ExampleController();
 
 void defineRoutes() {
+  Route.any('*').handle((context) {
+    return 'Hello from DartSeid!';
+  });
+
   Route.get('/').handle(exampleController.index);
 
   Route.get('/get').before(checkAuthMiddleware).handle(exampleController.get);
