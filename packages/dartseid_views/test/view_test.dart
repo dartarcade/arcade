@@ -71,5 +71,11 @@ void main() {
       expect(result, isA<String>());
       expect(result, contains('Partial'));
     });
+
+    test('partials starting with a / should be absolute', () {
+      final result = view('nested/absolute', {'name': 'Absolute'});
+      expect(result, isA<String>());
+      expect(result, contains('Absolute'));
+    });
   });
 }
