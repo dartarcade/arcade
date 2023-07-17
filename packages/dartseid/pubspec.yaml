@@ -1,6 +1,6 @@
 name: dartseid
 description: A no magic web framework for Dart.
-version: 0.0.9+2
+version: 0.0.10
 repository: https://github.com/exaby73/dartseid
 
 environment:

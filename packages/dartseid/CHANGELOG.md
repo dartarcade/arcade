@@ -1,3 +1,7 @@
+## 0.0.10
+
+- **FEAT**(core): added `Route.any` and `*` matcher
+
 ## 0.0.9+2
 
  - **FIX**(core): updated to logger dependencies. Need to solve cyclic deps.
