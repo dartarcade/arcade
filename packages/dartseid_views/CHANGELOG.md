@@ -1,3 +1,7 @@
+## 0.0.5
+
+ - **FEAT**(views): add support for absolute partials.
+
 ## 0.0.4
 
  - **FEAT**(config): new configuration package.

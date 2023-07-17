@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-07-17
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`dartseid_views` - `v0.0.5`](#dartseid_views---v005)
+
+---
+
+#### `dartseid_views` - `v0.0.5`
+
+ - **FEAT**(views): add support for absolute partials.
+
+
 ## 2023-07-15
 
 ### Changes
