@@ -1,6 +1,6 @@
 import 'dart:async';
 
-abstract interface class CacheAdapter {
+abstract interface class BaseCacheManager {
   /// Initializes the cache. E.g. opens the database connection.
   FutureOr<void> init();
 
