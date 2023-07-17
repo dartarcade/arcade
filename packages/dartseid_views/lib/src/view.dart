@@ -10,7 +10,6 @@ String view(String name, [Map<String, dynamic>? data]) {
 }
 
 Template _partialResolver(String name, [Directory? currentDirectory]) {
-  print(name);
   final viewsDirectory = name.startsWith('/')
       ? DartseidConfiguration.viewsDirectory
       : currentDirectory ?? DartseidConfiguration.viewsDirectory;
