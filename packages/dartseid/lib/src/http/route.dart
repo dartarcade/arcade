@@ -12,6 +12,7 @@ typedef RouteHandler<T extends RequestContext> = FutureOr<dynamic> Function(
 );
 
 enum HttpMethod {
+  any('ANY'),
   get('GET'),
   post('POST'),
   put('PUT'),
@@ -59,6 +60,12 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
   final List<AfterHookHandler> afterHooks = [];
 
   Route._(this.method, this.path, {this.notFoundHandler});
+
+  static BeforeRoute any(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = BeforeRoute._(HttpMethod.any, path, []);
+    return currentProcessingRoute! as BeforeRoute;
+  }
 
   static BeforeRoute get(String path) {
     validatePreviousRouteHasHandler();

@@ -64,15 +64,6 @@ Future<void> handleRequest(HttpRequest request) async {
     return sendErrorResponse(response, const MethodNotAllowedException());
   }
 
-  final (route, notFoundRoute) = findMatchingRouteAndNotFoundRoute(
-    routes: routes,
-    method: method,
-    uri: uri,
-  );
-
-  Logger.root.info('Request: $methodString ${request.uri.path}');
-
-  if (route == null) {
     if (_canServeStaticFiles) {
       final pathSegments = uri.pathSegments;
       final file = File(
@@ -88,6 +79,16 @@ Future<void> handleRequest(HttpRequest request) async {
         );
       }
     }
+
+  final (route, notFoundRoute) = findMatchingRouteAndNotFoundRoute(
+    routes: routes,
+    method: method,
+    uri: uri,
+  );
+
+  Logger.root.info('Request: $methodString ${request.uri.path}');
+
+  if (route == null) {
 
     if (notFoundRoute == null) {
       return sendErrorResponse(response, const NotFoundException());

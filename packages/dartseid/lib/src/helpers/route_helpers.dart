@@ -65,8 +65,15 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
         return previousValue;
       }
 
+      final methodMatches =
+          route.method == method || route.method == HttpMethod.any;
+
+      if (route.path == '*' && methodMatches) {
+        previousValue = (route, previousValue.$2);
+      }
+
       if (previousValue.$1 == null &&
-          route.method == method &&
+          methodMatches &&
           routeMatchesPath(route.path ?? '', uri.path)) {
         previousValue = (route, previousValue.$2);
       }
