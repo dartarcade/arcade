@@ -10,8 +10,10 @@ String view(String name, [Map<String, dynamic>? data]) {
 }
 
 Template _partialResolver(String name, [Directory? currentDirectory]) {
-  final viewsDirectory =
-      currentDirectory ?? DartseidConfiguration.viewsDirectory;
+  print(name);
+  final viewsDirectory = name.startsWith('/')
+      ? DartseidConfiguration.viewsDirectory
+      : currentDirectory ?? DartseidConfiguration.viewsDirectory;
   final viewsDirectoryExists = viewsDirectory.existsSync();
   if (!viewsDirectoryExists) {
     throw Exception('Views directory does not exist.');
