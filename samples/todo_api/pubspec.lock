@@ -231,7 +231,23 @@ packages:
       path: "../../packages/dartseid"
       relative: true
     source: path
-    version: "0.0.5"
+    version: "0.0.10"
+  dartseid_config:
+    dependency: transitive
+    description:
+      name: dartseid_config
+      sha256: d5a85e74888048cf2240b545cceaa82cf5a0285fadc5f1d019d8552a00be401f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
+  dartseid_logger:
+    dependency: transitive
+    description:
+      name: dartseid_logger
+      sha256: "42d8bffb30d9338c4710aa2c69967524f0e7a09e28e814352920c230ae853615"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   ed25519_edwards:
     dependency: transitive
     description:
