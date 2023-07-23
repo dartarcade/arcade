@@ -19,5 +19,6 @@ class ServeCommand extends Command {
       ['run', '--enable-vm-service', serverFile.path],
     );
     runProcess.stdout.pipe(stdout);
+    runProcess.stderr.pipe(stderr);
   }
 }
