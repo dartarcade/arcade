@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-07-23
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`dartseid_cli` - `v0.0.1+1`](#dartseid_cli---v0011)
+
+---
+
+#### `dartseid_cli` - `v0.0.1+1`
+
+ - **FIX**(dartseid_cli): pipe stderr.
+ - **FIX**(cli): pipe stderr.
+
+
 ## 2023-07-17
 
 ### Changes
