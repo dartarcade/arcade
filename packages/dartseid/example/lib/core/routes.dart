@@ -5,7 +5,7 @@ import 'package:dartseid/dartseid.dart';
 import 'package:dartseid_example/app/controllers/example_controller.dart';
 import 'package:dartseid_example/core/middlewares.dart';
 
-const exampleController = ExampleController();
+final exampleController = ExampleController();
 
 void defineRoutes() {
   Route.get('/').handle(exampleController.index);

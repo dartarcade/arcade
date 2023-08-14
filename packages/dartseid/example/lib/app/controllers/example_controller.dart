@@ -2,9 +2,12 @@ import 'package:dartseid/dartseid.dart';
 import 'package:dartseid_example/core/context/authed_request_context.dart';
 
 class ExampleController {
-  const ExampleController();
+  late String wsId;
+
+  ExampleController();
 
   Map<String, dynamic> index(RequestContext context) {
+    emitTo(wsId, 'Hello from get');
     return {'message': 'Hello, world!'};
   }
 
@@ -41,6 +44,7 @@ class ExampleController {
 
   void onWsConnect(covariant AuthedRequestContext _, WebSocketManager manager) {
     print('On connect ${manager.id}');
+    wsId = manager.id;
   }
 
   void ws(
