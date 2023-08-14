@@ -1,6 +1,10 @@
+## 0.1.0
+
+- **FEAT**(dartseid): add support for web sockets
+
 ## 0.0.10
 
-- **FEAT**(core): added `Route.any` and `*` matcher
+- **FEAT**(core): added `Route.any` and `*`
 
 ## 0.0.9+2
 
