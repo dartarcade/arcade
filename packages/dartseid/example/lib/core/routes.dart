@@ -8,10 +8,6 @@ import 'package:dartseid_example/core/middlewares.dart';
 const exampleController = ExampleController();
 
 void defineRoutes() {
-  Route.any('*').handle((context) {
-    return 'Hello from DartSeid!';
-  });
-
   Route.get('/').handle(exampleController.index);
 
   Route.get('/get').before(checkAuthMiddleware).handle(exampleController.get);
@@ -33,6 +29,19 @@ void defineRoutes() {
   Route.get('/hello/:name').handle(exampleController.hello);
 
   Route.post('/print-body').handle(exampleController.printBodyAsString);
+
+  Route.get('/ws')
+      .before(checkAuthMiddleware)
+      .handleWebSocket(
+        exampleController.ws,
+        onConnect: exampleController.onWsConnect,
+      )
+      .after(
+    (context, handleResult, id) {
+      print('After websocket handler for $id');
+      return (context, handleResult, id);
+    },
+  );
 
   Route.notFound((RequestContext context) {
     context.responseHeaders.contentType = ContentType.json;

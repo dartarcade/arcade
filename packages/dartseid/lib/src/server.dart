@@ -7,6 +7,7 @@ import 'package:dartseid/src/helpers/response_helpers.dart';
 import 'package:dartseid/src/helpers/route_helpers.dart';
 import 'package:dartseid/src/helpers/server_helpers.dart';
 import 'package:dartseid/src/http/route.dart';
+import 'package:dartseid/src/ws/ws.dart';
 import 'package:dartseid_config/dartseid_config.dart';
 import 'package:dartseid_logger/dartseid_logger.dart';
 import 'package:hotreloader/hotreloader.dart';
@@ -36,9 +37,9 @@ Future<void> runServer({
 
   server.listen(handleRequest);
   Logger.root.log(
-    const LogRecord(
+    LogRecord(
       level: LogLevel.none,
-      message: 'Server running',
+      message: 'Server running on port $port',
     ),
   );
 
@@ -64,21 +65,21 @@ Future<void> handleRequest(HttpRequest request) async {
     return sendErrorResponse(response, const MethodNotAllowedException());
   }
 
-    if (_canServeStaticFiles) {
-      final pathSegments = uri.pathSegments;
-      final file = File(
-        joinAll([
-          DartseidConfiguration.staticFilesDirectory.path,
-          ...pathSegments,
-        ]),
+  if (_canServeStaticFiles) {
+    final pathSegments = uri.pathSegments;
+    final file = File(
+      joinAll([
+        DartseidConfiguration.staticFilesDirectory.path,
+        ...pathSegments,
+      ]),
+    );
+    if (await file.exists()) {
+      return serveStaticFile(
+        file: file,
+        response: response,
       );
-      if (await file.exists()) {
-        return serveStaticFile(
-          file: file,
-          response: response,
-        );
-      }
     }
+  }
 
   final (route, notFoundRoute) = findMatchingRouteAndNotFoundRoute(
     routes: routes,
@@ -89,7 +90,6 @@ Future<void> handleRequest(HttpRequest request) async {
   Logger.root.info('Request: $methodString ${request.uri.path}');
 
   if (route == null) {
-
     if (notFoundRoute == null) {
       return sendErrorResponse(response, const NotFoundException());
     }
@@ -105,11 +105,32 @@ Future<void> handleRequest(HttpRequest request) async {
 
   final context = RequestContext(request: request, route: route);
 
-  await writeResponse(
-    context: context,
-    route: route,
-    response: response,
-  );
+  try {
+  if (route.wsHandler != null) {
+    await setupWsConnection(
+      context: context,
+      route: route,
+    );
+    return;
+  }
+
+  if (route.handler != null) {
+    await writeResponse(
+      context: context,
+      route: route,
+      response: response,
+    );
+    return;
+  }
+
+  sendErrorResponse(response, const InternalServerErrorException());
+  } on DartseidHttpException catch (e, s) {
+    Logger.root.error('$e\n$s');
+    return sendErrorResponse(response, e);
+  } catch (e, s) {
+    Logger.root.error('$e\n$s');
+    return sendErrorResponse(response, const InternalServerErrorException());
+  }
 }
 
 Future<void> serveStaticFile({

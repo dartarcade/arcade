@@ -38,4 +38,17 @@ class ExampleController {
           const BadRequestException(message: 'Invalid input'),
     };
   }
+
+  void onWsConnect(covariant AuthedRequestContext _, WebSocketManager manager) {
+    print('On connect ${manager.id}');
+  }
+
+  void ws(
+    covariant AuthedRequestContext context,
+    dynamic message,
+    WebSocketManager manager,
+  ) {
+    print('Message from client: $message');
+    manager.emit('Hello from server');
+  }
 }
