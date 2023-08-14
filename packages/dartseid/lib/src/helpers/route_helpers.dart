@@ -98,9 +98,9 @@ void validatePreviousRouteHasHandler() {
   final previousRoute = routes.lastOrNull;
   if (previousRoute == null || previousRoute.notFoundHandler != null) return;
 
-  if (previousRoute.handler == null) {
+  if (previousRoute.handler == null && previousRoute.wsHandler == null) {
     throw StateError(
-      '${previousRoute.method!.name} ${previousRoute.path} must have a handler',
+      '${previousRoute.method!.name} ${previousRoute.path} must have a handler or wsHandler',
     );
   }
 }

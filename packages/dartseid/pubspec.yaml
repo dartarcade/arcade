@@ -15,6 +15,7 @@ dependencies:
   mime: ^1.0.4
   path: ^1.8.3
   string_scanner: ^1.2.0
+  uuid: ^3.0.7
   vm_service: ^11.7.2
 
 dev_dependencies:

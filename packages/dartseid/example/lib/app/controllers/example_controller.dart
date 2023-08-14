@@ -2,9 +2,12 @@ import 'package:dartseid/dartseid.dart';
 import 'package:dartseid_example/core/context/authed_request_context.dart';
 
 class ExampleController {
-  const ExampleController();
+  late String wsId;
+
+  ExampleController();
 
   Map<String, dynamic> index(RequestContext context) {
+    emitTo(wsId, 'Hello from get');
     return {'message': 'Hello, world!'};
   }
 
@@ -37,5 +40,19 @@ class ExampleController {
       BodyParseFailure(error: final e) => throw e as Object? ??
           const BadRequestException(message: 'Invalid input'),
     };
+  }
+
+  void onWsConnect(covariant AuthedRequestContext _, WebSocketManager manager) {
+    print('On connect ${manager.id}');
+    wsId = manager.id;
+  }
+
+  void ws(
+    covariant AuthedRequestContext context,
+    dynamic message,
+    WebSocketManager manager,
+  ) {
+    print('Message from client: $message');
+    manager.emit('Hello from server');
   }
 }

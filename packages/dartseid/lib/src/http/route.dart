@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:dartseid/src/core/hooks.dart';
 import 'package:dartseid/src/helpers/route_helpers.dart';
-import 'package:dartseid/src/http/hooks.dart';
 import 'package:dartseid/src/http/request_context.dart';
+import 'package:dartseid/src/ws/ws.dart';
 
 // ignore: library_private_types_in_public_api
 final List<BaseRoute> routes = [];
@@ -33,11 +34,17 @@ abstract class BaseRoute<T extends RequestContext> {
 
   RouteHandler<T>? get handler;
 
+  WebSocketHandler<T>? get wsHandler;
+
   RouteHandler<T>? get notFoundHandler;
 
   List<BeforeHookHandler> get beforeHooks;
 
   List<AfterHookHandler> get afterHooks;
+
+  List<AfterWebSocketHookHandler> get afterWebSocketHooks;
+
+  OnConnection<T>? get onWebSocketConnect;
 
   @override
   String toString() {
@@ -48,16 +55,30 @@ abstract class BaseRoute<T extends RequestContext> {
 class Route<T extends RequestContext> extends BaseRoute<T> {
   @override
   final HttpMethod? method;
+
   @override
   final String? path;
+
   @override
   RouteHandler<T>? handler;
+
+  @override
+  WebSocketHandler<T>? wsHandler;
+
   @override
   RouteHandler<T>? notFoundHandler;
+
   @override
   final List<BeforeHookHandler> beforeHooks = [];
+
   @override
   final List<AfterHookHandler> afterHooks = [];
+
+  @override
+  final List<AfterWebSocketHookHandler> afterWebSocketHooks = [];
+
+  @override
+  OnConnection<T>? onWebSocketConnect;
 
   Route._(this.method, this.path, {this.notFoundHandler});
 
@@ -131,6 +152,7 @@ class BeforeRoute<T extends RequestContext> extends Route<T> {
     beforeHooks.add((context) => hook(context as T));
     currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
       ..handler = handler as RouteHandler<RequestContext>?
+      ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
       ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as BeforeRoute<U>;
   }
@@ -141,6 +163,7 @@ class BeforeRoute<T extends RequestContext> extends Route<T> {
     beforeHooks.addAll(hooks);
     currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
       ..handler = handler as RouteHandler<RequestContext>?
+      ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
       ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as BeforeRoute<U>;
   }
@@ -149,8 +172,22 @@ class BeforeRoute<T extends RequestContext> extends Route<T> {
     this.handler = handler;
     currentProcessingRoute = AfterRoute<T>._(method, path, beforeHooks, [])
       ..handler = handler as RouteHandler<RequestContext>?
+      ..wsHandler = wsHandler
       ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as AfterRoute<T>;
+  }
+
+  AfterWebSocketRoute<T> handleWebSocket(
+    WebSocketHandler<T> wsHandler, {
+    OnConnection<T>? onConnect,
+  }) {
+    this.wsHandler = wsHandler;
+    currentProcessingRoute =
+        AfterWebSocketRoute<T>._(method, path, beforeHooks, [])
+          ..wsHandler = wsHandler
+          ..onWebSocketConnect = onConnect
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as AfterWebSocketRoute<T>;
   }
 }
 
@@ -173,6 +210,7 @@ class AfterRoute<T extends RequestContext> extends Route<T> {
     currentProcessingRoute =
         AfterRoute<U>._(method, path, beforeHooks, afterHooks)
           ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
           ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as AfterRoute<U>;
   }
@@ -184,6 +222,47 @@ class AfterRoute<T extends RequestContext> extends Route<T> {
     currentProcessingRoute =
         AfterRoute<U>._(method, path, beforeHooks, afterHooks)
           ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as AfterRoute<U>;
+  }
+}
+
+class AfterWebSocketRoute<T extends RequestContext> extends Route<T> {
+  AfterWebSocketRoute._(
+    super.method,
+    super.path,
+    List<BeforeHookHandler> beforeHooks,
+    List<AfterWebSocketHookHandler> afterWebSocketHooks,
+  ) : super._() {
+    this.beforeHooks.addAll(beforeHooks);
+    this.afterWebSocketHooks.addAll(afterWebSocketHooks);
+  }
+
+  AfterWebSocketRoute<U> after<U extends RequestContext, V, W>(
+    AfterWebSocketHookHandler<T, U, V, W> hook,
+  ) {
+    afterWebSocketHooks.add(
+      (context, handleResult, id) => hook(context as T, handleResult as V, id),
+    );
+    currentProcessingRoute =
+        AfterWebSocketRoute<U>._(method, path, beforeHooks, afterWebSocketHooks)
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
+          ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as AfterWebSocketRoute<U>;
+  }
+
+  AfterRoute<U> afterAll<U extends RequestContext>(
+    List<AfterWebSocketHookHandler> hooks,
+  ) {
+    afterWebSocketHooks.addAll(hooks);
+    currentProcessingRoute =
+        AfterRoute<U>._(method, path, beforeHooks, afterHooks)
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
+          ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
           ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as AfterRoute<U>;
   }

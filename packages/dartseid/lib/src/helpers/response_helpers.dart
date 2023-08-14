@@ -40,6 +40,25 @@ Future<({RequestContext context, Object? handleResult})> runAfterHooks(
   return (context: ctx, handleResult: r);
 }
 
+Future<({RequestContext context, Object? handleResult, String wsId})>
+    runAfterWebSocketHooks(
+  RequestContext context,
+  BaseRoute route,
+  dynamic result,
+  String wsId,
+) async {
+  var (ctx, r, id) = (context, result, wsId);
+
+  for (final hook in route.afterWebSocketHooks) {
+    final (newCtx, newR, newId) = await hook(ctx, r, id);
+    ctx = newCtx;
+    r = newR;
+    id = newId;
+  }
+
+  return (context: ctx, handleResult: r, wsId: id);
+}
+
 void writeNotFoundResponse({
   required RequestContext context,
   required HttpResponse response,
@@ -67,35 +86,26 @@ Future<void> writeResponse({
   required BaseRoute route,
   required HttpResponse response,
 }) async {
-  try {
-    var ctx = await runBeforeHooks(context, route);
+  var ctx = await runBeforeHooks(context, route);
 
-    var result = route.handler!(ctx);
-    if (result is Future) {
-      result = await result;
-    }
-
-    final (context: newCtx, handleResult: newResult) =
-    await runAfterHooks(ctx, route, result);
-    ctx = newCtx;
-    result = newResult;
-
-
-    if (result is String) {
-      response.headers.contentType = ContentType.html;
-    } else {
-      result = jsonEncode(result);
-      response.headers.contentType = ContentType.json;
-    }
-
-    response.write(result);
-
-    response.close();
-  } on DartseidHttpException catch (e, s) {
-    Logger.root.error('$e\n$s');
-    return sendErrorResponse(response, e);
-  } catch (e, s) {
-    Logger.root.error('$e\n$s');
-    return sendErrorResponse(response, const InternalServerErrorException());
+  var result = route.handler!(ctx);
+  if (result is Future) {
+    result = await result;
   }
+
+  final (context: newCtx, handleResult: newResult) =
+      await runAfterHooks(ctx, route, result);
+  ctx = newCtx;
+  result = newResult;
+
+  if (result is String) {
+    response.headers.contentType = ContentType.html;
+  } else {
+    result = jsonEncode(result);
+    response.headers.contentType = ContentType.json;
+  }
+
+  response.write(result);
+
+  response.close();
 }
