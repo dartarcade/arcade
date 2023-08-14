@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-08-15
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`dartseid` - `v0.1.0`](#dartseid---v010)
+
+---
+
+#### `dartseid` - `v0.1.0`
+
+- **FEAT**(dartseid): add support for web sockets
+
+## 2023-07-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`dartseid_cli` - `v0.0.2`](#dartseid_cli---v002)
+
+---
+
+#### `dartseid_cli` - `v0.0.2`
+
+ - **FIX**(dartseid_cli): pipe stderr.
+ - **FEAT**(dartseid_cli): add create command.
+ - **FEAT**(cli): add serve command.
 ## 2023-07-28
 
 ### Changes
