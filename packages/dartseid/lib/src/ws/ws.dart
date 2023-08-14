@@ -30,6 +30,11 @@ Future<void> setupWsConnection<T extends RequestContext>({
   required T context,
   required BaseRoute<RequestContext> route,
 }) async {
+  final wsHandler = route.wsHandler;
+  if (wsHandler == null) {
+    throw Exception('No WebSocket handler found');
+  }
+
   final ctx = await runBeforeHooks(context, route);
 
   final wsId = const Uuid().v4();
@@ -47,7 +52,7 @@ Future<void> setupWsConnection<T extends RequestContext>({
 
   ws.listen(
     (dynamic message) {
-      route.wsHandler!.call(ctx, message, manager);
+      wsHandler(ctx, message, manager);
     },
     onDone: () {
       wsMap.remove(wsId);
