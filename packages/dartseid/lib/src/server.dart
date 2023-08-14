@@ -106,24 +106,24 @@ Future<void> handleRequest(HttpRequest request) async {
   final context = RequestContext(request: request, route: route);
 
   try {
-  if (route.wsHandler != null) {
-    await setupWsConnection(
-      context: context,
-      route: route,
-    );
-    return;
-  }
+    if (route.wsHandler != null) {
+      await setupWsConnection(
+        context: context,
+        route: route,
+      );
+      return;
+    }
 
-  if (route.handler != null) {
-    await writeResponse(
-      context: context,
-      route: route,
-      response: response,
-    );
-    return;
-  }
+    if (route.handler != null) {
+      await writeResponse(
+        context: context,
+        route: route,
+        response: response,
+      );
+      return;
+    }
 
-  sendErrorResponse(response, const InternalServerErrorException());
+    sendErrorResponse(response, const InternalServerErrorException());
   } on DartseidHttpException catch (e, s) {
     Logger.root.error('$e\n$s');
     return sendErrorResponse(response, e);
