@@ -93,6 +93,39 @@ class CreateCommand extends Command {
 
     final start = File('$name/bin/start.dart');
     start.renameSync('$name/bin/$name.dart');
+
+    final binDir = Directory('$name/bin');
+    final libDir = Directory('$name/lib');
+    final dartFiles = (findFilesInDir(binDir) + findFilesInDir(libDir))
+        .where((f) => f.path.endsWith('.dart'));
+    for (final file in dartFiles) {
+      final lines = file.readAsLinesSync();
+      final newLines = <String>[];
+      for (final line in lines) {
+        if (line.startsWith('import') && line.contains('start')) {
+          newLines.add(line.replaceFirst('start', name));
+        } else {
+          newLines.add(line);
+        }
+      }
+      file.writeAsStringSync(newLines.join('\n'));
+    }
+
+    Process.runSync('dart', ['fix', '--apply'], workingDirectory: name);
+    Process.runSync('dart', ['format', 'bin'], workingDirectory: name);
+    Process.runSync('dart', ['format', 'lib'], workingDirectory: name);
+  }
+
+  List<File> findFilesInDir(Directory dir) {
+    final files = <File>[];
+    for (final entity in dir.listSync()) {
+      if (entity is File) {
+        files.add(entity);
+      } else if (entity is Directory) {
+        files.addAll(findFilesInDir(entity));
+      }
+    }
+    return files;
   }
 
   void _validateUrl(String url) {
