@@ -1,3 +1,7 @@
+## 0.0.2+1
+
+ - **FIX**(dartseid_cli): fix create command does not rename imports.
+
 ## 0.0.2
 
  - **FIX**(dartseid_cli): pipe stderr.

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-08-16
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`dartseid_cli` - `v0.0.2+1`](#dartseid_cli---v0021)
+
+---
+
+#### `dartseid_cli` - `v0.0.2+1`
+
+ - **FIX**(dartseid_cli): fix create command does not rename imports.
+
+
 ## 2023-08-15
 
 ### Changes
