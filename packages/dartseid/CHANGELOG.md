@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+ - **FIX**: dartseid_cli will hot restart the app instead of hot reload for more reliability.
+
 ## 0.1.0
 
 - **FEAT**(dartseid): add support for web sockets
