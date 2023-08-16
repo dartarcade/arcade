@@ -10,7 +10,6 @@ import 'package:dartseid/src/http/route.dart';
 import 'package:dartseid/src/ws/ws.dart';
 import 'package:dartseid_config/dartseid_config.dart';
 import 'package:dartseid_logger/dartseid_logger.dart';
-import 'package:hotreloader/hotreloader.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 
@@ -43,16 +42,7 @@ Future<void> runServer({
     ),
   );
 
-  const isProd = bool.fromEnvironment('dart.vm.product');
-
-  HotReloader? hotreloader;
-
-  if (!isProd) {
-    hotreloader = await createHotReloader(init);
-  }
-
-  // Close server and hot reloader when exiting
-  setupProcessSignalWatchers(server, hotreloader);
+  setupProcessSignalWatchers(server);
 }
 
 Future<void> handleRequest(HttpRequest request) async {

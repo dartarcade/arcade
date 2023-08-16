@@ -5,7 +5,6 @@ import 'package:dartseid/src/helpers/route_helpers.dart';
 import 'package:dartseid/src/http/request_context.dart';
 import 'package:dartseid/src/ws/ws.dart';
 
-// ignore: library_private_types_in_public_api
 final List<BaseRoute> routes = [];
 
 typedef RouteHandler<T extends RequestContext> = FutureOr<dynamic> Function(
