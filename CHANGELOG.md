@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-08-17
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`dartseid` - `v0.1.0+1`](#dartseid---v0101)
+ - [`dartseid_cli` - `v0.0.2+2`](#dartseid_cli---v0022)
+
+---
+
+#### `dartseid` - `v0.1.0+1`
+
+ - **FIX**: dartseid_cli will hot restart the app instead of hot reload for more reliability.
+
+#### `dartseid_cli` - `v0.0.2+2`
+
+ - **FIX**: dartseid_cli will hot restart the app instead of hot reload for more reliability.
+
+
 ## 2023-08-16
 
 ### Changes
