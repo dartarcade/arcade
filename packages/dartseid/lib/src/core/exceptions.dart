@@ -1,7 +1,7 @@
 class DartseidHttpException {
   final String message;
-  final Map<String, dynamic>? errors;
   final int statusCode;
+  final Map<String, dynamic>? errors;
 
   const DartseidHttpException(this.message, this.statusCode, {this.errors});
 
