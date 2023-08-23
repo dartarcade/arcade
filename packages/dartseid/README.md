@@ -1,6 +1,6 @@
 # Dartseid
 
-Read the [documentation](https://dartseid.ex3.dev) for detailed guides.
+Read the [documentation](https://dartseid.dev) for detailed guides.
 
 Dartseid is a no-code-gen, simple Dart backend framework.
 
@@ -219,6 +219,6 @@ class PayloadTooLargeException extends DartseidHttpException {
   const PayloadTooLargeException({
     String? message,
     Map<String, dynamic>? errors,
-  }) : super('Uploaded file too large', 413, errors: errors);
+  }) : super(message ?? 'Uploaded file too large', 413, errors: errors);
 }
 ```
