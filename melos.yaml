@@ -1,5 +1,5 @@
-name: dartseid
-repository: https://github.com/dartseid/dartseid
+name: arcade
+repository: https://github.com/dartarcade/arcade
 
 packages:
   - packages/*
@@ -7,3 +7,4 @@ packages:
 scripts:
   analyze:
     run: dart analyze
+
