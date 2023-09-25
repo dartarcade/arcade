@@ -1,3 +1,7 @@
+## 0.0.3
+
+ - **FEAT**: rename to arcade.
+
 ## 0.0.2
 
  - **FIX**(config): description, update(melos): bootstrap with new package.

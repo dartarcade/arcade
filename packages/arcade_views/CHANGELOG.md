@@ -1,3 +1,7 @@
+## 0.0.6
+
+ - **FEAT**: rename to arcade.
+
 ## 0.0.5
 
  - **FEAT**(views): add support for absolute partials.

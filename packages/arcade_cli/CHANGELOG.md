@@ -1,3 +1,8 @@
+## 0.0.3
+
+ - **FIX**(arcade_cli): command printed prints arcade.
+ - **FEAT**: rename to arcade.
+
 ## 0.0.2+2
 
  - **FIX**: dartseid_cli will hot restart the app instead of hot reload for more reliability.

@@ -1,13 +1,13 @@
 name: arcade_views
 description: Add views to your Dartseid application
-version: 0.0.5
+version: 0.0.6
 repository: https://github.com/dartarcade/arcade/tree/master/packages/arcade_views
 
 environment:
   sdk: ^3.0.5
 
 dependencies:
-  arcade_config: ^0.0.2
+  arcade_config: ^0.0.3
   mustache_template: ^2.0.0
   path: ^1.8.3
 

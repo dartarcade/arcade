@@ -1,3 +1,7 @@
+## 0.1.1
+
+ - **FEAT**: rename to arcade.
+
 ## 0.1.0+1
 
  - **FIX**: dartseid_cli will hot restart the app instead of hot reload for more reliability.

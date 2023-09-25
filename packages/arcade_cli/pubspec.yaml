@@ -1,6 +1,6 @@
 name: arcade_cli
 description: CLI for Dartseid
-version: 0.0.2+3
+version: 0.0.3
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_cli
 
 environment:
