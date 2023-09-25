@@ -46,7 +46,7 @@ class CreateCommand extends Command {
     print('-----------------------------------');
     print('To run the project:');
     print('cd $name');
-    print('dartseid serve');
+    print('arcade serve');
   }
 
   void _cloneAndSetup(String gitUrl, String name) {
