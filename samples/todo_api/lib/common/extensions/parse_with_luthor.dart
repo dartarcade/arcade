@@ -1,4 +1,4 @@
-import 'package:dartseid/dartseid.dart';
+import 'package:arcade/arcade.dart';
 import 'package:luthor/luthor.dart';
 
 typedef LuthorValidator<T> = SchemaValidationResult<T> Function(

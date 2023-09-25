@@ -7,8 +7,8 @@
 | server and run the application.
 */
 
-import 'package:dartseid/dartseid.dart';
-import 'package:dartseid_example/core/routes.dart';
+import 'package:arcade/arcade.dart';
+import 'package:arcade_example/core/routes.dart';
 
 Future<void> main(List<String> arguments) {
   return runServer(

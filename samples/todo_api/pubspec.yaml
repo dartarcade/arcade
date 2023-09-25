@@ -7,10 +7,10 @@ environment:
   sdk: ^3.0.5
 
 dependencies:
+  arcade:
+    path: ../../packages/arcade
   dargon2: ^3.2.1
   dart_jsonwebtoken: ^2.8.2
-  dartseid:
-    path: ../../packages/dartseid
   envied: ^0.3.0+3
   freezed_annotation: ^2.2.0
   get_it: ^7.6.0

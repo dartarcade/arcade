@@ -1,4 +1,4 @@
-import 'package:dartseid/dartseid.dart';
+import 'package:arcade/arcade.dart';
 
 class IsAuthContext extends RequestContext {
   final int userId;

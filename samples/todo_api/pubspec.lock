@@ -33,6 +33,29 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.2+1"
+  arcade:
+    dependency: "direct main"
+    description:
+      path: "../../packages/arcade"
+      relative: true
+    source: path
+    version: "0.1.1"
+  arcade_config:
+    dependency: transitive
+    description:
+      name: arcade_config
+      sha256: "3a438bcc5b77919ff10051fbb8305c43d58c64e08538eeee940d0252a0984e35"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
+  arcade_logger:
+    dependency: transitive
+    description:
+      name: arcade_logger
+      sha256: "87b8cb36d23c8904e4eea2cadfab32375dedc9a97abc86f66ed0cd9c323b9707"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   args:
     dependency: transitive
     description:
@@ -225,29 +248,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
-  dartseid:
-    dependency: "direct main"
-    description:
-      path: "../../packages/dartseid"
-      relative: true
-    source: path
-    version: "0.1.0+1"
-  dartseid_config:
-    dependency: transitive
-    description:
-      name: dartseid_config
-      sha256: d5a85e74888048cf2240b545cceaa82cf5a0285fadc5f1d019d8552a00be401f
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2"
-  dartseid_logger:
-    dependency: transitive
-    description:
-      name: dartseid_logger
-      sha256: "42d8bffb30d9338c4710aa2c69967524f0e7a09e28e814352920c230ae853615"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2"
   ed25519_edwards:
     dependency: transitive
     description:

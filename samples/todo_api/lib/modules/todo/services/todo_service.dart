@@ -1,4 +1,4 @@
-import 'package:dartseid/dartseid.dart';
+import 'package:arcade/arcade.dart';
 import 'package:injectable/injectable.dart';
 import 'package:todo_api/config/database.dart';
 import 'package:todo_api/core/orm/prisma_client.dart';

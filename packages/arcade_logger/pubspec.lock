@@ -31,7 +31,7 @@ packages:
       path: "../arcade_config"
       relative: true
     source: path
-    version: "0.0.2"
+    version: "0.0.3"
   args:
     dependency: transitive
     description:

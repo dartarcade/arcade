@@ -1,4 +1,4 @@
-import 'package:dartseid/dartseid.dart';
+import 'package:arcade/arcade.dart';
 import 'package:injectable/injectable.dart';
 import 'package:todo_api/common/dtos/jwt_payload.dart';
 import 'package:todo_api/common/dtos/response_with_message.dart';
