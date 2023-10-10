@@ -22,7 +22,9 @@ void setupProcessSignalWatchers(
     await closeServerExit(server);
   });
 
-  ProcessSignal.sigterm.watch().listen((_) async {
-    await closeServerExit(server);
-  });
+  if (!Platform.isWindows) {
+    ProcessSignal.sigterm.watch().listen((_) async {
+      await closeServerExit(server);
+    });
+  }
 }
