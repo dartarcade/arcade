@@ -84,10 +84,11 @@ class ServeCommand extends Command {
       Process.runSync('dart', ['compilation-server', 'shutdown']);
       exit(0);
     });
-
-    ProcessSignal.sigterm.watch().listen((_) async {
-      process?.kill();
-      exit(0);
-    });
+    if (!Platform.isWindows) {
+      ProcessSignal.sigterm.watch().listen((_) async {
+        process?.kill();
+        exit(0);
+      });
+    }
   }
 }
