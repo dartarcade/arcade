@@ -14,16 +14,20 @@ class ServeCommand extends Command {
   @override
   String get description => 'Locally serve your app';
 
+  ServeCommand() {
+    argParser.addFlag(
+      "watch",
+      abbr: 'w',
+      negatable: false,
+      help: 'Enable hot reloading during development',
+    );
+  }
+
   @override
   Future<void> run() async {
     Process? process;
     final serverFile = await getServerFile();
     final cwd = Directory.current.path;
-
-    bool shouldReload(WatchEvent event) {
-      return path.isWithin(path.join(cwd, 'bin'), event.path) ||
-          path.isWithin(path.join(cwd, 'lib'), event.path);
-    }
 
     Process.runSync('dart', ['compilation-server', 'start']);
 
@@ -39,45 +43,53 @@ class ServeCommand extends Command {
     var stderrSubscription = process.stderr.listen((event) {
       stderr.add(event);
     });
+    if (argResults!['watch'] == true) {
+      print('Live Development Server is running');
+      bool shouldReload(WatchEvent event) {
+        return path.isWithin(path.join(cwd, 'bin'), event.path) ||
+            path.isWithin(path.join(cwd, 'lib'), event.path);
+      }
 
-    bool isReloading = false;
-    DirectoryWatcher(cwd)
-        .events
-        .where(shouldReload)
-        .debounceBuffer(const Duration(milliseconds: 500))
-        .listen(
-      (_) async {
-        if (!isReloading) {
-          print('Restarting server...');
-          isReloading = true;
-        }
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        process?.kill();
-        process = null;
-        final now = DateTime.now();
-        process = await Process.start(
-          'dart',
-          ['run', '-r', serverFile.path],
-          workingDirectory: cwd,
-        );
-        stdoutSubscription = process!.stdout.listen((event) {
-          final data = String.fromCharCodes(event);
-
-          if (data.contains('Server running on port')) {
-            final time = DateTime.now().difference(now).inMilliseconds;
-            print('Restarted server in $time ms');
-            isReloading = false;
-            return;
+      bool isReloading = false;
+      DirectoryWatcher(cwd)
+          .events
+          .where(shouldReload)
+          .debounceBuffer(const Duration(milliseconds: 500))
+          .listen(
+        (_) async {
+          if (!isReloading) {
+            print('Restarting server...');
+            isReloading = true;
           }
+          stdoutSubscription.cancel();
+          stderrSubscription.cancel();
+          process?.kill();
+          process = null;
+          final now = DateTime.now();
+          process = await Process.start(
+            'dart',
+            ['run', '-r', serverFile.path],
+            workingDirectory: cwd,
+          );
 
-          stdout.add(event);
-        });
-        stderrSubscription = process!.stderr.listen((event) {
-          stderr.add(event);
-        });
-      },
-    );
+          stdoutSubscription = process!.stdout.listen((event) {
+            final data = String.fromCharCodes(event);
+
+            if (data.contains('Server running on port')) {
+              final time = DateTime.now().difference(now).inMilliseconds;
+              print('Restarted server in $time ms');
+              isReloading = false;
+              return;
+            }
+
+            stdout.add(event);
+          });
+          stderrSubscription = process!.stderr.listen((event) {
+            stderr.add(event);
+          });
+        },
+      );
+    }
 
     ProcessSignal.sigint.watch().listen((_) async {
       process?.kill();
