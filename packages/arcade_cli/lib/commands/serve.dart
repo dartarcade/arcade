@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:arcade_cli/utils.dart';
+import 'package:arcade_logger/arcade_logger.dart';
 import 'package:args/command_runner.dart';
 import 'package:path/path.dart' as path;
 import 'package:stream_transform/stream_transform.dart';
@@ -25,6 +26,7 @@ class ServeCommand extends Command {
 
   @override
   Future<void> run() async {
+    await Logger.init();
     Process? process;
     final serverFile = await getServerFile();
     final cwd = Directory.current.path;
@@ -44,7 +46,12 @@ class ServeCommand extends Command {
       stderr.add(event);
     });
     if (argResults!['watch'] == true) {
-      print('Live Development Server is running');
+      const Logger("WATCH").log(
+        const LogRecord(
+          level: LogLevel.info,
+          message: 'Live Development Server is running',
+        ),
+      );
       bool shouldReload(WatchEvent event) {
         return path.isWithin(path.join(cwd, 'bin'), event.path) ||
             path.isWithin(path.join(cwd, 'lib'), event.path);
@@ -58,7 +65,12 @@ class ServeCommand extends Command {
           .listen(
         (_) async {
           if (!isReloading) {
-            print('Restarting server...');
+            const Logger("WATCH").log(
+              const LogRecord(
+                level: LogLevel.info,
+                message: 'Restarting server...',
+              ),
+            );
             isReloading = true;
           }
           stdoutSubscription.cancel();
@@ -77,7 +89,12 @@ class ServeCommand extends Command {
 
             if (data.contains('Server running on port')) {
               final time = DateTime.now().difference(now).inMilliseconds;
-              print('Restarted server in $time ms');
+              const Logger("WATCH").log(
+                 LogRecord(
+                  level: LogLevel.info,
+                  message: 'Restarted server in $time ms',
+                ),
+              );
               isReloading = false;
               return;
             }
