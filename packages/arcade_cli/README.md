@@ -1,1 +1,1 @@
-# Dartseid CLI
+# Arcade CLI
