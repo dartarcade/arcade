@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-11-12
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade` - `v0.1.1+1`](#arcade---v0111)
+ - [`arcade_cli` - `v0.0.3+1`](#arcade_cli---v0031)
+ - [`arcade_config` - `v0.0.3+1`](#arcade_config---v0031)
+ - [`arcade_logger` - `v0.0.3+1`](#arcade_logger---v0031)
+ - [`arcade_views` - `v0.0.6+1`](#arcade_views---v0061)
+
+---
+
+#### `arcade` - `v0.1.1+1`
+
+ - **REFACTOR**: fix samples and examples.
+ - **FIX**(server_helper): process signal empty stream for platform windows.
+
+#### `arcade_cli` - `v0.0.3+1`
+
+ - **REFACTOR**: fix samples and examples.
+
+#### `arcade_config` - `v0.0.3+1`
+
+ - **REFACTOR**: fix samples and examples.
+
+#### `arcade_logger` - `v0.0.3+1`
+
+ - **REFACTOR**: fix samples and examples.
+
+#### `arcade_views` - `v0.0.6+1`
+
+ - **REFACTOR**: fix samples and examples.
+
+
 ## 2023-09-26
 
 ### Changes

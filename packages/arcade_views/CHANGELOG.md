@@ -1,3 +1,7 @@
+## 0.0.6+1
+
+ - **REFACTOR**: fix samples and examples.
+
 ## 0.0.6
 
  - **FEAT**: rename to arcade.

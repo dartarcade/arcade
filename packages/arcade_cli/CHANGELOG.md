@@ -1,3 +1,7 @@
+## 0.0.3+1
+
+ - **REFACTOR**: fix samples and examples.
+
 ## 0.0.3
 
  - **FIX**(arcade_cli): command printed prints arcade.
