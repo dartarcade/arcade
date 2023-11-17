@@ -13,7 +13,7 @@ abstract interface class ArcadeOrmAdapterBase {
     required this.connection,
   });
 
-  Future<void> init();
+  FutureOr<void> init();
   Future<Map<String, dynamic>> operate({
     required TableOperator operator,
     required ArcadeOrmTransaction? transaction,
@@ -35,6 +35,8 @@ abstract interface class ArcadeOrmAdapterBase {
   void setArcadeOrmInstance(ArcadeOrm orm);
 
   ArcadeOrmTransaction transaction();
+  
+  FutureOr<void> close();
 }
 
 abstract class ArcadeOrmTransaction {

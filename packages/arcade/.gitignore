@@ -8,6 +8,6 @@ pubspec.lock
 
 .idea/
 
-melos_dartseid.iml
+melos_arcade.iml
 # Generated files in example
 example/**/*.g.dart

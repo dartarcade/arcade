@@ -1,4 +1,6 @@
-import 'package:dartseid_orm/dartseid_orm.dart';
+import 'dart:async';
+
+import 'package:arcade_orm/arcade_orm.dart';
 
 class ArcadeOrmMockAdapter implements ArcadeOrmAdapterBase {
   @override
@@ -46,6 +48,12 @@ class ArcadeOrmMockAdapter implements ArcadeOrmAdapterBase {
   @override
   void setArcadeOrmInstance(ArcadeOrm orm) {
     this.orm = orm;
+  }
+
+  @override
+  FutureOr<void> close() {
+    // TODO: implement close
+    throw UnimplementedError();
   }
 }
 
