@@ -1,4 +1,4 @@
-import 'package:dartseid/dartseid.dart';
+import 'package:arcade/arcade.dart';
 import 'package:todo_api/config/injection.dart';
 
 Future<void> main() async {

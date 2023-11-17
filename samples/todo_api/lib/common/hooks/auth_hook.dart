@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dartseid/dartseid.dart';
+import 'package:arcade/arcade.dart';
 import 'package:injectable/injectable.dart';
 import 'package:todo_api/common/contexts/is_auth_context.dart';
 import 'package:todo_api/common/services/jwt_service.dart';
