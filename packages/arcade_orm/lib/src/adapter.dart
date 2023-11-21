@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:arcade_orm/arcade_orm.dart';
 import 'package:meta/meta.dart';
 
-abstract interface class ArcadeOrmAdapterBase {
+abstract interface class ArcadeOrmAdapterBase<T extends Record, U> {
   @protected
-  final dynamic connection;
+  final U connection;
+  @protected
+  final T? options;
   @protected
   late ArcadeOrm orm;
 
   ArcadeOrmAdapterBase({
     required this.connection,
+    this.options,
   });
 
   FutureOr<void> init();
@@ -35,7 +38,7 @@ abstract interface class ArcadeOrmAdapterBase {
   void setArcadeOrmInstance(ArcadeOrm orm);
 
   ArcadeOrmTransaction transaction();
-  
+
   FutureOr<void> close();
 }
 
@@ -44,15 +47,15 @@ abstract class ArcadeOrmTransaction {
   bool isCommitted = false;
   bool isRolledBack = false;
 
-  Future<void> commit() async {
+  Future<void> _commit() async {
     _checkPrecondition("Commit");
-    await _commit();
+    await commit();
     isCommitted = true;
   }
 
-  Future<void> rollback() async {
+  Future<void> _rollback() async {
     _checkPrecondition("Rollback");
-    await _rollback();
+    await rollback();
     isRolledBack = true;
   }
 
@@ -61,27 +64,29 @@ abstract class ArcadeOrmTransaction {
   ]) async {
     try {
       _checkStartPreCondition();
-      await _start();
+      await startTransaction();
       isStarted = true;
       if (callback == null) {
         return null;
       }
       final data = await callback(this);
-      await commit();
+      await _commit();
       return data;
     } catch (e) {
       if (callback != null) {
-        await rollback();
+        await _rollback();
       }
       rethrow;
     }
   }
 
-  Future<void> _commit();
+  Future<void> commit();
 
-  Future<void> _rollback();
+  Future<void> rollback();
 
-  Future<void> _start();
+  /// Use [ArcadeOrmTransaction.start] instead
+  @protected
+  Future<void> startTransaction();
 
   void _checkStartPreCondition() {
     if (isCommitted) {

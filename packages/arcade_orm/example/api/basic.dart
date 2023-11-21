@@ -2,14 +2,21 @@ import 'dart:async';
 
 import 'package:arcade_orm/arcade_orm.dart';
 
-class ArcadeOrmMockAdapter implements ArcadeOrmAdapterBase {
+typedef OptionsRecord = ({String? name, String? host, int? port});
+
+class ArcadeOrmMockAdapter
+    implements ArcadeOrmAdapterBase<OptionsRecord, String> {
   @override
   late ArcadeOrm orm;
   @override
-  final dynamic connection;
+  final OptionsRecord? options;
+
+  @override
+  final String connection;
 
   ArcadeOrmMockAdapter({
     required this.connection,
+    this.options,
   });
 
   @override
@@ -69,24 +76,21 @@ Future<dynamic> orming() async {
       "name": ColumnString(),
       "json": ColumnJson(),
     },
-    converter: (
-      fromJson: (Map<String, dynamic> j) {},
-      toJson: () => {},
-    ),
   );
 
   t.index({"id": 1, "name": 1});
 
-  // final trx = t.transaction();
-  // final b = await trx.start();
-  // trx.commit();
-  // trx.rollback();
+  final trx = t.transaction();
+  await trx.start();
+  t.findOne(transaction: trx);
+  trx.commit();
+  trx.rollback();
 
   final data = await t.transaction().start(
     (trx) async {
       final r = t.findOne(transaction: trx)
         ..where({
-          "id": array([1, 2, 4])
+          "id": array([1, 2, 4]),
         })
         ..where({"id": eq(10)})
         ..where(
@@ -95,7 +99,7 @@ Future<dynamic> orming() async {
               "name": like("%aa"),
               "id": array([1, 2, 4]),
             },
-            {"name": eq("2")}
+            {"name": eq("2")},
           ]),
         )
         ..where(
@@ -136,7 +140,7 @@ Future<dynamic> orming() async {
         return "";
       }
 
-      final result = await r.exec(converter: (fromJson: fromJsonFn));
+      final result = await r.exec(fromJson: fromJsonFn);
 
       return switch (result) {
         ExecResultData(data: final data) => data,

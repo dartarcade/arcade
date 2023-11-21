@@ -195,7 +195,6 @@ SelectParam sum(String value) {
 class ArcadeOrmTableFindOperator {
   final ArcadeOrm _orm;
   final TableOperator _operator;
-  final ArcadeOrmTableConverter _baseConverter;
   final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, WhereParam>> _whereParams = [];
@@ -213,23 +212,15 @@ class ArcadeOrmTableFindOperator {
   ArcadeOrmTableFindOperator({
     required ArcadeOrm orm,
     required TableOperator operator,
-    required ({
-      FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
-      FutureOr<Map<String, dynamic>> Function() toJson
-    }) baseConverter,
     ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
-        _baseConverter = baseConverter,
         _operator = operator,
         _orm = orm;
 
   Future<ExecResult> exec<T>({
-    ArcadeOrmTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? fromJson,
   }) async {
     try {
-      final execConverter =
-          converter != null ? converter.fromJson : _baseConverter.fromJson;
-
       final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         operator: _operator,
@@ -244,9 +235,9 @@ class ArcadeOrmTableFindOperator {
         skip: _skip,
       );
 
-      final convertedData = await execConverter(data);
+      final convertedData = await fromJson?.call(data);
 
-      return ExecResultData(convertedData);
+      return ExecResultData(convertedData ?? data);
     } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
@@ -324,7 +315,6 @@ class ArcadeOrmTableFindOperator {
 class ArcadeOrmTableCreateOperator {
   final ArcadeOrm _orm;
   final TableOperator _operator;
-  final ArcadeOrmTableConverter _baseConverter;
   final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, dynamic>> _createWithParams = [];
@@ -334,13 +324,8 @@ class ArcadeOrmTableCreateOperator {
   ArcadeOrmTableCreateOperator({
     required ArcadeOrm orm,
     required TableOperator operator,
-    required ({
-      FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
-      FutureOr<Map<String, dynamic>> Function() toJson
-    }) baseConverter,
     ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
-        _baseConverter = baseConverter,
         _operator = operator,
         _orm = orm;
 
@@ -349,12 +334,9 @@ class ArcadeOrmTableCreateOperator {
   }
 
   Future<ExecResult> exec<T>({
-    ArcadeOrmTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? fromJson,
   }) async {
     try {
-      final execConverter =
-          converter != null ? converter.fromJson : _baseConverter.fromJson;
-
       final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         operator: _operator,
@@ -362,9 +344,9 @@ class ArcadeOrmTableCreateOperator {
         createWithParams: _createWithParams,
       );
 
-      final convertedData = await execConverter(data);
+      final convertedData = await fromJson?.call(data);
 
-      return ExecResultData(convertedData);
+      return ExecResultData(convertedData ?? data);
     } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
@@ -382,7 +364,6 @@ class ArcadeOrmTableCreateOperator {
 class ArcadeOrmTableDeleteOperator {
   final ArcadeOrm _orm;
   final TableOperator _operator;
-  final ArcadeOrmTableConverter _baseConverter;
   final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, WhereParam>> _whereParams = [];
@@ -393,23 +374,15 @@ class ArcadeOrmTableDeleteOperator {
   ArcadeOrmTableDeleteOperator({
     required ArcadeOrm orm,
     required TableOperator operator,
-    required ({
-      FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
-      FutureOr<Map<String, dynamic>> Function() toJson
-    }) baseConverter,
     ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
-        _baseConverter = baseConverter,
         _operator = operator,
         _orm = orm;
 
   Future<ExecResult> exec<T>({
-    ArcadeOrmTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? fromJson,
   }) async {
     try {
-      final execConverter =
-          converter != null ? converter.fromJson : _baseConverter.fromJson;
-
       final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         operator: _operator,
@@ -418,9 +391,9 @@ class ArcadeOrmTableDeleteOperator {
         includeParams: _includeParams,
       );
 
-      final convertedData = await execConverter(data);
+      final convertedData = await fromJson?.call(data);
 
-      return ExecResultData(convertedData);
+      return ExecResultData(convertedData ?? data);
     } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
@@ -458,7 +431,6 @@ class ArcadeOrmTableDeleteOperator {
 class ArcadeOrmTableRawOperator {
   final ArcadeOrm _orm;
   final TableOperator _operator;
-  final ArcadeOrmTableConverter _baseConverter;
   final ArcadeOrmTransaction? _transaction;
 
   bool _isExplain = false;
@@ -469,23 +441,15 @@ class ArcadeOrmTableRawOperator {
   ArcadeOrmTableRawOperator({
     required ArcadeOrm orm,
     required TableOperator operator,
-    required ({
-      FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
-      FutureOr<Map<String, dynamic>> Function() toJson
-    }) baseConverter,
     ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
-        _baseConverter = baseConverter,
         _operator = operator,
         _orm = orm;
 
   Future<ExecResult> exec<T>({
-    ArcadeOrmTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? fromJson,
   }) async {
     try {
-      final execConverter =
-          converter != null ? converter.fromJson : _baseConverter.fromJson;
-
       final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         rawSql: _rawSql,
@@ -494,9 +458,9 @@ class ArcadeOrmTableRawOperator {
         transaction: _transaction,
       );
 
-      final convertedData = await execConverter(data);
+      final convertedData = await fromJson?.call(data);
 
-      return ExecResultData(convertedData);
+      return ExecResultData(convertedData ?? data);
     } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
@@ -524,7 +488,6 @@ class ArcadeOrmTableRawOperator {
 class ArcadeOrmTableUpdateOperator {
   final ArcadeOrm _orm;
   final TableOperator _operator;
-  final ArcadeOrmTableConverter _baseConverter;
   final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, dynamic>> _updateWithParams = [];
@@ -535,23 +498,15 @@ class ArcadeOrmTableUpdateOperator {
   ArcadeOrmTableUpdateOperator({
     required ArcadeOrm orm,
     required TableOperator operator,
-    required ({
-      FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
-      FutureOr<Map<String, dynamic>> Function() toJson
-    }) baseConverter,
     ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
-        _baseConverter = baseConverter,
         _operator = operator,
         _orm = orm;
 
   Future<ExecResult> exec<T>({
-    ArcadeOrmTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? fromJson,
   }) async {
     try {
-      final execConverter =
-          converter != null ? converter.fromJson : _baseConverter.fromJson;
-
       final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         operator: _operator,
@@ -560,9 +515,9 @@ class ArcadeOrmTableUpdateOperator {
         updateWithParams: _updateWithParams,
       );
 
-      final convertedData = await execConverter(data);
+      final convertedData = await fromJson?.call(data);
 
-      return ExecResultData(convertedData);
+      return ExecResultData(convertedData ?? data);
     } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {

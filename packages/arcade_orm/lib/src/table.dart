@@ -7,9 +7,9 @@ typedef ArcadeOrmTableConverter<T> = ({
   FutureOr<Map<String, dynamic>> Function() toJson,
 });
 
-typedef ArcadeOrmTableFromConverter<T> = ({
-  FutureOr<T> Function(Map<String, dynamic> json) fromJson,
-});
+typedef ArcadeOrmTableFromConverter<T> = FutureOr<T> Function(
+  Map<String, dynamic> json,
+);
 
 mixin ArcadeOrmTable {
   late String name;
@@ -17,13 +17,8 @@ mixin ArcadeOrmTable {
 
   late final ArcadeOrm _orm = getArcadeOrmInstance(name);
 
-  ArcadeOrmTableSchema table(
-    String name,
-    Map<String, ColumnMeta> schema, {
-    required ArcadeOrmTableConverter converter,
-  }) {
-    final schema =
-        ArcadeOrmTableSchema(orm: _orm, name: name, baseConverter: converter);
+  ArcadeOrmTableSchema table(String name, Map<String, ColumnMeta> schema) {
+    final schema = ArcadeOrmTableSchema(orm: _orm, name: name);
     _orm._tables.add(schema);
     return schema;
   }
@@ -42,12 +37,10 @@ mixin ArcadeOrmTable {
 class ArcadeOrmTableSchema {
   final ArcadeOrm orm;
   final String name;
-  final ArcadeOrmTableConverter baseConverter;
 
   ArcadeOrmTableSchema({
     required this.orm,
     required this.name,
-    required this.baseConverter,
   });
 
   ArcadeOrmTransaction transaction() {
@@ -60,7 +53,6 @@ class ArcadeOrmTableSchema {
     return ArcadeOrmTableRawOperator(
       orm: orm,
       operator: TableOperator.raw,
-      baseConverter: baseConverter,
       transaction: transaction,
     );
   }
@@ -69,7 +61,6 @@ class ArcadeOrmTableSchema {
     return ArcadeOrmTableFindOperator(
       orm: orm,
       operator: TableOperator.count,
-      baseConverter: baseConverter,
       transaction: transaction,
     );
   }
@@ -78,7 +69,6 @@ class ArcadeOrmTableSchema {
     return ArcadeOrmTableFindOperator(
       orm: orm,
       operator: TableOperator.findOne,
-      baseConverter: baseConverter,
       transaction: transaction,
     );
   }
@@ -87,7 +77,6 @@ class ArcadeOrmTableSchema {
     return ArcadeOrmTableFindOperator(
       orm: orm,
       operator: TableOperator.findMany,
-      baseConverter: baseConverter,
       transaction: transaction,
     );
   }
@@ -96,7 +85,6 @@ class ArcadeOrmTableSchema {
     return ArcadeOrmTableCreateOperator(
       orm: orm,
       operator: TableOperator.create,
-      baseConverter: baseConverter,
       transaction: transaction,
     );
   }
@@ -105,7 +93,6 @@ class ArcadeOrmTableSchema {
     return ArcadeOrmTableUpdateOperator(
       orm: orm,
       operator: TableOperator.update,
-      baseConverter: baseConverter,
       transaction: transaction,
     );
   }
@@ -114,7 +101,6 @@ class ArcadeOrmTableSchema {
     return ArcadeOrmTableDeleteOperator(
       orm: orm,
       operator: TableOperator.delete,
-      baseConverter: baseConverter,
       transaction: transaction,
     );
   }
