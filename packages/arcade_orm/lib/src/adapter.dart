@@ -43,20 +43,24 @@ abstract interface class ArcadeOrmAdapterBase<T extends Record, U> {
 }
 
 abstract class ArcadeOrmTransaction {
-  bool isStarted = false;
-  bool isCommitted = false;
-  bool isRolledBack = false;
+  bool _isStarted = false;
+  bool _isCommitted = false;
+  bool _isRolledBack = false;
 
-  Future<void> _commit() async {
+  bool get isStarted => _isStarted;
+  bool get isComitted => _isCommitted;
+  bool get isRolledBack => _isRolledBack;
+
+  Future<void> commit() async {
     _checkPrecondition("Commit");
-    await commit();
-    isCommitted = true;
+    await $commit();
+    _isCommitted = true;
   }
 
-  Future<void> _rollback() async {
+  Future<void> rollback() async {
     _checkPrecondition("Rollback");
-    await rollback();
-    isRolledBack = true;
+    await $rollback();
+    _isRolledBack = true;
   }
 
   Future<T?> start<T>([
@@ -64,38 +68,39 @@ abstract class ArcadeOrmTransaction {
   ]) async {
     try {
       _checkStartPreCondition();
-      await startTransaction();
-      isStarted = true;
+      await $startTransaction();
+      _isStarted = true;
       if (callback == null) {
         return null;
       }
       final data = await callback(this);
-      await _commit();
+      await commit();
       return data;
     } catch (e) {
       if (callback != null) {
-        await _rollback();
+        await rollback();
       }
       rethrow;
     }
   }
 
-  Future<void> commit();
-
-  Future<void> rollback();
-
-  /// Use [ArcadeOrmTransaction.start] instead
   @protected
-  Future<void> startTransaction();
+  Future<void> $commit();
+
+  @protected
+  Future<void> $rollback();
+
+  @protected
+  Future<void> $startTransaction();
 
   void _checkStartPreCondition() {
-    if (isCommitted) {
+    if (_isCommitted) {
       throw ArcadeOrmException(
         message: "Cannot Start a transaction that is already committed",
         originalError: null,
       );
     }
-    if (isRolledBack) {
+    if (_isRolledBack) {
       throw ArcadeOrmException(
         message: "Cannot Start a transaction that is already rolled back",
         originalError: null,
@@ -104,19 +109,19 @@ abstract class ArcadeOrmTransaction {
   }
 
   void _checkPrecondition(String op) {
-    if (!isStarted) {
+    if (!_isStarted) {
       throw ArcadeOrmException(
         message: "Cannot $op a transaction that has not been started",
         originalError: null,
       );
     }
-    if (isCommitted) {
+    if (_isCommitted) {
       throw ArcadeOrmException(
         message: "Cannot $op a transaction that is already committed",
         originalError: null,
       );
     }
-    if (isRolledBack) {
+    if (_isRolledBack) {
       throw ArcadeOrmException(
         message: "Cannot $op a transaction that has been rolled back",
         originalError: null,
