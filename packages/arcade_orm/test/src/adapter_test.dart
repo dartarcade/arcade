@@ -33,7 +33,9 @@ void main() {
     setUp(() {
       when(() => mockAdapter.transaction()).thenReturn(Transaction());
     });
+
     tearDown(clearOrms);
+
     test("commit flow", () async {
       final arcadeOrm = await ArcadeOrm.init(
         adapter: mockAdapter,
@@ -46,6 +48,7 @@ void main() {
       expect(commitCount, 1);
       expect(rollbackCount, 0);
     });
+
     test("rollback flow", () async {
       final arcadeOrm = await ArcadeOrm.init(
         adapter: mockAdapter,
@@ -58,6 +61,7 @@ void main() {
       expect(commitCount, 0);
       expect(rollbackCount, 1);
     });
+
     test("callback commit flow", () async {
       final arcadeOrm = await ArcadeOrm.init(
         adapter: mockAdapter,
@@ -72,6 +76,7 @@ void main() {
       expect(commitCount, 1);
       expect(rollbackCount, 0);
     });
+
     test("callback rollback flow", () async {
       final arcadeOrm = await ArcadeOrm.init(
         adapter: mockAdapter,
@@ -90,6 +95,7 @@ void main() {
       }
       throw Exception("Expected Exception");
     });
+
     test("early commit", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -108,6 +114,7 @@ void main() {
         );
       }
     });
+
     test("callback early commit", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -126,6 +133,7 @@ void main() {
       }
       fail("Expected ArcadeOrmException");
     });
+
     test("early rollback", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -142,6 +150,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("callback - early rollback", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -160,6 +169,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("late start after commit", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -178,6 +188,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("callback - late start after commit", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -195,6 +206,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("late start after rollback", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -213,6 +225,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("callback - late start after rollback", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -234,6 +247,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("commit after rollback", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -252,6 +266,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("callback - commit after rollback", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -273,6 +288,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("rollback after commit", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
@@ -291,6 +307,7 @@ void main() {
       }
       throw Exception("Expected ArcadeOrmException");
     });
+
     test("callback - rollback after commit", () async {
       try {
         final arcadeOrm = await ArcadeOrm.init(
