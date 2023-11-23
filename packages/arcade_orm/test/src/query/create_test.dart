@@ -17,50 +17,110 @@ void main() {
     tearDown(() {
       clearOrms();
       reset(mockAdapter);
+      reset(mockTransaction);
     });
 
-    test("create db record - success", () async {
-      when(
-        () => mockAdapter.operate(
-          operator: TableOperator.create,
-          transaction: null,
-          isExplain: false,
-          createWithParams: any(named: "createWithParams"),
-        ),
-      ).thenAnswer(
-        (_) => Future.value({"nCreated": 1}),
-      );
-      final arcadeOrm = await ArcadeOrm.init(
-        adapter: mockAdapter,
-      );
-      final table = arcadeOrm.table(
-        "users",
-        {},
-      );
-      final createQuery = table.create()
-        ..createWith({"name": "foo", "age": 20})
-        ..createWith({"email": "foo@examle.com"});
-      final data = await createQuery.exec();
-      verify(
-        () => mockAdapter.operate(
-          operator: TableOperator.create,
-          transaction: null,
-          isExplain: false,
-          whereParams: [],
-          havingParams: [],
-          selectParams: [],
-          includeParams: [],
-          groupParams: [],
-          sortParams: [],
-          updateWithParams: [],
-          createWithParams: [
-            {"name": "foo", "age": 20},
-            {"email": "foo@examle.com"},
-          ],
-        ),
-      ).called(1);
-      expect(data, isA<ExecResultData>());
-      expect((data as ExecResultData).data, {"nCreated": 1});
+    group("success", () {
+      setUp(() {
+        when(
+          () => mockAdapter.operate(
+            operator: TableOperator.create,
+            transaction: null,
+            isExplain: false,
+            createWithParams: any(named: "createWithParams"),
+          ),
+        ).thenAnswer(
+          (_) => Future.value({"nCreated": 1}),
+        );
+      });
+
+      tearDown(() {
+        clearOrms();
+        reset(mockAdapter);
+        reset(mockTransaction);
+      });
+
+      test("operate", () async {
+        final arcadeOrm = await ArcadeOrm.init(
+          adapter: mockAdapter,
+        );
+        final table = arcadeOrm.table(
+          "users",
+          {},
+        );
+        final createQuery = table.create()
+          ..createWith({"name": "foo", "age": 20})
+          ..createWith({"email": "foo@examle.com"});
+        await createQuery.exec();
+        verify(
+          () => mockAdapter.operate(
+            operator: TableOperator.create,
+            transaction: null,
+            isExplain: false,
+            whereParams: [],
+            havingParams: [],
+            selectParams: [],
+            includeParams: [],
+            groupParams: [],
+            sortParams: [],
+            updateWithParams: [],
+            createWithParams: [
+              {"name": "foo", "age": 20},
+              {"email": "foo@examle.com"},
+            ],
+          ),
+        ).called(1);
+      });
+
+      test("data", () async {
+        final arcadeOrm = await ArcadeOrm.init(
+          adapter: mockAdapter,
+        );
+        final table = arcadeOrm.table(
+          "users",
+          {},
+        );
+        final createQuery = table.create()
+          ..createWith({"name": "foo", "age": 20})
+          ..createWith({"email": "foo@examle.com"});
+        final data = await createQuery.exec();
+        expect(data, isA<ExecResultData>());
+        expect((data as ExecResultData).data, equals({"nCreated": 1}));
+      });
+
+      test("operate with transaction", () async {
+        when(() => mockTransaction.start())
+            .thenAnswer((_) async => Future.value());
+        final arcadeOrm = await ArcadeOrm.init(
+          adapter: mockAdapter,
+        );
+        final table = arcadeOrm.table(
+          "users",
+          {},
+        );
+        final trx = table.transaction();
+        await trx.start();
+        final createQuery = table.create(transaction: trx)
+          ..createWith({"name": "foo", "age": 20});
+        await createQuery.exec();
+        verify(
+          () => mockAdapter.operate(
+            operator: TableOperator.create,
+            transaction: trx,
+            isExplain: false,
+            whereParams: [],
+            havingParams: [],
+            selectParams: [],
+            includeParams: [],
+            groupParams: [],
+            sortParams: [],
+            updateWithParams: [],
+            createWithParams: [
+              {"name": "foo", "age": 20},
+            ],
+          ),
+        ).called(1);
+      });
     });
 
     test("create db record - failure", () async {
@@ -85,60 +145,8 @@ void main() {
         ..createWith({"name": "foo", "age": 20})
         ..createWith({"email": "foo@examle.com"});
       final data = await createQuery.exec();
-      verify(
-        () => mockAdapter.operate(
-          operator: TableOperator.create,
-          transaction: null,
-          isExplain: false,
-          whereParams: [],
-          havingParams: [],
-          selectParams: [],
-          includeParams: [],
-          groupParams: [],
-          sortParams: [],
-          updateWithParams: [],
-          createWithParams: [
-            {"name": "foo", "age": 20},
-            {"email": "foo@examle.com"},
-          ],
-        ),
-      ).called(1);
       expect(data, isA<ExecResultFailure>());
       expect((data as ExecResultFailure).exception.message, "Create Failed");
-    });
-
-    test("create db record with Transaction", () async {
-      when(() => mockTransaction.start())
-          .thenAnswer((_) async => Future.value());
-      final arcadeOrm = await ArcadeOrm.init(
-        adapter: mockAdapter,
-      );
-      final table = arcadeOrm.table(
-        "users",
-        {},
-      );
-      final trx = table.transaction();
-      await trx.start();
-      final createQuery = table.create(transaction: trx)
-        ..createWith({"name": "foo", "age": 20});
-      await createQuery.exec();
-      verify(
-        () => mockAdapter.operate(
-          operator: TableOperator.create,
-          transaction: trx,
-          isExplain: false,
-          whereParams: [],
-          havingParams: [],
-          selectParams: [],
-          includeParams: [],
-          groupParams: [],
-          sortParams: [],
-          updateWithParams: [],
-          createWithParams: [
-            {"name": "foo", "age": 20},
-          ],
-        ),
-      ).called(1);
     });
   });
 }
