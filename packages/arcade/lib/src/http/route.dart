@@ -85,7 +85,7 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
 
   static void group(
     String path, {
-    required FutureOr<void> Function() routes,
+    required FutureOr<void> Function() defineRoutes,
     List<BeforeHookHandler> before = const [],
     List<AfterHookHandler> after = const [],
   }) {
@@ -93,7 +93,7 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
     final lastRouteIndex = routes.length - 1;
     final previousRouteGroupPrefix = _routeGroupPrefix;
     _routeGroupPrefix = previousRouteGroupPrefix + path;
-    callback();
+    defineRoutes();
     _routeGroupPrefix = previousRouteGroupPrefix;
     validatePreviousRouteHasHandler();
     routes.sublist(lastRouteIndex + 1).forEach((route) {

@@ -53,7 +53,7 @@ void defineRoutes() {
         return context;
       },
     ],
-    routes: () {
+    defineRoutes: () {
       Route.get('/').handle((context) => 'Group route');
       Route.get('/hello/:name').handle(
         (context) =>
