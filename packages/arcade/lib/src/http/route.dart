@@ -29,7 +29,7 @@ enum HttpMethod {
 abstract class BaseRoute<T extends RequestContext> {
   HttpMethod? get method;
 
-  String? get path;
+  String get path;
 
   RouteHandler<T>? get handler;
 
@@ -51,12 +51,14 @@ abstract class BaseRoute<T extends RequestContext> {
   }
 }
 
+String _routeGroupPrefix = '';
+
 class Route<T extends RequestContext> extends BaseRoute<T> {
   @override
   final HttpMethod? method;
 
   @override
-  final String? path;
+  final String path;
 
   @override
   RouteHandler<T>? handler;
@@ -81,51 +83,78 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
 
   Route._(this.method, this.path, {this.notFoundHandler});
 
+  static void group(
+    String path, {
+    required FutureOr<void> Function() routes,
+    List<BeforeHookHandler> before = const [],
+    List<AfterHookHandler> after = const [],
+  }) {
+    validatePreviousRouteHasHandler();
+    final lastRouteIndex = routes.length - 1;
+    final previousRouteGroupPrefix = _routeGroupPrefix;
+    _routeGroupPrefix = previousRouteGroupPrefix + path;
+    callback();
+    _routeGroupPrefix = previousRouteGroupPrefix;
+    validatePreviousRouteHasHandler();
+    routes.sublist(lastRouteIndex + 1).forEach((route) {
+      route.beforeHooks.addAll(before);
+      route.afterHooks.addAll(after);
+    });
+  }
+
   static BeforeRoute any(String path) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = BeforeRoute._(HttpMethod.any, path, []);
+    currentProcessingRoute =
+        BeforeRoute._(HttpMethod.any, _routeGroupPrefix + path, []);
     return currentProcessingRoute! as BeforeRoute;
   }
 
   static BeforeRoute get(String path) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = BeforeRoute._(HttpMethod.get, path, []);
+    currentProcessingRoute =
+        BeforeRoute._(HttpMethod.get, _routeGroupPrefix + path, []);
     return currentProcessingRoute! as BeforeRoute;
   }
 
   static BeforeRoute post(String path) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = BeforeRoute._(HttpMethod.post, path, []);
+    currentProcessingRoute =
+        BeforeRoute._(HttpMethod.post, _routeGroupPrefix + path, []);
     return currentProcessingRoute! as BeforeRoute;
   }
 
   static BeforeRoute put(String path) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = BeforeRoute._(HttpMethod.put, path, []);
+    currentProcessingRoute =
+        BeforeRoute._(HttpMethod.put, _routeGroupPrefix + path, []);
     return currentProcessingRoute! as BeforeRoute;
   }
 
   static BeforeRoute delete(String path) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = BeforeRoute._(HttpMethod.delete, path, []);
+    currentProcessingRoute =
+        BeforeRoute._(HttpMethod.delete, _routeGroupPrefix + path, []);
     return currentProcessingRoute! as BeforeRoute;
   }
 
   static BeforeRoute patch(String path) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = BeforeRoute._(HttpMethod.patch, path, []);
+    currentProcessingRoute =
+        BeforeRoute._(HttpMethod.patch, _routeGroupPrefix + path, []);
     return currentProcessingRoute! as BeforeRoute;
   }
 
   static BeforeRoute head(String path) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = BeforeRoute._(HttpMethod.head, path, []);
+    currentProcessingRoute =
+        BeforeRoute._(HttpMethod.head, _routeGroupPrefix + path, []);
     return currentProcessingRoute! as BeforeRoute;
   }
 
   static BeforeRoute options(String path) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = BeforeRoute._(HttpMethod.options, path, []);
+    currentProcessingRoute =
+        BeforeRoute._(HttpMethod.options, _routeGroupPrefix + path, []);
     return currentProcessingRoute! as BeforeRoute;
   }
 
@@ -133,7 +162,7 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
     RouteHandler<T> handler,
   ) {
     validatePreviousRouteHasHandler();
-    currentProcessingRoute = AfterRoute<T>._(null, null, [], [])
+    currentProcessingRoute = AfterRoute<T>._(null, '', [], [])
       ..notFoundHandler = handler;
     return currentProcessingRoute! as AfterRoute;
   }

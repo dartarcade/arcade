@@ -2,7 +2,6 @@ import 'package:arcade/src/http/route.dart';
 
 String _normalizePath(String path) {
   String p = path;
-
   p = p.replaceAll(RegExp('^/+'), '');
   p = p.replaceAll(RegExp(r'/+$'), '');
   return p;
@@ -40,8 +39,8 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
   final Map<String, String> pathParameters = {};
 
   if (route != null) {
-    final routePathSegments = route.path?.split('/') ?? [];
-    final pathSegments = uri.path.split('/');
+    final routePathSegments = _normalizePath(route.path).split('/') ?? [];
+    final pathSegments = _normalizePath(uri.path).split('/');
 
     for (var i = 0; i < routePathSegments.length; i++) {
       final routePathSegment = routePathSegments[i];
