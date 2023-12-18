@@ -2,12 +2,14 @@ import 'package:arcade/arcade.dart';
 import 'package:arcade_example/core/context/authed_request_context.dart';
 
 class ExampleController {
-  late String wsId;
+  String? wsId;
 
   ExampleController();
 
   Map<String, dynamic> index(RequestContext context) {
-    emitTo(wsId, 'Hello from get');
+    if (wsId != null) {
+      emitTo(wsId!, 'Hello from get');
+    }
     return {'message': 'Hello, world!'};
   }
 

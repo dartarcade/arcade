@@ -19,6 +19,10 @@ bool routeMatchesPath(String routePath, String path) {
   for (var i = 0; i < routePathSegments.length; i++) {
     final routePathSegment = routePathSegments[i];
     final pathSegment = pathSegments[i];
+    
+    if (routePathSegment == '*') {
+      return true;
+    }
 
     if (routePathSegment.startsWith(':')) {
       continue;
