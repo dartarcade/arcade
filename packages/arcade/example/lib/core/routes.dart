@@ -42,8 +42,31 @@ void defineRoutes() {
       return (context, handleResult, id);
     },
   );
-  
+
   Route.get('/any/*').handle((context) => 'Any route');
+
+  Route.group(
+    '/group',
+    before: [
+      (context) {
+        print('Before group: ${context.path}');
+        return context;
+      },
+    ],
+    routes: () {
+      Route.get('/').handle((context) => 'Group route');
+      Route.get('/hello/:name').handle(
+        (context) =>
+            'Group route with path parameter: ${context.pathParameters['name']}',
+      );
+    },
+    after: [
+      (context, handleResult) {
+        print('After group: ${context.path}');
+        return (context, handleResult);
+      },
+    ],
+  );
 
   Route.notFound((RequestContext context) {
     context.responseHeaders.contentType = ContentType.json;
