@@ -42,6 +42,8 @@ void defineRoutes() {
       return (context, handleResult, id);
     },
   );
+  
+  Route.get('/any/*').handle((context) => 'Any route');
 
   Route.notFound((RequestContext context) {
     context.responseHeaders.contentType = ContentType.json;
