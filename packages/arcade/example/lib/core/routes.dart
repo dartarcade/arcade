@@ -8,6 +8,21 @@ import 'package:arcade_example/core/middlewares.dart';
 final exampleController = ExampleController();
 
 void defineRoutes() {
+  Route.registerGlobalBeforeHook((context) {
+    print('Global before hook');
+    return context;
+  });
+  
+  Route.registerGlobalAfterHook((context, handleResult) {
+    print('Global after hook');
+    return (context, handleResult);
+  });
+  
+  Route.registerGlobalAfterWebSocketHook((context, handleResult, id) {
+    print('Global after websocket hook for $id');
+    return (context, handleResult, id);
+  });
+  
   Route.get('/').handle(exampleController.index);
 
   Route.get('/get').before(checkAuthMiddleware).handle(exampleController.get);
