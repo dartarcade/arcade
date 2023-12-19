@@ -18,7 +18,7 @@ bool routeMatchesPath(String routePath, String path) {
   for (var i = 0; i < routePathSegments.length; i++) {
     final routePathSegment = routePathSegments[i];
     final pathSegment = pathSegments[i];
-    
+
     if (routePathSegment == '*') {
       return true;
     }
@@ -61,33 +61,28 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
   required HttpMethod method,
   required Uri uri,
 }) {
-  return routes.fold(
-    (null, null),
-    (previousValue, route) {
-      if (previousValue.$1 != null && previousValue.$2 != null) {
-        return previousValue;
-      }
+  (BaseRoute? route, BaseRoute? notFoundRoute) result = (null, null);
 
-      final methodMatches =
-          route.method == method || route.method == HttpMethod.any;
+  for (final route in routes) {
+    final methodMatches =
+        route.method == method || route.method == HttpMethod.any;
 
-      if (route.path == '*' && methodMatches) {
-        previousValue = (route, previousValue.$2);
-      }
+    if (route.path == '*' && methodMatches) {
+      return (route, null);
+    }
 
-      if (previousValue.$1 == null &&
-          methodMatches &&
-          routeMatchesPath(route.path ?? '', uri.path)) {
-        previousValue = (route, previousValue.$2);
-      }
+    if (result.$1 == null &&
+        methodMatches &&
+        routeMatchesPath(route.path ?? '', uri.path)) {
+      return (route, null);
+    }
 
-      if (previousValue.$2 == null && route.notFoundHandler != null) {
-        previousValue = (previousValue.$1, route);
-      }
+    if (result.$2 == null && route.notFoundHandler != null) {
+      result = (result.$1, route);
+    }
+  }
 
-      return previousValue;
-    },
-  );
+  return result;
 }
 
 BaseRoute? currentProcessingRoute;
