@@ -1,36 +1,34 @@
 import 'dart:async';
 
-import 'package:dartseid_orm/src/adapter.dart';
-import 'package:dartseid_orm/src/core.dart';
-import 'package:dartseid_orm/src/query.dart';
+import 'package:arcade_orm/arcade_orm.dart';
 
-typedef DormTableConverter<T> = ({
+typedef ArcadeOrmTableConverter<T> = ({
   FutureOr<T> Function(Map<String, dynamic> json) fromJson,
   FutureOr<Map<String, dynamic>> Function() toJson,
 });
 
-typedef DormTableFromConverter<T> = ({
+typedef ArcadeOrmTableFromConverter<T> = ({
   FutureOr<T> Function(Map<String, dynamic> json) fromJson,
 });
 
-mixin DormTable {
+mixin ArcadeOrmTable {
   late String name;
-  final List<DormTableSchema> _tables = [];
+  final List<ArcadeOrmTableSchema> _tables = [];
 
-  late final Dorm _dorm = getDormInstance(name);
+  late final ArcadeOrm _orm = getArcadeOrmInstance(name);
 
-  DormTableSchema table(
+  ArcadeOrmTableSchema table(
     String name,
     Map<String, ColumnMeta> schema, {
-    required DormTableConverter converter,
+    required ArcadeOrmTableConverter converter,
   }) {
     final schema =
-        DormTableSchema(dorm: _dorm, name: name, baseConverter: converter);
-    _dorm._tables.add(schema);
+        ArcadeOrmTableSchema(orm: _orm, name: name, baseConverter: converter);
+    _orm._tables.add(schema);
     return schema;
   }
 
-  DormTableSchema getTable(String name) {
+  ArcadeOrmTableSchema getTable(String name) {
     try {
       return _tables.firstWhere((element) => element.name == name);
     } catch (e) {
@@ -41,80 +39,80 @@ mixin DormTable {
   }
 }
 
-class DormTableSchema {
-  final Dorm dorm;
+class ArcadeOrmTableSchema {
+  final ArcadeOrm orm;
   final String name;
-  final DormTableConverter baseConverter;
+  final ArcadeOrmTableConverter baseConverter;
 
-  DormTableSchema({
-    required this.dorm,
+  ArcadeOrmTableSchema({
+    required this.orm,
     required this.name,
     required this.baseConverter,
   });
 
-  DormTransaction transaction() {
-    return dorm.transaction();
+  ArcadeOrmTransaction transaction() {
+    return orm.transaction();
   }
 
   void index(Map<String, dynamic> config, {({bool? unique})? options}) {}
 
-  DormTableRawOperator raw({DormTransaction? transaction}) {
-    return DormTableRawOperator(
-      dorm: dorm,
+  ArcadeOrmTableRawOperator raw({ArcadeOrmTransaction? transaction}) {
+    return ArcadeOrmTableRawOperator(
+      orm: orm,
       operator: TableOperator.raw,
       baseConverter: baseConverter,
       transaction: transaction,
     );
   }
 
-  DormTableFindOperator count({DormTransaction? transaction}) {
-    return DormTableFindOperator(
-      dorm: dorm,
+  ArcadeOrmTableFindOperator count({ArcadeOrmTransaction? transaction}) {
+    return ArcadeOrmTableFindOperator(
+      orm: orm,
       operator: TableOperator.count,
       baseConverter: baseConverter,
       transaction: transaction,
     );
   }
 
-  DormTableFindOperator findOne({DormTransaction? transaction}) {
-    return DormTableFindOperator(
-      dorm: dorm,
+  ArcadeOrmTableFindOperator findOne({ArcadeOrmTransaction? transaction}) {
+    return ArcadeOrmTableFindOperator(
+      orm: orm,
       operator: TableOperator.findOne,
       baseConverter: baseConverter,
       transaction: transaction,
     );
   }
 
-  DormTableFindOperator findMany({DormTransaction? transaction}) {
-    return DormTableFindOperator(
-      dorm: dorm,
+  ArcadeOrmTableFindOperator findMany({ArcadeOrmTransaction? transaction}) {
+    return ArcadeOrmTableFindOperator(
+      orm: orm,
       operator: TableOperator.findMany,
       baseConverter: baseConverter,
       transaction: transaction,
     );
   }
 
-  DormTableCreateOperator create({DormTransaction? transaction}) {
-    return DormTableCreateOperator(
-      dorm: dorm,
+  ArcadeOrmTableCreateOperator create({ArcadeOrmTransaction? transaction}) {
+    return ArcadeOrmTableCreateOperator(
+      orm: orm,
       operator: TableOperator.create,
       baseConverter: baseConverter,
       transaction: transaction,
     );
   }
 
-  DormTableUpdateOperator update({DormTransaction? transaction}) {
-    return DormTableUpdateOperator(
-      dorm: dorm,
+  ArcadeOrmTableUpdateOperator update({ArcadeOrmTransaction? transaction}) {
+    return ArcadeOrmTableUpdateOperator(
+      orm: orm,
       operator: TableOperator.update,
       baseConverter: baseConverter,
       transaction: transaction,
     );
   }
 
-  DormTableDeleteOperator delete({DormTransaction? transaction}) {
-    return DormTableDeleteOperator(
-      dorm: dorm,
+  ArcadeOrmTableDeleteOperator delete({ArcadeOrmTransaction? transaction}) {
+    return ArcadeOrmTableDeleteOperator(
+      orm: orm,
       operator: TableOperator.delete,
       baseConverter: baseConverter,
       transaction: transaction,

@@ -1,23 +1,22 @@
 import 'dart:async';
 
-import 'package:dartseid_orm/src/core.dart';
-import 'package:dartseid_orm/src/query.dart';
+import 'package:arcade_orm/arcade_orm.dart';
 import 'package:meta/meta.dart';
 
-abstract interface class DormAdapterBase {
+abstract interface class ArcadeOrmAdapterBase {
   @protected
   final dynamic connection;
   @protected
-  late Dorm dorm;
+  late ArcadeOrm orm;
 
-  DormAdapterBase({
+  ArcadeOrmAdapterBase({
     required this.connection,
   });
 
   Future<void> init();
   Future<Map<String, dynamic>> operate({
     required TableOperator operator,
-    required DormTransaction? transaction,
+    required ArcadeOrmTransaction? transaction,
     required bool isExplain,
     String? rawSql,
     Map<String, dynamic>? rawNoSql,
@@ -33,12 +32,12 @@ abstract interface class DormAdapterBase {
     int? skip,
   });
 
-  void setDormInstance(Dorm dorm);
+  void setArcadeOrmInstance(ArcadeOrm orm);
 
-  DormTransaction transaction();
+  ArcadeOrmTransaction transaction();
 }
 
-abstract class DormTransaction {
+abstract class ArcadeOrmTransaction {
   bool isStarted = false;
   bool isCommitted = false;
   bool isRolledBack = false;
@@ -56,7 +55,7 @@ abstract class DormTransaction {
   }
 
   Future<T?> start<T>([
-    FutureOr<T> Function(DormTransaction trx)? callback,
+    FutureOr<T> Function(ArcadeOrmTransaction trx)? callback,
   ]) async {
     try {
       _checkStartPreCondition();
@@ -84,13 +83,13 @@ abstract class DormTransaction {
 
   void _checkStartPreCondition() {
     if (isCommitted) {
-      throw DormException(
+      throw ArcadeOrmException(
         message: "Cannot Start a transaction that is already committed",
         originalError: null,
       );
     }
     if (isRolledBack) {
-      throw DormException(
+      throw ArcadeOrmException(
         message: "Cannot Start a transaction that is already rolled back",
         originalError: null,
       );
@@ -99,19 +98,19 @@ abstract class DormTransaction {
 
   void _checkPrecondition(String op) {
     if (!isStarted) {
-      throw DormException(
+      throw ArcadeOrmException(
         message: "Cannot $op a transaction that has not been started",
         originalError: null,
       );
     }
     if (isCommitted) {
-      throw DormException(
+      throw ArcadeOrmException(
         message: "Cannot $op a transaction that is already committed",
         originalError: null,
       );
     }
     if (isRolledBack) {
-      throw DormException(
+      throw ArcadeOrmException(
         message: "Cannot $op a transaction that has been rolled back",
         originalError: null,
       );

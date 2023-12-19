@@ -1,12 +1,12 @@
 import 'package:dartseid_orm/dartseid_orm.dart';
 
-class DormMockAdapter implements DormAdapterBase {
+class ArcadeOrmMockAdapter implements ArcadeOrmAdapterBase {
   @override
-  late Dorm dorm;
+  late ArcadeOrm orm;
   @override
   final dynamic connection;
 
-  DormMockAdapter({
+  ArcadeOrmMockAdapter({
     required this.connection,
   });
 
@@ -19,7 +19,7 @@ class DormMockAdapter implements DormAdapterBase {
   @override
   Future<Map<String, dynamic>> operate({
     required TableOperator operator,
-    required DormTransaction? transaction,
+    required ArcadeOrmTransaction? transaction,
     required bool isExplain,
     String? rawSql,
     Map<String, dynamic>? rawNoSql,
@@ -38,20 +38,20 @@ class DormMockAdapter implements DormAdapterBase {
   }
 
   @override
-  DormTransaction transaction() {
+  ArcadeOrmTransaction transaction() {
     // TODO: implement transaction
     throw UnimplementedError();
   }
 
   @override
-  void setDormInstance(Dorm dorm) {
-    this.dorm = dorm;
+  void setArcadeOrmInstance(ArcadeOrm orm) {
+    this.orm = orm;
   }
 }
 
-Future<dynamic> dorming() async {
-  final a = await Dorm.init(
-    adapter: DormMockAdapter(connection: ""),
+Future<dynamic> orming() async {
+  final a = await ArcadeOrm.init(
+    adapter: ArcadeOrmMockAdapter(connection: ""),
   );
 
   final t = a.table(
@@ -139,6 +139,6 @@ Future<dynamic> dorming() async {
     },
   );
 
-  // more dorming
+  // more orming
   return data;
 }

@@ -6,4 +6,4 @@
 # https://dart.dev/guides/libraries/private-files#pubspeclock.
 pubspec.lock
 
-melos_dartseid_orm_sqlite_adapter.iml
+melos_arcade_orm.iml

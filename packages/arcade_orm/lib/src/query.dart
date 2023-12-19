@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:dartseid_orm/src/adapter.dart';
-import 'package:dartseid_orm/src/core.dart';
-import 'package:dartseid_orm/src/table.dart';
+import 'package:arcade_orm/arcade_orm.dart';
 
 const dAnd = r'$__AND';
 const dOr = r'$__OR';
@@ -194,11 +192,11 @@ SelectParam sum(String value) {
   );
 }
 
-class DormTableFindOperator {
-  final Dorm _dorm;
+class ArcadeOrmTableFindOperator {
+  final ArcadeOrm _orm;
   final TableOperator _operator;
-  final DormTableConverter _baseConverter;
-  final DormTransaction? _transaction;
+  final ArcadeOrmTableConverter _baseConverter;
+  final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, WhereParam>> _whereParams = [];
   final List<Map<String, WhereParam>> _havingParams = [];
@@ -212,27 +210,27 @@ class DormTableFindOperator {
 
   bool _isExplain = false;
 
-  DormTableFindOperator({
-    required Dorm dorm,
+  ArcadeOrmTableFindOperator({
+    required ArcadeOrm orm,
     required TableOperator operator,
     required ({
       FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
       FutureOr<Map<String, dynamic>> Function() toJson
     }) baseConverter,
-    DormTransaction? transaction,
+    ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
         _baseConverter = baseConverter,
         _operator = operator,
-        _dorm = dorm;
+        _orm = orm;
 
   Future<ExecResult> exec<T>({
-    DormTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? converter,
   }) async {
     try {
       final execConverter =
           converter != null ? converter.fromJson : _baseConverter.fromJson;
 
-      final data = await _dorm.adapter.operate(
+      final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         operator: _operator,
         transaction: _transaction,
@@ -249,11 +247,11 @@ class DormTableFindOperator {
       final convertedData = await execConverter(data);
 
       return ExecResultData(convertedData);
-    } on DormException catch (e) {
+    } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
       return ExecResultFailure(
-        DormException(originalError: e, message: "Unknown Error"),
+        ArcadeOrmException(originalError: e, message: "Unknown Error"),
       );
     }
   }
@@ -289,7 +287,7 @@ class DormTableFindOperator {
   /// Set the number of results to return. Cannot be less than 1.
   void limit(int limit) {
     if (limit <= 0) {
-      throw DormException(
+      throw ArcadeOrmException(
         message: "limit cannot be less then 1",
         originalError: null,
       );
@@ -304,7 +302,7 @@ class DormTableFindOperator {
   /// Set the number of results skipped. Cannot be less than 0.
   void skip(int skip) {
     if (skip < 0) {
-      throw DormException(
+      throw ArcadeOrmException(
         message: "skip cannot be less then 0",
         originalError: null,
       );
@@ -323,41 +321,41 @@ class DormTableFindOperator {
   }
 }
 
-class DormTableCreateOperator {
-  final Dorm _dorm;
+class ArcadeOrmTableCreateOperator {
+  final ArcadeOrm _orm;
   final TableOperator _operator;
-  final DormTableConverter _baseConverter;
-  final DormTransaction? _transaction;
+  final ArcadeOrmTableConverter _baseConverter;
+  final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, dynamic>> _createWithParams = [];
 
   bool _isExplain = false;
 
-  DormTableCreateOperator({
-    required Dorm dorm,
+  ArcadeOrmTableCreateOperator({
+    required ArcadeOrm orm,
     required TableOperator operator,
     required ({
       FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
       FutureOr<Map<String, dynamic>> Function() toJson
     }) baseConverter,
-    DormTransaction? transaction,
+    ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
         _baseConverter = baseConverter,
         _operator = operator,
-        _dorm = dorm;
+        _orm = orm;
 
   void createWith(Map<String, dynamic> value) {
     _createWithParams.add(value);
   }
 
   Future<ExecResult> exec<T>({
-    DormTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? converter,
   }) async {
     try {
       final execConverter =
           converter != null ? converter.fromJson : _baseConverter.fromJson;
 
-      final data = await _dorm.adapter.operate(
+      final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         operator: _operator,
         transaction: _transaction,
@@ -367,11 +365,11 @@ class DormTableCreateOperator {
       final convertedData = await execConverter(data);
 
       return ExecResultData(convertedData);
-    } on DormException catch (e) {
+    } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
       return ExecResultFailure(
-        DormException(originalError: e, message: "Unknown Error"),
+        ArcadeOrmException(originalError: e, message: "Unknown Error"),
       );
     }
   }
@@ -381,38 +379,38 @@ class DormTableCreateOperator {
   }
 }
 
-class DormTableDeleteOperator {
-  final Dorm _dorm;
+class ArcadeOrmTableDeleteOperator {
+  final ArcadeOrm _orm;
   final TableOperator _operator;
-  final DormTableConverter _baseConverter;
-  final DormTransaction? _transaction;
+  final ArcadeOrmTableConverter _baseConverter;
+  final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, WhereParam>> _whereParams = [];
   final List<IncludeParam> _includeParams = [];
 
   bool _isExplain = false;
 
-  DormTableDeleteOperator({
-    required Dorm dorm,
+  ArcadeOrmTableDeleteOperator({
+    required ArcadeOrm orm,
     required TableOperator operator,
     required ({
       FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
       FutureOr<Map<String, dynamic>> Function() toJson
     }) baseConverter,
-    DormTransaction? transaction,
+    ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
         _baseConverter = baseConverter,
         _operator = operator,
-        _dorm = dorm;
+        _orm = orm;
 
   Future<ExecResult> exec<T>({
-    DormTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? converter,
   }) async {
     try {
       final execConverter =
           converter != null ? converter.fromJson : _baseConverter.fromJson;
 
-      final data = await _dorm.adapter.operate(
+      final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         operator: _operator,
         transaction: _transaction,
@@ -423,11 +421,11 @@ class DormTableDeleteOperator {
       final convertedData = await execConverter(data);
 
       return ExecResultData(convertedData);
-    } on DormException catch (e) {
+    } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
       return ExecResultFailure(
-        DormException(originalError: e, message: "Unknown Error"),
+        ArcadeOrmException(originalError: e, message: "Unknown Error"),
       );
     }
   }
@@ -457,38 +455,38 @@ class DormTableDeleteOperator {
   }
 }
 
-class DormTableRawOperator {
-  final Dorm _dorm;
+class ArcadeOrmTableRawOperator {
+  final ArcadeOrm _orm;
   final TableOperator _operator;
-  final DormTableConverter _baseConverter;
-  final DormTransaction? _transaction;
+  final ArcadeOrmTableConverter _baseConverter;
+  final ArcadeOrmTransaction? _transaction;
 
   bool _isExplain = false;
 
   String? _rawSql;
   Map<String, dynamic>? _rawNoSql;
 
-  DormTableRawOperator({
-    required Dorm dorm,
+  ArcadeOrmTableRawOperator({
+    required ArcadeOrm orm,
     required TableOperator operator,
     required ({
       FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
       FutureOr<Map<String, dynamic>> Function() toJson
     }) baseConverter,
-    DormTransaction? transaction,
+    ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
         _baseConverter = baseConverter,
         _operator = operator,
-        _dorm = dorm;
+        _orm = orm;
 
   Future<ExecResult> exec<T>({
-    DormTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? converter,
   }) async {
     try {
       final execConverter =
           converter != null ? converter.fromJson : _baseConverter.fromJson;
 
-      final data = await _dorm.adapter.operate(
+      final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         rawSql: _rawSql,
         rawNoSql: _rawNoSql,
@@ -499,11 +497,11 @@ class DormTableRawOperator {
       final convertedData = await execConverter(data);
 
       return ExecResultData(convertedData);
-    } on DormException catch (e) {
+    } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
       return ExecResultFailure(
-        DormException(originalError: e, message: "Unknown Error"),
+        ArcadeOrmException(originalError: e, message: "Unknown Error"),
       );
     }
   }
@@ -523,38 +521,38 @@ class DormTableRawOperator {
   }
 }
 
-class DormTableUpdateOperator {
-  final Dorm _dorm;
+class ArcadeOrmTableUpdateOperator {
+  final ArcadeOrm _orm;
   final TableOperator _operator;
-  final DormTableConverter _baseConverter;
-  final DormTransaction? _transaction;
+  final ArcadeOrmTableConverter _baseConverter;
+  final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, dynamic>> _updateWithParams = [];
   final List<Map<String, WhereParam>> _whereParams = [];
 
   bool _isExplain = false;
 
-  DormTableUpdateOperator({
-    required Dorm dorm,
+  ArcadeOrmTableUpdateOperator({
+    required ArcadeOrm orm,
     required TableOperator operator,
     required ({
       FutureOr<dynamic> Function(Map<String, dynamic>) fromJson,
       FutureOr<Map<String, dynamic>> Function() toJson
     }) baseConverter,
-    DormTransaction? transaction,
+    ArcadeOrmTransaction? transaction,
   })  : _transaction = transaction,
         _baseConverter = baseConverter,
         _operator = operator,
-        _dorm = dorm;
+        _orm = orm;
 
   Future<ExecResult> exec<T>({
-    DormTableFromConverter<T>? converter,
+    ArcadeOrmTableFromConverter<T>? converter,
   }) async {
     try {
       final execConverter =
           converter != null ? converter.fromJson : _baseConverter.fromJson;
 
-      final data = await _dorm.adapter.operate(
+      final data = await _orm.adapter.operate(
         isExplain: _isExplain,
         operator: _operator,
         transaction: _transaction,
@@ -565,11 +563,11 @@ class DormTableUpdateOperator {
       final convertedData = await execConverter(data);
 
       return ExecResultData(convertedData);
-    } on DormException catch (e) {
+    } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
       return ExecResultFailure(
-        DormException(originalError: e, message: "Unknown Error"),
+        ArcadeOrmException(originalError: e, message: "Unknown Error"),
       );
     }
   }
@@ -596,7 +594,7 @@ class ExecResultData<T> extends ExecResult<T> {
 }
 
 class ExecResultFailure<T> extends ExecResult<T> {
-  final DormException exception;
+  final ArcadeOrmException exception;
 
   ExecResultFailure(this.exception);
 }
