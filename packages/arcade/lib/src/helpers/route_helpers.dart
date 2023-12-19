@@ -1,3 +1,4 @@
+import 'package:arcade/arcade.dart';
 import 'package:arcade/src/http/route.dart';
 
 String _normalizePath(String path) {
@@ -39,7 +40,7 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
   final Map<String, String> pathParameters = {};
 
   if (route != null) {
-    final routePathSegments = _normalizePath(route.path).split('/') ?? [];
+    final routePathSegments = _normalizePath(route.path).split('/');
     final pathSegments = _normalizePath(uri.path).split('/');
 
     for (var i = 0; i < routePathSegments.length; i++) {
@@ -73,7 +74,7 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
 
     if (result.$1 == null &&
         methodMatches &&
-        routeMatchesPath(route.path ?? '', uri.path)) {
+        routeMatchesPath(route.path, uri.path)) {
       return (route, null);
     }
 
@@ -84,6 +85,10 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
 
   return result;
 }
+
+final List<BeforeHookHandler> globalBeforeHooks = [];
+final List<AfterHookHandler> globalAfterHooks = [];
+final List<AfterWebSocketHookHandler> globalAfterWebSocketHooks = [];
 
 BaseRoute? currentProcessingRoute;
 
@@ -100,5 +105,19 @@ void validatePreviousRouteHasHandler() {
     throw StateError(
       '${previousRoute.method!.name} ${previousRoute.path} must have a handler or wsHandler',
     );
+  }
+}
+
+void addGlobalHooks() {
+  for (final route in routes) {
+    route.beforeHooks.addAll(globalBeforeHooks);
+   
+    if (route is AfterRoute) {
+      route.afterHooks.addAll(globalAfterHooks);
+    }
+
+    if (route is AfterWebSocketRoute) {
+      route.afterWebSocketHooks.addAll(globalAfterWebSocketHooks);
+    }
   }
 }

@@ -83,6 +83,32 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
 
   Route._(this.method, this.path, {this.notFoundHandler});
 
+  static void registerGlobalBeforeHook(BeforeHookHandler hook) {
+    globalBeforeHooks.add(hook);
+  }
+
+  static void registerAllGlobalBeforeHooks(List<BeforeHookHandler> hooks) {
+    globalBeforeHooks.addAll(hooks);
+  }
+
+  static void registerGlobalAfterHook(AfterHookHandler hook) {
+    globalAfterHooks.add(hook);
+  }
+
+  static void registerAllGlobalAfterHooks(List<AfterHookHandler> hooks) {
+    globalAfterHooks.addAll(hooks);
+  }
+
+  static void registerGlobalAfterWebSocketHook(AfterWebSocketHookHandler hook) {
+    globalAfterWebSocketHooks.add(hook);
+  }
+
+  static void registerAllGlobalAfterWebSocketHooks(
+    List<AfterWebSocketHookHandler> hooks,
+  ) {
+    globalAfterWebSocketHooks.addAll(hooks);
+  }
+
   static void group(
     String path, {
     required FutureOr<void> Function() defineRoutes,
