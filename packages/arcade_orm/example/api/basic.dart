@@ -65,11 +65,11 @@ class ArcadeOrmMockAdapter
 }
 
 Future<dynamic> orming() async {
-  final a = await ArcadeOrm.init(
+  final orm = await ArcadeOrm.init(
     adapter: ArcadeOrmMockAdapter(connection: ""),
   );
 
-  final t = a.table(
+  final userTable = orm.table(
     "users",
     {
       "id": ColumnInt()..nullable(),
@@ -78,17 +78,17 @@ Future<dynamic> orming() async {
     },
   );
 
-  t.index({"id": 1, "name": 1});
+  userTable.index({"id": 1, "name": 1});
 
-  final trx = t.transaction();
+  final trx = userTable.transaction();
   await trx.start();
-  t.findOne(transaction: trx);
+  userTable.findOne(transaction: trx);
   trx.commit();
   trx.rollback();
 
-  final data = await t.transaction().start(
+  final data = await userTable.transaction().start(
     (trx) async {
-      final r = t.findOne(transaction: trx)
+      final r = userTable.findOne(transaction: trx)
         ..where({
           "id": array([1, 2, 4]),
         })

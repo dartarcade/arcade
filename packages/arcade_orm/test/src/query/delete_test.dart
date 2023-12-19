@@ -6,11 +6,15 @@ class MockAdapter extends Mock implements ArcadeOrmAdapterBase {}
 
 class MockTransaction extends Mock implements ArcadeOrmTransaction {}
 
+class FakeWhereParam extends Fake implements WhereParam {}
+
 void main() {
   final mockAdapter = MockAdapter();
   final mockTransaction = MockTransaction();
-  group('create', () {
+
+  group('delete', () {
     setUp(() {
+      registerFallbackValue(FakeWhereParam());
       when(() => mockAdapter.transaction()).thenReturn(mockTransaction);
     });
 
@@ -24,13 +28,13 @@ void main() {
       setUp(() {
         when(
           () => mockAdapter.operate(
-            operator: TableOperator.create,
+            operator: TableOperator.delete,
             transaction: null,
             isExplain: false,
-            createWithParams: any(named: "createWithParams"),
+            whereParams: any(named: "whereParams"),
           ),
         ).thenAnswer(
-          (_) => Future.value({"nCreated": 1}),
+          (_) => Future.value({"deleted": 1}),
         );
       });
 
@@ -48,28 +52,50 @@ void main() {
           "users",
           {},
         );
-        final createQuery = table.create()
-          ..createWith({"name": "foo", "age": 20})
-          ..createWith({"email": "foo@examle.com"});
-        await createQuery.exec();
-        verify(
+        final deleteQuery = table.delete()
+          ..where({"id": eq(1)})
+          ..include("role", where: {"name": notEq("admin")});
+
+        await deleteQuery.exec();
+
+        final captured = verify(
           () => mockAdapter.operate(
-            operator: TableOperator.create,
+            operator: TableOperator.delete,
             transaction: null,
             isExplain: false,
-            whereParams: [],
+            whereParams: captureAny(named: "whereParams"),
             havingParams: [],
             selectParams: [],
-            includeParams: [],
+            includeParams: captureAny(named: "includeParams"),
             groupParams: [],
             sortParams: [],
             updateWithParams: [],
-            createWithParams: [
-              {"name": "foo", "age": 20},
-              {"email": "foo@examle.com"},
-            ],
+            createWithParams: [],
           ),
-        ).called(1);
+        ).captured;
+        final capturedWhereParams =
+            (captured.first as List<Map<String, WhereParam>>).first['id'];
+        expect(
+          capturedWhereParams?.value,
+          equals(1),
+        );
+        expect(
+          capturedWhereParams?.operator,
+          equals(WhereOperator.eq),
+        );
+        final capturedIncludeParams = (captured[1] as List<IncludeParam>).first;
+        expect(capturedIncludeParams.tableName, equals("role"));
+        expect(
+          capturedIncludeParams.where?["name"]?.operator,
+          equals(WhereOperator.notEq),
+        );
+        expect(
+          capturedIncludeParams.where?["name"]?.value,
+          equals("admin"),
+        );
+        expect(capturedIncludeParams.as, equals(null));
+        expect(capturedIncludeParams.on, equals(null));
+        expect(capturedIncludeParams.joinType, equals(JoinOperation.inner));
       });
 
       test("data", () async {
@@ -80,12 +106,10 @@ void main() {
           "users",
           {},
         );
-        final createQuery = table.create()
-          ..createWith({"name": "foo", "age": 20})
-          ..createWith({"email": "foo@examle.com"});
-        final data = await createQuery.exec();
+        final deleteQuery = table.delete()..where({"id": eq(1)});
+        final data = await deleteQuery.exec();
         expect(data, isA<ExecResultData>());
-        expect((data as ExecResultData).data, equals({"nCreated": 1}));
+        expect((data as ExecResultData).data, equals({"deleted": 1}));
       });
 
       test("operate with transaction", () async {
@@ -100,39 +124,48 @@ void main() {
         );
         final trx = table.transaction();
         await trx.start();
-        final createQuery = table.create(transaction: trx)
-          ..createWith({"name": "foo", "age": 20});
-        await createQuery.exec();
-        verify(
+        final deleteQuery = table.delete(transaction: trx)
+          ..where({"id": eq(1)});
+        await deleteQuery.exec();
+        final captured = verify(
           () => mockAdapter.operate(
-            operator: TableOperator.create,
+            operator: TableOperator.delete,
             transaction: trx,
             isExplain: false,
-            whereParams: [],
+            whereParams: captureAny(named: "whereParams"),
             havingParams: [],
             selectParams: [],
             includeParams: [],
             groupParams: [],
             sortParams: [],
             updateWithParams: [],
-            createWithParams: [
-              {"name": "foo", "age": 20},
-            ],
+            createWithParams: [],
           ),
-        ).called(1);
+        ).captured;
+
+        final capturedWhereParams =
+            (captured.first as List<Map<String, WhereParam>>).first['id'];
+        expect(
+          capturedWhereParams?.value,
+          equals(1),
+        );
+        expect(
+          capturedWhereParams?.operator,
+          equals(WhereOperator.eq),
+        );
       });
     });
 
     test("db record - failure", () async {
       when(
         () => mockAdapter.operate(
-          operator: TableOperator.create,
+          operator: TableOperator.delete,
           transaction: null,
           isExplain: false,
-          createWithParams: any(named: "createWithParams"),
+          whereParams: any(named: "whereParams"),
         ),
       ).thenThrow(
-        ArcadeOrmException(message: "Create Failed", originalError: null),
+        ArcadeOrmException(message: "Delete Failed", originalError: null),
       );
       final arcadeOrm = await ArcadeOrm.init(
         adapter: mockAdapter,
@@ -141,12 +174,10 @@ void main() {
         "users",
         {},
       );
-      final createQuery = table.create()
-        ..createWith({"name": "foo", "age": 20})
-        ..createWith({"email": "foo@examle.com"});
+      final createQuery = table.delete()..where({"id": eq(1)});
       final data = await createQuery.exec();
       expect(data, isA<ExecResultFailure>());
-      expect((data as ExecResultFailure).exception.message, "Create Failed");
+      expect((data as ExecResultFailure).exception.message, "Delete Failed");
     });
   });
 }

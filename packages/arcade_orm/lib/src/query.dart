@@ -217,7 +217,7 @@ class ArcadeOrmTableFindOperator {
         _operator = operator,
         _orm = orm;
 
-  Future<ExecResult> exec<T>({
+  Future<ExecResult<T>> exec<T>({
     ArcadeOrmTableFromConverter<T>? fromJson,
   }) async {
     try {
@@ -237,7 +237,7 @@ class ArcadeOrmTableFindOperator {
 
       final convertedData = await fromJson?.call(data);
 
-      return ExecResultData(convertedData ?? data);
+      return ExecResultData(convertedData ?? data as T);
     } on ArcadeOrmException catch (e) {
       return ExecResultFailure(e);
     } catch (e) {
@@ -262,6 +262,7 @@ class ArcadeOrmTableFindOperator {
   void include(
     String tableName, {
     String? on,
+    String? as,
     Map<String, WhereParamBuilder>? where,
     JoinOperation joinType = JoinOperation.inner,
   }) {
@@ -269,6 +270,7 @@ class ArcadeOrmTableFindOperator {
       IncludeParam(
         tableName,
         on: on,
+        as: as,
         where: where,
         joinType: joinType,
       ),
@@ -557,11 +559,13 @@ class ExecResultFailure<T> extends ExecResult<T> {
 class IncludeParam {
   final String tableName;
   final String? on;
+  final String? as;
   final JoinOperation joinType;
   Map<String, WhereParam>? where;
   IncludeParam(
     this.tableName, {
     this.on,
+    this.as,
     this.joinType = JoinOperation.inner,
     Map<String, WhereParamBuilder>? where,
   }) {
