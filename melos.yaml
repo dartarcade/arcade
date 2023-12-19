@@ -11,3 +11,12 @@ scripts:
   format:
     exec: dart format lib
 
+  test:
+    exec: dart test
+    packageFilters: 
+      scope: '*'
+
+  testArcadeOrm:
+    exec: dart test --reporter=expanded --chain-stack-traces
+    packageFilters: 
+      scope: arcade_orm
