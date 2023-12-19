@@ -80,6 +80,22 @@ Future<void> handleRequest(HttpRequest request) async {
   Logger.root.info('Request: $methodString ${request.uri.path}');
 
   if (route == null) {
+    if (_canServeStaticFiles) {
+      final pathSegments = uri.pathSegments;
+      final file = File(
+        joinAll([
+          ArcadeConfiguration.staticFilesDirectory.path,
+          ...pathSegments,
+        ]),
+      );
+      if (await file.exists()) {
+        return serveStaticFile(
+          file: file,
+          response: response,
+        );
+      }
+    }
+
     if (notFoundRoute == null) {
       return sendErrorResponse(response, const NotFoundException());
     }
