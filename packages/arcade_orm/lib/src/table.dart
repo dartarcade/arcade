@@ -15,14 +15,6 @@ mixin ArcadeOrmTable {
   late String name;
   final List<ArcadeOrmTableSchema> _tables = [];
 
-  late final ArcadeOrm _orm = getArcadeOrmInstance(name);
-
-  ArcadeOrmTableSchema table(String name, Map<String, ColumnMeta> schema) {
-    final schema = ArcadeOrmTableSchema(orm: _orm, name: name);
-    _orm._tables.add(schema);
-    return schema;
-  }
-
   ArcadeOrmTableSchema getTable(String name) {
     try {
       return _tables.firstWhere((element) => element.name == name);
@@ -34,14 +26,15 @@ mixin ArcadeOrmTable {
   }
 }
 
-class ArcadeOrmTableSchema {
+abstract class ArcadeOrmTableSchema {
   final ArcadeOrm orm;
-  final String name;
+  String get name;
 
-  ArcadeOrmTableSchema({
-    required this.orm,
-    required this.name,
-  });
+  Map<String, ColumnMeta> get schema;
+
+  ArcadeOrmTableSchema(this.orm) {
+    orm._tables.add(this);
+  }
 
   ArcadeOrmTransaction transaction() {
     return orm.transaction();

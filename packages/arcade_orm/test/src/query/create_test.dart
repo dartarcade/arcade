@@ -6,6 +6,26 @@ class MockAdapter extends Mock implements ArcadeOrmAdapterBase {}
 
 class MockTransaction extends Mock implements ArcadeOrmTransaction {}
 
+class UserTable extends ArcadeOrmTableSchema {
+  UserTable(super.orm);
+
+  @override
+  final String name = "user";
+
+  static const String id = "id";
+  static const String userName = "name";
+  static const String email = "email";
+  static const String age = "age";
+
+  @override
+  Map<String, ColumnMeta> schema = {
+    id: ColumnInt(),
+    userName: ColumnString(),
+    email: ColumnString(),
+    age: ColumnInt(),
+  };
+}
+
 void main() {
   final mockAdapter = MockAdapter();
   final mockTransaction = MockTransaction();
@@ -44,10 +64,7 @@ void main() {
         final arcadeOrm = await ArcadeOrm.init(
           adapter: mockAdapter,
         );
-        final table = arcadeOrm.table(
-          "users",
-          {},
-        );
+        final table = UserTable(arcadeOrm);
         final createQuery = table.create()
           ..createWith({"name": "foo", "age": 20})
           ..createWith({"email": "foo@examle.com"});
@@ -76,10 +93,7 @@ void main() {
         final arcadeOrm = await ArcadeOrm.init(
           adapter: mockAdapter,
         );
-        final table = arcadeOrm.table(
-          "users",
-          {},
-        );
+        final table = UserTable(arcadeOrm);
         final createQuery = table.create()
           ..createWith({"name": "foo", "age": 20})
           ..createWith({"email": "foo@examle.com"});
@@ -94,10 +108,7 @@ void main() {
         final arcadeOrm = await ArcadeOrm.init(
           adapter: mockAdapter,
         );
-        final table = arcadeOrm.table(
-          "users",
-          {},
-        );
+        final table = UserTable(arcadeOrm);
         final trx = table.transaction();
         await trx.start();
         final createQuery = table.create(transaction: trx)
@@ -137,10 +148,7 @@ void main() {
       final arcadeOrm = await ArcadeOrm.init(
         adapter: mockAdapter,
       );
-      final table = arcadeOrm.table(
-        "users",
-        {},
-      );
+      final table = UserTable(arcadeOrm);
       final createQuery = table.create()
         ..createWith({"name": "foo", "age": 20})
         ..createWith({"email": "foo@examle.com"});

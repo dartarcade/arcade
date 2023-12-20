@@ -6,7 +6,33 @@ class MockAdapter extends Mock implements ArcadeOrmAdapterBase {}
 
 class MockTransaction extends Mock implements ArcadeOrmTransaction {}
 
-class FakeWhereParam extends Fake implements WhereParam {}
+class UserTable extends ArcadeOrmTableSchema {
+  UserTable(super.orm);
+
+  @override
+  final String name = "user";
+
+  static const String id = "id";
+
+  @override
+  Map<String, ColumnMeta> schema = {id: ColumnInt()};
+}
+
+class RoleTable extends ArcadeOrmTableSchema {
+  RoleTable(super.orm);
+
+  @override
+  final String name = "role";
+
+  static const String roleName = "name";
+  static const String foo = "foo";
+
+  @override
+  Map<String, ColumnMeta> schema = {
+    roleName: ColumnString(),
+    foo: ColumnString(),
+  };
+}
 
 void main() {
   final mockAdapter = MockAdapter();
@@ -14,7 +40,6 @@ void main() {
 
   group('delete', () {
     setUp(() {
-      registerFallbackValue(FakeWhereParam());
       when(() => mockAdapter.transaction()).thenReturn(mockTransaction);
     });
 
@@ -48,13 +73,12 @@ void main() {
         final arcadeOrm = await ArcadeOrm.init(
           adapter: mockAdapter,
         );
-        final table = arcadeOrm.table(
-          "users",
-          {},
-        );
-        final deleteQuery = table.delete()
-          ..where({"id": eq(1)})
-          ..include("role", where: {"name": notEq("admin")});
+        final userTable = UserTable(arcadeOrm);
+        final roleTable = RoleTable(arcadeOrm);
+
+        final deleteQuery = userTable.delete()
+          ..include(roleTable.name, where: {"name": notEq("admin")})
+          ..where({"id": eq(1)});
 
         await deleteQuery.exec();
 
@@ -102,10 +126,7 @@ void main() {
         final arcadeOrm = await ArcadeOrm.init(
           adapter: mockAdapter,
         );
-        final table = arcadeOrm.table(
-          "users",
-          {},
-        );
+        final table = UserTable(arcadeOrm);
         final deleteQuery = table.delete()..where({"id": eq(1)});
         final data = await deleteQuery.exec();
         expect(data, isA<ExecResultData>());
@@ -118,10 +139,7 @@ void main() {
         final arcadeOrm = await ArcadeOrm.init(
           adapter: mockAdapter,
         );
-        final table = arcadeOrm.table(
-          "users",
-          {},
-        );
+        final table = UserTable(arcadeOrm);
         final trx = table.transaction();
         await trx.start();
         final deleteQuery = table.delete(transaction: trx)
@@ -170,10 +188,7 @@ void main() {
       final arcadeOrm = await ArcadeOrm.init(
         adapter: mockAdapter,
       );
-      final table = arcadeOrm.table(
-        "users",
-        {},
-      );
+      final table = UserTable(arcadeOrm);
       final createQuery = table.delete()..where({"id": eq(1)});
       final data = await createQuery.exec();
       expect(data, isA<ExecResultFailure>());
