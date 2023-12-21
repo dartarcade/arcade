@@ -100,7 +100,7 @@ void main() {
             groupParams: [],
             sortParams: [],
             updateWithParams: [],
-            createWithParams: [],
+            insertWithParams: [],
           ),
         ).captured;
         final capturedWhereParams =
@@ -163,7 +163,7 @@ void main() {
             groupParams: [],
             sortParams: [],
             updateWithParams: [],
-            createWithParams: [],
+            insertWithParams: [],
           ),
         ).captured;
 
@@ -195,8 +195,8 @@ void main() {
         adapter: mockAdapter,
       );
       final table = UserTable(arcadeOrm);
-      final createQuery = table.delete()..where({"id": eq(1)});
-      final data = await createQuery.exec();
+      final deleteQuery = table.delete()..where({"id": eq(1)});
+      final data = await deleteQuery.exec();
       expect(data, isA<ExecResultFailure>());
       expect((data as ExecResultFailure).exception.message, "Delete Failed");
     });

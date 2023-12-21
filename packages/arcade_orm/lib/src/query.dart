@@ -314,16 +314,16 @@ class ArcadeOrmTableFindOperator {
   }
 }
 
-class ArcadeOrmTableCreateOperator {
+class ArcadeOrmTableInsertOperator {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
 
-  final List<Map<String, dynamic>> _createWithParams = [];
+  final List<Map<String, dynamic>> _insertWithParams = [];
 
   bool _isExplain = false;
 
-  ArcadeOrmTableCreateOperator({
+  ArcadeOrmTableInsertOperator({
     required ArcadeOrm orm,
     required TableOperator operator,
     ArcadeOrmTransaction? transaction,
@@ -331,8 +331,8 @@ class ArcadeOrmTableCreateOperator {
         _operator = operator,
         _orm = orm;
 
-  void createWith(Map<String, dynamic> value) {
-    _createWithParams.add(value);
+  void insertWith(Map<String, dynamic> value) {
+    _insertWithParams.add(value);
   }
 
   Future<ExecResult> exec<T>({
@@ -343,7 +343,7 @@ class ArcadeOrmTableCreateOperator {
         isExplain: _isExplain,
         operator: _operator,
         transaction: _transaction,
-        createWithParams: _createWithParams,
+        insertWithParams: _insertWithParams,
       );
 
       final convertedData = await fromJson?.call(data);
@@ -613,7 +613,7 @@ enum TableOperator {
   count,
   findOne,
   findMany,
-  create,
+  insert,
   update,
   delete,
 }

@@ -29,7 +29,7 @@ class UserTable extends ArcadeOrmTableSchema {
 void main() {
   final mockAdapter = MockAdapter();
   final mockTransaction = MockTransaction();
-  group('create', () {
+  group('insert', () {
     setUp(() {
       when(() => mockAdapter.transaction()).thenReturn(mockTransaction);
     });
@@ -44,13 +44,13 @@ void main() {
       setUp(() {
         when(
           () => mockAdapter.operate(
-            operator: TableOperator.create,
+            operator: TableOperator.insert,
             transaction: null,
             isExplain: false,
-            createWithParams: any(named: "createWithParams"),
+            insertWithParams: any(named: "insertWithParams"),
           ),
         ).thenAnswer(
-          (_) => Future.value({"nCreated": 1}),
+          (_) => Future.value({"nInserted": 1}),
         );
       });
 
@@ -65,13 +65,13 @@ void main() {
           adapter: mockAdapter,
         );
         final table = UserTable(arcadeOrm);
-        final createQuery = table.create()
-          ..createWith({"name": "foo", "age": 20})
-          ..createWith({"email": "foo@examle.com"});
-        await createQuery.exec();
+        final insertQuery = table.insert()
+          ..insertWith({"name": "foo", "age": 20})
+          ..insertWith({"email": "foo@examle.com"});
+        await insertQuery.exec();
         verify(
           () => mockAdapter.operate(
-            operator: TableOperator.create,
+            operator: TableOperator.insert,
             transaction: null,
             isExplain: false,
             whereParams: [],
@@ -81,7 +81,7 @@ void main() {
             groupParams: [],
             sortParams: [],
             updateWithParams: [],
-            createWithParams: [
+            insertWithParams: [
               {"name": "foo", "age": 20},
               {"email": "foo@examle.com"},
             ],
@@ -94,12 +94,12 @@ void main() {
           adapter: mockAdapter,
         );
         final table = UserTable(arcadeOrm);
-        final createQuery = table.create()
-          ..createWith({"name": "foo", "age": 20})
-          ..createWith({"email": "foo@examle.com"});
-        final data = await createQuery.exec();
+        final insertQuery = table.insert()
+          ..insertWith({"name": "foo", "age": 20})
+          ..insertWith({"email": "foo@examle.com"});
+        final data = await insertQuery.exec();
         expect(data, isA<ExecResultData>());
-        expect((data as ExecResultData).data, equals({"nCreated": 1}));
+        expect((data as ExecResultData).data, equals({"nInserted": 1}));
       });
 
       test("operate with transaction", () async {
@@ -111,12 +111,12 @@ void main() {
         final table = UserTable(arcadeOrm);
         final trx = table.transaction();
         await trx.start();
-        final createQuery = table.create(transaction: trx)
-          ..createWith({"name": "foo", "age": 20});
-        await createQuery.exec();
+        final insertQuery = table.insert(transaction: trx)
+          ..insertWith({"name": "foo", "age": 20});
+        await insertQuery.exec();
         verify(
           () => mockAdapter.operate(
-            operator: TableOperator.create,
+            operator: TableOperator.insert,
             transaction: trx,
             isExplain: false,
             whereParams: [],
@@ -126,7 +126,7 @@ void main() {
             groupParams: [],
             sortParams: [],
             updateWithParams: [],
-            createWithParams: [
+            insertWithParams: [
               {"name": "foo", "age": 20},
             ],
           ),
@@ -137,24 +137,24 @@ void main() {
     test("db record - failure", () async {
       when(
         () => mockAdapter.operate(
-          operator: TableOperator.create,
+          operator: TableOperator.insert,
           transaction: null,
           isExplain: false,
-          createWithParams: any(named: "createWithParams"),
+          insertWithParams: any(named: "insertWithParams"),
         ),
       ).thenThrow(
-        ArcadeOrmException(message: "Create Failed", originalError: null),
+        ArcadeOrmException(message: "Insert Failed", originalError: null),
       );
       final arcadeOrm = await ArcadeOrm.init(
         adapter: mockAdapter,
       );
       final table = UserTable(arcadeOrm);
-      final createQuery = table.create()
-        ..createWith({"name": "foo", "age": 20})
-        ..createWith({"email": "foo@examle.com"});
-      final data = await createQuery.exec();
+      final insertQuery = table.insert()
+        ..insertWith({"name": "foo", "age": 20})
+        ..insertWith({"email": "foo@examle.com"});
+      final data = await insertQuery.exec();
       expect(data, isA<ExecResultFailure>());
-      expect((data as ExecResultFailure).exception.message, "Create Failed");
+      expect((data as ExecResultFailure).exception.message, "Insert Failed");
     });
   });
 }

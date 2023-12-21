@@ -91,10 +91,10 @@ abstract class ArcadeOrmTableSchema {
     );
   }
 
-  ArcadeOrmTableCreateOperator create({ArcadeOrmTransaction? transaction}) {
-    return ArcadeOrmTableCreateOperator(
+  ArcadeOrmTableInsertOperator insert({ArcadeOrmTransaction? transaction}) {
+    return ArcadeOrmTableInsertOperator(
       orm: $orm,
-      operator: TableOperator.create,
+      operator: TableOperator.insert,
       transaction: transaction,
     );
   }
