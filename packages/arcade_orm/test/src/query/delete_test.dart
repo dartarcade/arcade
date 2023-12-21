@@ -10,27 +10,33 @@ class UserTable extends ArcadeOrmTableSchema {
   UserTable(super.orm);
 
   @override
-  final String name = "user";
+  final String tableName = "user";
 
   static const String id = "id";
 
   @override
-  Map<String, ColumnMeta> schema = {id: ColumnInt()};
+  Map<String, ColumnMeta> schema = {id: const ColumnInt()};
+
+  @override
+  Map<String, ArcadeTableIndexRecord> index = {};
+
+  @override
+  Map<String, dynamic> relations = {};
 }
 
 class RoleTable extends ArcadeOrmTableSchema {
   RoleTable(super.orm);
 
   @override
-  final String name = "role";
+  final String tableName = "role";
 
-  static const String roleName = "name";
+  static const String name = "name";
   static const String foo = "foo";
 
   @override
   Map<String, ColumnMeta> schema = {
-    roleName: ColumnString(),
-    foo: ColumnString(),
+    name: const ColumnString(),
+    foo: const ColumnString(),
   };
 }
 
@@ -77,7 +83,7 @@ void main() {
         final roleTable = RoleTable(arcadeOrm);
 
         final deleteQuery = userTable.delete()
-          ..include(roleTable.name, where: {"name": notEq("admin")})
+          ..include(roleTable, where: {"name": notEq("admin")})
           ..where({"id": eq(1)});
 
         await deleteQuery.exec();

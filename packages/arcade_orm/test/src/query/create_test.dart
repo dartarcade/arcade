@@ -10,19 +10,19 @@ class UserTable extends ArcadeOrmTableSchema {
   UserTable(super.orm);
 
   @override
-  final String name = "user";
+  final String tableName = "user";
 
   static const String id = "id";
-  static const String userName = "name";
+  static const String name = "name";
   static const String email = "email";
   static const String age = "age";
 
   @override
   Map<String, ColumnMeta> schema = {
-    id: ColumnInt(),
-    userName: ColumnString(),
-    email: ColumnString(),
-    age: ColumnInt(),
+    id: const ColumnInt(),
+    name: const ColumnString(),
+    email: const ColumnString(),
+    age: const ColumnInt(),
   };
 }
 

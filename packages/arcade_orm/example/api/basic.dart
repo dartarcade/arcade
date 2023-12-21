@@ -64,21 +64,68 @@ class ArcadeOrmMockAdapter
   }
 }
 
+class UserTable extends ArcadeOrmTableSchema {
+  UserTable(super.orm);
+
+  @override
+  final String tableName = "user";
+
+  static const String id = "id";
+  static const String name = "name";
+  static const String email = "email";
+  static const String age = "age";
+  static const String profileId = "profileId";
+
+  @override
+  Map<String, ColumnMeta> schema = const {
+    id: ColumnInt(),
+    name: ColumnString(),
+    email: ColumnString(),
+    age: ColumnInt(),
+    profileId: ColumnInt(),
+  };
+
+  @override
+  Map<String, ArcadeTableIndexRecord> index = {
+    name: (1, unique: null),
+  };
+
+  @override
+  Map<String, ArcadeOrmRelationshipRecord> relations = const {
+    "profile": (
+      type: ArcadeOrmRelationshipType.hasOne,
+      table: ProfileTable.$tableName,
+      localKey: profileId,
+      foreignKey: ProfileTable.id,
+    ),
+  };
+}
+
+class ProfileTable extends ArcadeOrmTableSchema {
+  ProfileTable(super.orm);
+
+  static const String $tableName = "profile";
+
+  @override
+  String tableName = $tableName;
+
+  static const String id = "id";
+  static const String bio = "bio";
+
+  @override
+  Map<String, ColumnMeta> schema = {};
+}
+
+late final UserTable userTable;
+late final ProfileTable profileTable;
+
 Future<dynamic> orming() async {
   final orm = await ArcadeOrm.init(
     adapter: ArcadeOrmMockAdapter(connection: ""),
   );
 
-  final userTable = orm.table(
-    "users",
-    {
-      "id": ColumnInt()..nullable(),
-      "name": ColumnString(),
-      "json": ColumnJson(),
-    },
-  );
-
-  userTable.index({"id": 1, "name": 1});
+  userTable = UserTable(orm);
+  profileTable = ProfileTable(orm);
 
   final trx = userTable.transaction();
   await trx.start();
@@ -90,48 +137,48 @@ Future<dynamic> orming() async {
     (trx) async {
       final r = userTable.findOne(transaction: trx)
         ..where({
-          "id": array([1, 2, 4]),
+          UserTable.id: array([1, 2, 4]),
         })
-        ..where({"id": eq(10)})
+        ..where({UserTable.id: eq(10)})
         ..where(
           and([
             {
-              "name": like("%aa"),
-              "id": array([1, 2, 4]),
+              UserTable.name: like("%aa"),
+              UserTable.id: array([1, 2, 4]),
             },
-            {"name": eq("2")},
+            {UserTable.name: eq("2")},
           ]),
         )
         ..where(
           or([
             {
-              "name": like("%aa"),
-              "id": between(1, 200),
+              UserTable.name: like("%aa"),
+              UserTable.id: between(1, 200),
             }
           ]),
         )
         ..select({
-          "id": show(),
-          "_id": hide(),
-          "nom": field("name"),
-          "avg": avg("name"),
-          "count": count("name"),
-          "countD": count("DISTINCT(name)"),
-          "countD2": countDistinct("name"),
-          "x": distinct("name"),
-          "max": max("name"),
+          UserTable.name: show(),
+          UserTable.id: hide(),
+          "nom": field(UserTable.name),
+          "avg": avg(UserTable.age),
+          "count": count(UserTable.name),
+          "countD": count("DISTINCT(${UserTable.name})"),
+          "countD2": countDistinct(UserTable.name),
+          "x": distinct(UserTable.name),
+          "max": max(UserTable.age),
         })
         ..include(
-          "profile",
-          on: "profileId",
+          profileTable,
+          on: UserTable.profileId,
           where: and([
-            {"bio": notEq(null)},
-            {"bio": notEq("")},
+            {ProfileTable.bio: notEq(null)},
+            {ProfileTable.bio: notEq("")},
           ]),
           joinType: JoinOperation.left,
         )
-        ..group("id")
-        ..sort({"name": 1})
+        ..group(UserTable.id)
+        ..sort({UserTable.name: 1})
         ..having(and([]))
         ..limit(10)
         ..skip(0);

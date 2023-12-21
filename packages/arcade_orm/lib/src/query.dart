@@ -260,7 +260,7 @@ class ArcadeOrmTableFindOperator {
   }
 
   void include(
-    String tableName, {
+    ArcadeOrmTableSchema table, {
     String? on,
     String? as,
     Map<String, WhereParamBuilder>? where,
@@ -268,7 +268,7 @@ class ArcadeOrmTableFindOperator {
   }) {
     _includeParams.add(
       IncludeParam(
-        tableName,
+        table.tableName,
         on: on,
         as: as,
         where: where,
@@ -410,15 +410,17 @@ class ArcadeOrmTableDeleteOperator {
   }
 
   void include(
-    String tableName, {
+    ArcadeOrmTableSchema table, {
     String? on,
+    String? as,
     Map<String, WhereParamBuilder>? where,
     JoinOperation joinType = JoinOperation.inner,
   }) {
     _includeParams.add(
       IncludeParam(
-        tableName,
+        table.tableName,
         on: on,
+        as: as,
         where: where,
         joinType: joinType,
       ),

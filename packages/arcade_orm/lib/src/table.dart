@@ -17,7 +17,7 @@ mixin ArcadeOrmTable {
 
   ArcadeOrmTableSchema getTable(String name) {
     try {
-      return _tables.firstWhere((element) => element.name == name);
+      return _tables.firstWhere((element) => element.tableName == name);
     } catch (e) {
       throw StateError(
         "Table ($name) not found. Please make sure table schema is initialized",
@@ -26,25 +26,42 @@ mixin ArcadeOrmTable {
   }
 }
 
+typedef ArcadeTableIndexRecord = (int direction, {bool? unique});
+
+typedef ArcadeOrmRelationshipRecord = ({
+  ArcadeOrmRelationshipType type,
+  String table,
+  String localKey,
+  String foreignKey,
+});
+
+enum ArcadeOrmRelationshipType {
+  hasOne,
+  hasMany,
+  belongsTo,
+  belongsToMany,
+}
+
 abstract class ArcadeOrmTableSchema {
-  final ArcadeOrm orm;
-  String get name;
+  late final ArcadeOrm $orm;
+  String get tableName;
 
   Map<String, ColumnMeta> get schema;
+  Map<String, ArcadeTableIndexRecord> get index => {};
+  Map<String, dynamic> get relations => {};
 
-  ArcadeOrmTableSchema(this.orm) {
+  ArcadeOrmTableSchema(ArcadeOrm orm) {
+    $orm = orm;
     orm._tables.add(this);
   }
 
   ArcadeOrmTransaction transaction() {
-    return orm.transaction();
+    return $orm.transaction();
   }
-
-  void index(Map<String, dynamic> config, {({bool? unique})? options}) {}
 
   ArcadeOrmTableRawOperator raw({ArcadeOrmTransaction? transaction}) {
     return ArcadeOrmTableRawOperator(
-      orm: orm,
+      orm: $orm,
       operator: TableOperator.raw,
       transaction: transaction,
     );
@@ -52,7 +69,7 @@ abstract class ArcadeOrmTableSchema {
 
   ArcadeOrmTableFindOperator count({ArcadeOrmTransaction? transaction}) {
     return ArcadeOrmTableFindOperator(
-      orm: orm,
+      orm: $orm,
       operator: TableOperator.count,
       transaction: transaction,
     );
@@ -60,7 +77,7 @@ abstract class ArcadeOrmTableSchema {
 
   ArcadeOrmTableFindOperator findOne({ArcadeOrmTransaction? transaction}) {
     return ArcadeOrmTableFindOperator(
-      orm: orm,
+      orm: $orm,
       operator: TableOperator.findOne,
       transaction: transaction,
     );
@@ -68,7 +85,7 @@ abstract class ArcadeOrmTableSchema {
 
   ArcadeOrmTableFindOperator findMany({ArcadeOrmTransaction? transaction}) {
     return ArcadeOrmTableFindOperator(
-      orm: orm,
+      orm: $orm,
       operator: TableOperator.findMany,
       transaction: transaction,
     );
@@ -76,7 +93,7 @@ abstract class ArcadeOrmTableSchema {
 
   ArcadeOrmTableCreateOperator create({ArcadeOrmTransaction? transaction}) {
     return ArcadeOrmTableCreateOperator(
-      orm: orm,
+      orm: $orm,
       operator: TableOperator.create,
       transaction: transaction,
     );
@@ -84,7 +101,7 @@ abstract class ArcadeOrmTableSchema {
 
   ArcadeOrmTableUpdateOperator update({ArcadeOrmTransaction? transaction}) {
     return ArcadeOrmTableUpdateOperator(
-      orm: orm,
+      orm: $orm,
       operator: TableOperator.update,
       transaction: transaction,
     );
@@ -92,57 +109,84 @@ abstract class ArcadeOrmTableSchema {
 
   ArcadeOrmTableDeleteOperator delete({ArcadeOrmTransaction? transaction}) {
     return ArcadeOrmTableDeleteOperator(
-      orm: orm,
+      orm: $orm,
       operator: TableOperator.delete,
       transaction: transaction,
     );
   }
 }
 
-class ColumnMeta {
-  void nullable() {
-    // do something
-  }
+abstract class ColumnMeta {
+  final bool isNullable;
+  const ColumnMeta({this.isNullable = false});
 }
 
-class ColumnInt extends ColumnMeta {}
+class ColumnInt extends ColumnMeta {
+  const ColumnInt({super.isNullable});
+}
 
-class ColumnIntRange extends ColumnMeta {}
+class ColumnIntRange extends ColumnMeta {
+  const ColumnIntRange();
+}
 
-class ColumnFloat extends ColumnMeta {}
+class ColumnFloat extends ColumnMeta {
+  const ColumnFloat();
+}
 
-class ColumnBool extends ColumnMeta {}
+class ColumnBool extends ColumnMeta {
+  const ColumnBool();
+}
 
 class ColumnString extends ColumnMeta {
   final dynamic search;
 
-  ColumnString({this.search});
+  const ColumnString({this.search});
 }
 
-class ColumnStringEnum extends ColumnMeta {}
+class ColumnStringEnum extends ColumnMeta {
+  const ColumnStringEnum();
+}
 
-class ColumnStringSet extends ColumnMeta {}
+class ColumnStringSet extends ColumnMeta {
+  const ColumnStringSet();
+}
 
-class ColumnBinary extends ColumnMeta {}
+class ColumnBinary extends ColumnMeta {
+  const ColumnBinary();
+}
 
-class ColumnDate extends ColumnMeta {}
+class ColumnDate extends ColumnMeta {
+  const ColumnDate();
+}
 
-class ColumnDateRange extends ColumnMeta {}
+class ColumnDateRange extends ColumnMeta {
+  const ColumnDateRange();
+}
 
-class ColumnJson extends ColumnMeta {}
+class ColumnJson extends ColumnMeta {
+  const ColumnJson();
+}
 
-class ColumnComposite extends ColumnMeta {}
+class ColumnComposite extends ColumnMeta {
+  const ColumnComposite();
+}
 
-class ColumnGeoJson extends ColumnMeta {}
+class ColumnGeoJson extends ColumnMeta {
+  const ColumnGeoJson();
+}
 
-class ColumnObjectId extends ColumnMeta {}
+class ColumnObjectId extends ColumnMeta {
+  const ColumnObjectId();
+}
 
-class ColumnArray extends ColumnMeta {}
+class ColumnArray extends ColumnMeta {
+  const ColumnArray();
+}
 
 abstract interface class ColumnCustomDomain extends ColumnMeta {}
 
 class ColumnCustom extends ColumnMeta {
   final String raw;
 
-  ColumnCustom({required this.raw});
+  const ColumnCustom({required this.raw});
 }
