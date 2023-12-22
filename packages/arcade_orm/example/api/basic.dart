@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:arcade_orm/arcade_orm.dart';
 import 'package:arcade_orm/src/query/include.dart';
+import 'package:arcade_orm/src/query/mixins/sort.dart';
 import 'package:arcade_orm/src/query/select.dart';
 import 'package:arcade_orm/src/query/where.dart';
 
@@ -46,22 +47,23 @@ class ArcadeOrmMockAdapter
   }
 
   @override
-  Future<Map<String, dynamic>> operate(
-      {required TableOperator operator,
-      required ArcadeOrmTransaction? transaction,
-      required bool isExplain,
-      String? rawSql,
-      Map<String, dynamic>? rawNoSql,
-      WhereExpressionNode? whereParams,
-      WhereExpressionNode? havingParams,
-      List<Map<String, SelectParam>> selectParams = const [],
-      List<IncludeParam> includeParams = const [],
-      List<String> groupParams = const [],
-      List<Map<String, int>> sortParams = const [],
-      List<Map<String, dynamic>> updateWithParams = const [],
-      List<Map<String, dynamic>> insertWithParams = const [],
-      int? limit,
-      int? skip}) {
+  Future<Map<String, dynamic>> operate({
+    required TableOperator operator,
+    required ArcadeOrmTransaction? transaction,
+    required bool isExplain,
+    String? rawSql,
+    Map<String, dynamic>? rawNoSql,
+    WhereExpressionNode? whereParams,
+    WhereExpressionNode? havingParams,
+    List<Map<String, SelectParam>> selectParams = const [],
+    List<IncludeParam> includeParams = const [],
+    List<String> groupParams = const [],
+    List<Map<String, SortDirection>> sortParams = const [],
+    List<Map<String, dynamic>> updateWithParams = const [],
+    List<Map<String, dynamic>> insertWithParams = const [],
+    int? limit,
+    int? skip,
+  }) {
     // TODO: implement operate
     throw UnimplementedError();
   }
@@ -181,7 +183,7 @@ Future<dynamic> orming() async {
           joinType: JoinOperation.left,
         )
         ..group(UserTable.id)
-        ..sort({UserTable.name: 1})
+        ..sort({UserTable.name: SortDirection.asc})
         ..limit(10)
         ..skip(0);
 
