@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:arcade_orm/arcade_orm.dart';
+import 'package:arcade_orm/src/query/include.dart';
+import 'package:arcade_orm/src/query/select.dart';
+import 'package:arcade_orm/src/query/where.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class ArcadeOrmAdapterBase<T extends Record, U> {
@@ -23,8 +26,8 @@ abstract interface class ArcadeOrmAdapterBase<T extends Record, U> {
     required bool isExplain,
     String? rawSql,
     Map<String, dynamic>? rawNoSql,
-    List<Map<String, WhereParam>> whereParams = const [],
-    List<Map<String, WhereParam>> havingParams = const [],
+    WhereExpressionNode? whereParams,
+    WhereExpressionNode? havingParams,
     List<Map<String, SelectParam>> selectParams = const [],
     List<IncludeParam> includeParams = const [],
     List<String> groupParams = const [],

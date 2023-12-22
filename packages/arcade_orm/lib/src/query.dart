@@ -1,204 +1,17 @@
 import 'dart:async';
 
 import 'package:arcade_orm/arcade_orm.dart';
+import 'package:arcade_orm/src/query/include.dart';
+import 'package:arcade_orm/src/query/mixins/where.dart';
+import 'package:arcade_orm/src/query/select.dart';
+import 'package:arcade_orm/src/query/where.dart';
 
-const dAnd = r'$__AND';
-const dOr = r'$__OR';
-
-Map<String, MultipleWhereParam> and(List<Map<String, SingleWhereParam>> value) {
-  final List<Map<String, WhereParam>> whereParamList = [];
-  for (final element in value) {
-    element.forEach((key, _) {
-      if (element[key] != null) {
-        element[key]!.param.isAnd = true;
-        element[key]!.param.isOr = false;
-        whereParamList.add({key: element[key]!.param});
-      }
-    });
-  }
-  return {dAnd: MultipleWhereParam(whereParamList)};
-}
-
-Map<String, MultipleWhereParam> or(List<Map<String, SingleWhereParam>> value) {
-  final List<Map<String, WhereParam>> whereParamList = [];
-  for (final element in value) {
-    element.forEach((key, _) {
-      if (element[key] != null) {
-        element[key]!.param.isAnd = false;
-        element[key]!.param.isOr = true;
-        whereParamList.add({key: element[key]!.param});
-      }
-    });
-  }
-  return {dOr: MultipleWhereParam(whereParamList)};
-}
-
-SingleWhereParam array<T>(T value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.array,
-      value: value,
-    ),
-  );
-}
-
-SingleWhereParam between<T>(T start, T end) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.between,
-      start: start,
-      end: end,
-    ),
-  );
-}
-
-SingleWhereParam eq<T>(T value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.eq,
-      value: value,
-    ),
-  );
-}
-
-SingleWhereParam gt<T>(T value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.gt,
-      value: value,
-    ),
-  );
-}
-
-SingleWhereParam gte<T>(T value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.gte,
-      value: value,
-    ),
-  );
-}
-
-SingleWhereParam like(String value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.like,
-      value: value,
-    ),
-  );
-}
-
-SingleWhereParam lt<T>(T value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.lt,
-      value: value,
-    ),
-  );
-}
-
-SingleWhereParam lte<T>(T value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.lte,
-      value: value,
-    ),
-  );
-}
-
-SingleWhereParam notInArray<T>(T value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.notInArray,
-      value: value,
-    ),
-  );
-}
-
-SingleWhereParam notEq<T>(T value) {
-  return SingleWhereParam(
-    WhereParam(
-      operator: WhereOperator.notEq,
-      value: value,
-    ),
-  );
-}
-
-SelectParam avg(String value) {
-  return SelectParam(
-    operator: SelectAggregationOperator.avg,
-    fieldAs: value,
-  );
-}
-
-SelectParam count(String value) {
-  return SelectParam(
-    operator: SelectAggregationOperator.count,
-    fieldAs: value,
-  );
-}
-
-SelectParam countDistinct(String value) {
-  return SelectParam(
-    operator: SelectAggregationOperator.countDistinct,
-    fieldAs: value,
-  );
-}
-
-SelectParam distinct(String value) {
-  return SelectParam(
-    operator: SelectAggregationOperator.distinct,
-    fieldAs: value,
-  );
-}
-
-SelectParam field(String value) {
-  return SelectParam(
-    operator: SelectAggregationOperator.show,
-    fieldAs: value,
-  );
-}
-
-SelectParam hide() {
-  return SelectParam(
-    operator: SelectAggregationOperator.hide,
-  );
-}
-
-SelectParam max(String value) {
-  return SelectParam(
-    operator: SelectAggregationOperator.max,
-    fieldAs: value,
-  );
-}
-
-SelectParam min(String value) {
-  return SelectParam(
-    operator: SelectAggregationOperator.min,
-    fieldAs: value,
-  );
-}
-
-SelectParam show() {
-  return SelectParam(
-    operator: SelectAggregationOperator.show,
-  );
-}
-
-SelectParam sum(String value) {
-  return SelectParam(
-    operator: SelectAggregationOperator.sum,
-    fieldAs: value,
-  );
-}
-
-class ArcadeOrmTableFindOperator {
+class ArcadeOrmTableFindOperator with WhereMixin {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
 
-  final List<Map<String, WhereParam>> _whereParams = [];
-  final List<Map<String, WhereParam>> _havingParams = [];
+  // final List<Map<String, WhereParam>> _havingParams = [];
   final List<IncludeParam> _includeParams = [];
   final List<String> _groupParams = [];
   final List<Map<String, int>> _sortParams = [];
@@ -225,10 +38,10 @@ class ArcadeOrmTableFindOperator {
         isExplain: _isExplain,
         operator: _operator,
         transaction: _transaction,
-        whereParams: _whereParams,
+        whereParams: $whereParams?.simplify(),
         includeParams: _includeParams,
         selectParams: _selectParams,
-        havingParams: _havingParams,
+        // havingParams: _havingParams,
         groupParams: _groupParams,
         sortParams: _sortParams,
         limit: _limit,
@@ -255,9 +68,9 @@ class ArcadeOrmTableFindOperator {
     _groupParams.add(column);
   }
 
-  void having(Map<String, WhereParamBuilder> map) {
-    _whereParams.add(WhereParam.evaluateWhereParams(map));
-  }
+  // void having(Map<String, WhereParamBuilder> map) {
+  //   _whereParams.add(WhereParam.evaluateWhereParams(map));
+  // }
 
   void include(
     ArcadeOrmTableSchema table, {
@@ -307,10 +120,6 @@ class ArcadeOrmTableFindOperator {
     final Map<String, int> sortValue =
         sortBy.map((key, value) => MapEntry(key, value > 0 ? 1 : -1));
     _sortParams.add(sortValue);
-  }
-
-  void where(Map<String, WhereParamBuilder> map) {
-    _whereParams.add(WhereParam.evaluateWhereParams(map));
   }
 }
 
@@ -363,12 +172,11 @@ class ArcadeOrmTableInsertOperator {
   }
 }
 
-class ArcadeOrmTableDeleteOperator {
+class ArcadeOrmTableDeleteOperator with WhereMixin {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
 
-  final List<Map<String, WhereParam>> _whereParams = [];
   final List<IncludeParam> _includeParams = [];
 
   bool _isExplain = false;
@@ -389,7 +197,7 @@ class ArcadeOrmTableDeleteOperator {
         isExplain: _isExplain,
         operator: _operator,
         transaction: _transaction,
-        whereParams: _whereParams,
+        whereParams: $whereParams?.simplify(),
         includeParams: _includeParams,
       );
 
@@ -425,10 +233,6 @@ class ArcadeOrmTableDeleteOperator {
         joinType: joinType,
       ),
     );
-  }
-
-  void where(Map<String, WhereParamBuilder> map) {
-    _whereParams.add(WhereParam.evaluateWhereParams(map));
   }
 }
 
@@ -489,13 +293,12 @@ class ArcadeOrmTableRawOperator {
   }
 }
 
-class ArcadeOrmTableUpdateOperator {
+class ArcadeOrmTableUpdateOperator with WhereMixin {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
 
   final List<Map<String, dynamic>> _updateWithParams = [];
-  final List<Map<String, WhereParam>> _whereParams = [];
 
   bool _isExplain = false;
 
@@ -515,7 +318,7 @@ class ArcadeOrmTableUpdateOperator {
         isExplain: _isExplain,
         operator: _operator,
         transaction: _transaction,
-        whereParams: _whereParams,
+        whereParams: $whereParams?.simplify(),
         updateWithParams: _updateWithParams,
       );
 
@@ -538,10 +341,6 @@ class ArcadeOrmTableUpdateOperator {
   void updateWith(Map<String, dynamic> value) {
     _updateWithParams.add(value);
   }
-
-  void where(Map<String, WhereParamBuilder> map) {
-    _whereParams.add(WhereParam.evaluateWhereParams(map));
-  }
 }
 
 sealed class ExecResult<T> {}
@@ -558,56 +357,6 @@ class ExecResultFailure<T> extends ExecResult<T> {
   ExecResultFailure(this.exception);
 }
 
-class IncludeParam {
-  final String tableName;
-  final String? on;
-  final String? as;
-  final JoinOperation joinType;
-  Map<String, WhereParam>? where;
-  IncludeParam(
-    this.tableName, {
-    this.on,
-    this.as,
-    this.joinType = JoinOperation.inner,
-    Map<String, WhereParamBuilder>? where,
-  }) {
-    Map<String, WhereParam>? value;
-    if (where != null) {
-      value = WhereParam.evaluateWhereParams(where);
-    }
-    this.where = value;
-  }
-}
-
-enum JoinOperation {
-  inner,
-  left,
-  right,
-  cross,
-}
-
-enum SelectAggregationOperator {
-  show,
-  hide,
-  count,
-  sum,
-  avg,
-  min,
-  max,
-  distinct,
-  countDistinct,
-}
-
-class SelectParam {
-  String? fieldAs;
-  final SelectAggregationOperator operator;
-
-  SelectParam({
-    required this.operator,
-    this.fieldAs,
-  });
-}
-
 enum TableOperator {
   raw,
   count,
@@ -616,73 +365,4 @@ enum TableOperator {
   insert,
   update,
   delete,
-}
-
-enum WhereOperator {
-  eq,
-  gt,
-  gte,
-  lt,
-  lte,
-  between,
-  notEq,
-  like,
-  array,
-  notInArray,
-  and,
-  or,
-}
-
-sealed class WhereParamBuilder<T> {}
-
-class SingleWhereParam<T> extends WhereParamBuilder<T> {
-  final WhereParam param;
-
-  SingleWhereParam(this.param);
-}
-
-class MultipleWhereParam<T> extends WhereParamBuilder<T> {
-  final List<Map<String, WhereParam>> param;
-
-  MultipleWhereParam(this.param);
-}
-
-class WhereParam<T> {
-  final WhereOperator operator;
-  final T? value;
-  final T? start;
-  final T? end;
-  bool isAnd = true;
-  bool isOr = false;
-
-  WhereParam({
-    required this.operator,
-    this.value,
-    this.start,
-    this.end,
-  });
-
-  static Map<String, WhereParam> evaluateWhereParams(
-    Map<String, WhereParamBuilder> map,
-  ) {
-    Map<String, WhereParam> value = {};
-
-    if (map.containsKey(dAnd)) {
-      final multiple = map[dAnd]! as MultipleWhereParam;
-      for (final element in multiple.param) {
-        value = element;
-      }
-    } else if (map.containsKey(dOr)) {
-      final multiple = map[dOr]! as MultipleWhereParam;
-      for (final element in multiple.param) {
-        value = element;
-      }
-    } else {
-      value = map.map(
-        (key, v) => MapEntry(key, (v as SingleWhereParam).param),
-      );
-    }
-
-    return value;
-  }
 }

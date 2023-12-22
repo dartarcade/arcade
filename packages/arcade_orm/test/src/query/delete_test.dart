@@ -1,4 +1,6 @@
 import 'package:arcade_orm/arcade_orm.dart';
+import 'package:arcade_orm/src/query/include.dart';
+import 'package:arcade_orm/src/query/where.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
@@ -75,7 +77,7 @@ void main() {
         reset(mockTransaction);
       });
 
-      test("operate", () async {
+      test("operate where", () async {
         final arcadeOrm = await ArcadeOrm.init(
           adapter: mockAdapter,
         );
@@ -94,7 +96,43 @@ void main() {
             transaction: null,
             isExplain: false,
             whereParams: captureAny(named: "whereParams"),
-            havingParams: [],
+            // havingParams: [],
+            selectParams: [],
+            includeParams: any(named: "includeParams"),
+            groupParams: [],
+            sortParams: [],
+            updateWithParams: [],
+            insertWithParams: [],
+          ),
+        ).captured;
+        final capturedWhereParams =
+            (captured.first as WhereExpressionNode).toMap();
+        expect(
+          capturedWhereParams["id"],
+          equals(WhereParam<dynamic>(operator: WhereOperator.eq, value: 1)),
+        );
+      });
+
+      test("operate include", () async {
+        final arcadeOrm = await ArcadeOrm.init(
+          adapter: mockAdapter,
+        );
+        final userTable = UserTable(arcadeOrm);
+        final roleTable = RoleTable(arcadeOrm);
+
+        final deleteQuery = userTable.delete()
+          ..include(roleTable, where: {"name": notEq("admin")})
+          ..where({"id": eq(1)});
+
+        await deleteQuery.exec();
+
+        final captured = verify(
+          () => mockAdapter.operate(
+            operator: TableOperator.delete,
+            transaction: null,
+            isExplain: false,
+            whereParams: any(named: "whereParams"),
+            // havingParams: [],
             selectParams: [],
             includeParams: captureAny(named: "includeParams"),
             groupParams: [],
@@ -103,25 +141,17 @@ void main() {
             insertWithParams: [],
           ),
         ).captured;
-        final capturedWhereParams =
-            (captured.first as List<Map<String, WhereParam>>).first['id'];
-        expect(
-          capturedWhereParams?.value,
-          equals(1),
-        );
-        expect(
-          capturedWhereParams?.operator,
-          equals(WhereOperator.eq),
-        );
-        final capturedIncludeParams = (captured[1] as List<IncludeParam>).first;
+        final capturedIncludeParams =
+            (captured.first as List<IncludeParam>).first;
         expect(capturedIncludeParams.tableName, equals("role"));
         expect(
-          capturedIncludeParams.where?["name"]?.operator,
-          equals(WhereOperator.notEq),
-        );
-        expect(
-          capturedIncludeParams.where?["name"]?.value,
-          equals("admin"),
+          capturedIncludeParams.where?.toMap()["name"],
+          equals(
+            WhereParam<dynamic>(
+              operator: WhereOperator.notEq,
+              value: "admin",
+            ),
+          ),
         );
         expect(capturedIncludeParams.as, equals(null));
         expect(capturedIncludeParams.on, equals(null));
@@ -157,7 +187,7 @@ void main() {
             transaction: trx,
             isExplain: false,
             whereParams: captureAny(named: "whereParams"),
-            havingParams: [],
+            // havingParams: [],
             selectParams: [],
             includeParams: [],
             groupParams: [],
@@ -168,14 +198,10 @@ void main() {
         ).captured;
 
         final capturedWhereParams =
-            (captured.first as List<Map<String, WhereParam>>).first['id'];
+            (captured.first as WhereExpressionNode).toMap();
         expect(
-          capturedWhereParams?.value,
-          equals(1),
-        );
-        expect(
-          capturedWhereParams?.operator,
-          equals(WhereOperator.eq),
+          capturedWhereParams["id"],
+          equals(WhereParam<dynamic>(operator: WhereOperator.eq, value: 1)),
         );
       });
     });
