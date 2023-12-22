@@ -38,15 +38,24 @@ class WhereParam<T> extends WhereParamBuilder {
 
   @override
   bool operator ==(Object other) =>
+      identical(this, other) ||
       other is WhereParam &&
-      other.runtimeType == runtimeType &&
-      other.operator == operator &&
-      other.value == value &&
-      other.start == start &&
-      other.end == end;
+          other.operator == operator &&
+          other.value == value &&
+          other.start == start &&
+          other.end == end;
 
   @override
   int get hashCode => Object.hash(operator, value, start, end);
+
+  @override
+  String toString() {
+    return 'WhereParam{operator: $operator, value: $value, start: $start, end: $end}';
+  }
+
+  String toJson() {
+    return toString();
+  }
 }
 
 sealed class WhereExpressionNode extends WhereParamBuilder {
@@ -97,35 +106,33 @@ sealed class WhereExpressionNode extends WhereParamBuilder {
     if (nodes.length == 1) {
       return nodes.first;
     }
-    if (nodes.length > 1) {
-      bool isSame = true;
-      WhereExpressionOperator? operator;
-      for (final node in nodes) {
-        if (node is WhereExpressionOperatorNode) {
-          if (operator == null) {
-            operator = node.operator;
-          } else if (operator != node.operator) {
-            isSame = false;
-            break;
-          }
-        } else {
+    bool isSame = true;
+    WhereExpressionOperator? operator;
+    for (final node in nodes) {
+      if (node is WhereExpressionOperatorNode) {
+        if (operator == null) {
+          operator = node.operator;
+        } else if (operator != node.operator) {
           isSame = false;
           break;
         }
+      } else {
+        isSame = false;
+        break;
       }
-      if (isSame && operator != null) {
-        final simplifiedNodes = nodes.fold<List<WhereExpressionNode>>(
-          [],
-          (previousValue, element) {
-            previousValue.addAll(element.nodes);
-            return previousValue;
-          },
-        );
-        return WhereExpressionOperatorNode(
-          operator: operator,
-          nodes: simplifiedNodes,
-        );
-      }
+    }
+    if (isSame && operator != null) {
+      final simplifiedNodes = nodes.fold<List<WhereExpressionNode>>(
+        [],
+        (previousValue, element) {
+          previousValue.addAll(element.nodes);
+          return previousValue;
+        },
+      );
+      return WhereExpressionOperatorNode(
+        operator: operator,
+        nodes: simplifiedNodes,
+      );
     }
     return this;
   }
@@ -186,8 +193,8 @@ enum WhereOperator {
   between,
   notEq,
   like,
-  array,
-  notInArray,
+  inList,
+  notInList,
   and,
   or,
 }
@@ -229,9 +236,9 @@ List<WhereExpressionCompareNode> _getNodesFromMap(
   return nodes;
 }
 
-WhereParam array<T>(T value) {
+WhereParam inList<T extends List>(T value) {
   return WhereParam(
-    operator: WhereOperator.array,
+    operator: WhereOperator.inList,
     value: value,
   );
 }
@@ -286,9 +293,9 @@ WhereParam lte<T>(T value) {
   );
 }
 
-WhereParam notInArray<T>(T value) {
+WhereParam notInList<T extends List>(T value) {
   return WhereParam(
-    operator: WhereOperator.notInArray,
+    operator: WhereOperator.notInList,
     value: value,
   );
 }
@@ -299,113 +306,3 @@ WhereParam notEq<T>(T value) {
     value: value,
   );
 }
-
-// WhereExpressionNode test1() {
-//   // where A = 1
-//   final rootNode = WhereExpressionOperatorNode(
-//     operator: WhereExpressionOperator.and,
-//     nodes: [],
-//   );
-
-//   rootNode.addNode(
-//     WhereExpressionCompareNode(
-//       field: 'A',
-//       param: eq(1),
-//     ),
-//   );
-
-//   return rootNode.simplify();
-// }
-
-// WhereExpressionNode test2() {
-//   // where A = 1 and A = 2 and B = 3
-//   final rootNode = WhereExpressionOperatorNode(
-//     operator: WhereExpressionOperator.and,
-//     nodes: [],
-//   );
-
-//   rootNode.addNode(
-//     WhereExpressionCompareNode(
-//       field: 'A',
-//       param: eq(1),
-//     ),
-//   );
-
-//   rootNode.addNode(
-//     WhereExpressionCompareNode(
-//       field: 'A',
-//       param: eq(2),
-//     ),
-//   );
-
-//   rootNode.addNode(
-//     WhereExpressionCompareNode(
-//       field: 'B',
-//       param: eq(3),
-//     ),
-//   );
-
-//   return rootNode.simplify();
-// }
-
-// WhereExpressionNode test3() {
-//   // where (A = 1 or A = 2) and A = 3 and B = 2
-//   final rootNode = WhereExpressionOperatorNode(
-//     operator: WhereExpressionOperator.and,
-//     nodes: [],
-//   );
-
-//   rootNode.addNode(
-//     or([
-//       {'A': eq(1)},
-//       {'A': eq(2)},
-//     ]),
-//   );
-
-//   rootNode.addNode(
-//     and([
-//       {
-//         'A': eq(3),
-//         'B': eq(2),
-//       },
-//     ]),
-//   );
-
-//   return rootNode.simplify();
-// }
-
-// WhereExpressionNode test4() {
-//   // where A = 1 or A = 2 or B = 2 or B = 3 or A = 3 or B = 4
-//   final rootNode = WhereExpressionOperatorNode(
-//     operator: WhereExpressionOperator.and,
-//     nodes: [],
-//   );
-
-//   rootNode.addNode(
-//     or([
-//       {'A': eq(1)},
-//       {'A': eq(2)},
-//       {'B': eq(2)},
-//     ]),
-//   );
-
-//   rootNode.addNode(
-//     or([
-//       {'B': eq(3)},
-//     ]),
-//   );
-
-//   rootNode.addNode(
-//     or([
-//       {'A': eq(3)},
-//     ]),
-//   );
-
-//   rootNode.addNode(
-//     or([
-//       {'B': eq(4)},
-//     ]),
-//   );
-
-//   return rootNode.simplify();
-// }

@@ -109,7 +109,7 @@ void main() {
             (captured.first as WhereExpressionNode).toMap();
         expect(
           capturedWhereParams["id"],
-          equals(WhereParam<dynamic>(operator: WhereOperator.eq, value: 1)),
+          equals(WhereParam(operator: WhereOperator.eq, value: 1)),
         );
       });
 
@@ -147,7 +147,7 @@ void main() {
         expect(
           capturedIncludeParams.where?.toMap()["name"],
           equals(
-            WhereParam<dynamic>(
+            WhereParam(
               operator: WhereOperator.notEq,
               value: "admin",
             ),
@@ -201,7 +201,7 @@ void main() {
             (captured.first as WhereExpressionNode).toMap();
         expect(
           capturedWhereParams["id"],
-          equals(WhereParam<dynamic>(operator: WhereOperator.eq, value: 1)),
+          equals(WhereParam(operator: WhereOperator.eq, value: 1)),
         );
       });
     });

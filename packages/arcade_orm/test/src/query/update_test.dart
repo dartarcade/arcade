@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:arcade_orm/arcade_orm.dart';
 import 'package:arcade_orm/src/query/where.dart';
 import 'package:mocktail/mocktail.dart';
@@ -99,7 +101,10 @@ void main() {
           ),
         ).captured;
 
-        print((captured[1] as WhereExpressionNode).toMap());
+        // print(
+        //   const JsonEncoder.withIndent("  ")
+        //       .convert((captured[1] as WhereExpressionNode).toMap()),
+        // );
       });
 
       // test("data", () async {

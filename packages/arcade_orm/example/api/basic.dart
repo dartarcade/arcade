@@ -142,14 +142,14 @@ Future<dynamic> orming() async {
     (trx) async {
       final r = userTable.findOne(transaction: trx)
         ..where({
-          UserTable.id: array([1, 2, 4]),
+          UserTable.id: inList([1, 2, 4]),
         })
         ..where({UserTable.id: eq(10)})
         ..where(
           and([
             {
               UserTable.name: like("%aa"),
-              UserTable.id: array([1, 2, 4]),
+              UserTable.id: inList([1, 2, 4]),
             },
             {UserTable.name: eq("2")},
           ]),
