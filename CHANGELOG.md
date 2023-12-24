@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2023-12-24
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade` - `v0.1.2`](#arcade---v012)
+ - [`arcade_cache` - `v0.0.2`](#arcade_cache---v002)
+ - [`arcade_cache_redis` - `v0.0.2`](#arcade_cache_redis---v002)
+ - [`arcade_config` - `v0.0.4`](#arcade_config---v004)
+ - [`arcade_logger` - `v0.0.4`](#arcade_logger---v004)
+ - [`arcade_views` - `v0.0.6+2`](#arcade_views---v0062)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `arcade_views` - `v0.0.6+2`
+
+---
+
+#### `arcade` - `v0.1.2`
+
+ - **FIX**: name clash.
+ - **FEAT**: add support for global before, after and afterWebSocket hooks.
+ - **FEAT**: optimize route matching and static file checking.
+ - **FEAT**: group routes support.
+ - **FEAT**: match wildcard routes on any sub path segment.
+
+#### `arcade_cache` - `v0.0.2`
+
+ - **REFACTOR**: fix samples and examples.
+ - **FEAT**: redis implementation.
+ - **FEAT**: make ready for publishing.
+ - **FEAT**: export BaseCacheManager.
+ - **FEAT**: rename to arcade.
+
+#### `arcade_cache_redis` - `v0.0.2`
+
+ - **FEAT**: redis implementation.
+
+#### `arcade_config` - `v0.0.4`
+
+ - **FEAT**: match wildcard routes on any sub path segment.
+
+#### `arcade_logger` - `v0.0.4`
+
+ - **FEAT**: match wildcard routes on any sub path segment.
+ - **FEAT**: update logger.
+
+
 ## 2023-11-12
 
 ### Changes
