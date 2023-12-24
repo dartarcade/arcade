@@ -1,3 +1,7 @@
+## 0.0.4
+
+ - **FEAT**: match wildcard routes on any sub path segment.
+
 ## 0.0.3+1
 
  - **REFACTOR**: fix samples and examples.
