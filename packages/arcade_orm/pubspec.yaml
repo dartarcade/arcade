@@ -1,0 +1,17 @@
+name: arcade_orm
+description: A starting point for Dart libraries or applications.
+version: 0.0.1
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.0.5
+
+# Add regular dependencies here.
+dependencies:
+  meta: ^1.9.1
+  # path: ^1.8.0
+
+dev_dependencies:
+  lint: ^2.1.2
+  mocktail: ^1.0.1
+  test: ^1.21.0

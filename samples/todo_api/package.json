@@ -2,10 +2,10 @@
   "name": "todo_api",
   "version": "1.0.0",
   "description": "A TODO API implemented with Dartseid and Prisma",
-  "homepage": "https://github.com/exaby73/dartsied/tree/main",
+  "homepage": "https://github.com/dartarcade/arcade/tree/main",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/exaby73/dartsied.git#main"
+    "url": "git+https://github.com/dartarcade/arcade.git#main"
   },
   "author": "exaby73",
   "license": "MIT",
