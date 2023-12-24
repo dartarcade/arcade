@@ -1,8 +1,8 @@
 import 'dart:async';
 
-abstract interface class BaseCacheManager {
+abstract interface class BaseCacheManager<T> {
   /// Initializes the cache. E.g. opens the database connection.
-  FutureOr<void> init();
+  FutureOr<void> init(T connectionInfo);
 
   /// Disposes the cache. E.g. closes the database connection.
   FutureOr<void> dispose();
@@ -11,7 +11,16 @@ abstract interface class BaseCacheManager {
   FutureOr<void> clear();
 
   /// Get the value associated with the given key.
-  FutureOr<T?> get<T>(String key);
+  FutureOr<T?> get<T extends Object>(String key);
+
+  /// Get the value associated with the given key as a string.
+  FutureOr<String?> getString(String key);
+
+  /// Get the value associated with the given key as a list.
+  FutureOr<List<T>?> getList<T>(String key);
+
+  /// Get the value associated with the given key as a map.
+  FutureOr<Map<String, dynamic>?> getJson(String key);
 
   /// Checks if the cache contains the given key.
   FutureOr<bool> contains<T>(String key);

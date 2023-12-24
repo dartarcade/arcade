@@ -16,6 +16,9 @@
       <excludeFolder url="file://$MODULE_DIR$/samples/todo_api/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/samples/todo_api/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/samples/todo_api/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/arcade_cache_redis/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/arcade_cache_redis/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/arcade_cache_redis/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />

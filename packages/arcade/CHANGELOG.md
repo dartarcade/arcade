@@ -1,3 +1,11 @@
+## 0.1.2
+
+ - **FIX**: name clash.
+ - **FEAT**: add support for global before, after and afterWebSocket hooks.
+ - **FEAT**: optimize route matching and static file checking.
+ - **FEAT**: group routes support.
+ - **FEAT**: match wildcard routes on any sub path segment.
+
 ## 0.1.1+1
 
  - **REFACTOR**: fix samples and examples.
