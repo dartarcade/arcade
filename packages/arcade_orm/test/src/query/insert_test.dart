@@ -46,7 +46,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.insert,
             transaction: null,
-            isExplain: false,
+            isVerbose: false,
             insertWithParams: any(named: "insertWithParams"),
           ),
         ).thenAnswer(
@@ -73,7 +73,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.insert,
             transaction: null,
-            isExplain: false,
+            isVerbose: false,
             // havingParams: [],
             selectParams: [],
             includeParams: [],
@@ -117,7 +117,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.insert,
             transaction: trx,
-            isExplain: false,
+            isVerbose: false,
             // havingParams: [],
             selectParams: [],
             includeParams: [],
@@ -137,7 +137,7 @@ void main() {
         () => mockAdapter.operate(
           operator: TableOperator.insert,
           transaction: null,
-          isExplain: false,
+          isVerbose: false,
           insertWithParams: any(named: "insertWithParams"),
         ),
       ).thenThrow(

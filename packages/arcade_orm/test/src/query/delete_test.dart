@@ -63,7 +63,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.delete,
             transaction: null,
-            isExplain: false,
+            isVerbose: false,
             whereParams: any(named: "whereParams"),
           ),
         ).thenAnswer(
@@ -94,7 +94,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.delete,
             transaction: null,
-            isExplain: false,
+            isVerbose: false,
             whereParams: captureAny(named: "whereParams"),
             // havingParams: [],
             selectParams: [],
@@ -130,7 +130,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.delete,
             transaction: null,
-            isExplain: false,
+            isVerbose: false,
             whereParams: any(named: "whereParams"),
             // havingParams: [],
             selectParams: [],
@@ -185,7 +185,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.delete,
             transaction: trx,
-            isExplain: false,
+            isVerbose: false,
             whereParams: captureAny(named: "whereParams"),
             // havingParams: [],
             selectParams: [],
@@ -211,7 +211,7 @@ void main() {
         () => mockAdapter.operate(
           operator: TableOperator.delete,
           transaction: null,
-          isExplain: false,
+          isVerbose: false,
           whereParams: any(named: "whereParams"),
         ),
       ).thenThrow(

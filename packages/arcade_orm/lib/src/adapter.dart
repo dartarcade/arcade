@@ -24,9 +24,11 @@ abstract interface class ArcadeOrmAdapterBase<T extends Record, U> {
   Future<Map<String, dynamic>> operate({
     required TableOperator operator,
     required ArcadeOrmTransaction? transaction,
-    required bool isExplain,
+    required bool isVerbose,
     String? rawSql,
-    Map<String, dynamic>? rawNoSql,
+    List<Map<String, dynamic>>? rawNoSqlAggregate,
+    Map<String, dynamic>? rawNoSqlAggregateOptions,
+    Map<String, dynamic>? rawParams,
     WhereExpressionNode? whereParams,
     WhereExpressionNode? havingParams,
     List<Map<String, SelectParam>> selectParams = const [],

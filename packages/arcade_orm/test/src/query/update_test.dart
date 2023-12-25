@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:arcade_orm/arcade_orm.dart';
 import 'package:arcade_orm/src/query/where.dart';
 import 'package:mocktail/mocktail.dart';
@@ -50,7 +48,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.update,
             transaction: null,
-            isExplain: false,
+            isVerbose: false,
             whereParams: any(named: "whereParams"),
             updateWithParams: any(named: "updateWithParams"),
           ),
@@ -90,7 +88,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.update,
             transaction: null,
-            isExplain: false,
+            isVerbose: false,
             whereParams: captureAny(named: "whereParams"),
             // havingParams: [],
             selectParams: [],
@@ -147,7 +145,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.update,
             transaction: null,
-            isExplain: false,
+            isVerbose: false,
             whereParams: any(named: "whereParams"),
             // havingParams: [],
             selectParams: [],
@@ -199,7 +197,7 @@ void main() {
           () => mockAdapter.operate(
             operator: TableOperator.update,
             transaction: trx,
-            isExplain: false,
+            isVerbose: false,
             whereParams: any(named: "whereParams"),
             selectParams: [],
             includeParams: [],

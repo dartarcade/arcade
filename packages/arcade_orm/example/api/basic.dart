@@ -47,23 +47,24 @@ class ArcadeOrmMockAdapter
   }
 
   @override
-  Future<Map<String, dynamic>> operate({
-    required TableOperator operator,
-    required ArcadeOrmTransaction? transaction,
-    required bool isExplain,
-    String? rawSql,
-    Map<String, dynamic>? rawNoSql,
-    WhereExpressionNode? whereParams,
-    WhereExpressionNode? havingParams,
-    List<Map<String, SelectParam>> selectParams = const [],
-    List<IncludeParam> includeParams = const [],
-    List<String> groupParams = const [],
-    List<Map<String, SortDirection>> sortParams = const [],
-    List<Map<String, dynamic>> updateWithParams = const [],
-    List<Map<String, dynamic>> insertWithParams = const [],
-    int? limit,
-    int? skip,
-  }) {
+  Future<Map<String, dynamic>> operate(
+      {required TableOperator operator,
+      required ArcadeOrmTransaction? transaction,
+      required bool isVerbose,
+      String? rawSql,
+      List<Map<String, dynamic>>? rawNoSqlAggregate,
+      Map<String, dynamic>? rawNoSqlAggregateOptions,
+      Map<String, dynamic>? rawParams,
+      WhereExpressionNode? whereParams,
+      WhereExpressionNode? havingParams,
+      List<Map<String, SelectParam>> selectParams = const [],
+      List<IncludeParam> includeParams = const [],
+      List<String> groupParams = const [],
+      List<Map<String, SortDirection>> sortParams = const [],
+      Map<String, dynamic> updateWithParams = const {},
+      List<Map<String, dynamic>> insertWithParams = const [],
+      int? limit,
+      int? skip}) {
     // TODO: implement operate
     throw UnimplementedError();
   }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:arcade_orm/arcade_orm.dart';
-import 'package:arcade_orm/src/query/mixins/explain.dart';
 import 'package:arcade_orm/src/query/mixins/group.dart';
 import 'package:arcade_orm/src/query/mixins/include.dart';
 import 'package:arcade_orm/src/query/mixins/insert.dart';
@@ -10,6 +9,7 @@ import 'package:arcade_orm/src/query/mixins/raw.dart';
 import 'package:arcade_orm/src/query/mixins/select.dart';
 import 'package:arcade_orm/src/query/mixins/sort.dart';
 import 'package:arcade_orm/src/query/mixins/update.dart';
+import 'package:arcade_orm/src/query/mixins/verbose.dart';
 import 'package:arcade_orm/src/query/mixins/where.dart';
 
 class ArcadeOrmTableFindOperator
@@ -20,7 +20,7 @@ class ArcadeOrmTableFindOperator
         PaginationMixin,
         SortMixin,
         IncludeMixin,
-        ExplainMixin {
+        VerboseMixin {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
@@ -38,7 +38,7 @@ class ArcadeOrmTableFindOperator
   }) async {
     try {
       final data = await _orm.adapter.operate(
-        isExplain: $explain,
+        isVerbose: $verbose,
         operator: _operator,
         transaction: _transaction,
         whereParams: $whereParams?.simplify(),
@@ -68,7 +68,7 @@ class ArcadeOrmTableFindOperator
   // }
 }
 
-class ArcadeOrmTableInsertOperator with InsertMixin, ExplainMixin {
+class ArcadeOrmTableInsertOperator with InsertMixin, VerboseMixin {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
@@ -86,7 +86,7 @@ class ArcadeOrmTableInsertOperator with InsertMixin, ExplainMixin {
   }) async {
     try {
       final data = await _orm.adapter.operate(
-        isExplain: $explain,
+        isVerbose: $verbose,
         operator: _operator,
         transaction: _transaction,
         insertWithParams: $insertWithParams,
@@ -105,7 +105,7 @@ class ArcadeOrmTableInsertOperator with InsertMixin, ExplainMixin {
   }
 }
 
-class ArcadeOrmTableDeleteOperator with WhereMixin, IncludeMixin, ExplainMixin {
+class ArcadeOrmTableDeleteOperator with WhereMixin, IncludeMixin, VerboseMixin {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
@@ -125,7 +125,7 @@ class ArcadeOrmTableDeleteOperator with WhereMixin, IncludeMixin, ExplainMixin {
       final data = await _orm.adapter.operate(
         operator: _operator,
         transaction: _transaction,
-        isExplain: $explain,
+        isVerbose: $verbose,
         whereParams: $whereParams?.simplify(),
         includeParams: $includeParams,
       );
@@ -143,7 +143,7 @@ class ArcadeOrmTableDeleteOperator with WhereMixin, IncludeMixin, ExplainMixin {
   }
 }
 
-class ArcadeOrmTableRawOperator with ExplainMixin, RawMixin {
+class ArcadeOrmTableRawOperator with VerboseMixin, RawMixin {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
@@ -162,8 +162,10 @@ class ArcadeOrmTableRawOperator with ExplainMixin, RawMixin {
     try {
       final data = await _orm.adapter.operate(
         rawSql: $rawSql,
-        rawNoSql: $rawNoSql,
-        isExplain: $explain,
+        rawParams: $params,
+        rawNoSqlAggregate: $rawNoSqlAggregate,
+        rawNoSqlAggregateOptions: $rawNoSqlAggregateOptions,
+        isVerbose: $verbose,
         operator: _operator,
         transaction: _transaction,
       );
@@ -181,7 +183,7 @@ class ArcadeOrmTableRawOperator with ExplainMixin, RawMixin {
   }
 }
 
-class ArcadeOrmTableUpdateOperator with WhereMixin, UpdateMixin, ExplainMixin {
+class ArcadeOrmTableUpdateOperator with WhereMixin, UpdateMixin, VerboseMixin {
   final ArcadeOrm _orm;
   final TableOperator _operator;
   final ArcadeOrmTransaction? _transaction;
@@ -199,7 +201,7 @@ class ArcadeOrmTableUpdateOperator with WhereMixin, UpdateMixin, ExplainMixin {
   }) async {
     try {
       final data = await _orm.adapter.operate(
-        isExplain: $explain,
+        isVerbose: $verbose,
         operator: _operator,
         transaction: _transaction,
         whereParams: $whereParams?.simplify(),
