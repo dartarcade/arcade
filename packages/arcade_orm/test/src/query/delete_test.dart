@@ -101,7 +101,7 @@ void main() {
             includeParams: any(named: "includeParams"),
             groupParams: [],
             sortParams: [],
-            updateWithParams: [],
+            updateWithParams: {},
             insertWithParams: [],
           ),
         ).captured;
@@ -137,7 +137,7 @@ void main() {
             includeParams: captureAny(named: "includeParams"),
             groupParams: [],
             sortParams: [],
-            updateWithParams: [],
+            updateWithParams: {},
             insertWithParams: [],
           ),
         ).captured;
@@ -192,7 +192,7 @@ void main() {
             includeParams: [],
             groupParams: [],
             sortParams: [],
-            updateWithParams: [],
+            updateWithParams: {},
             insertWithParams: [],
           ),
         ).captured;

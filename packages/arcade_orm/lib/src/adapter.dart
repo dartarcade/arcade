@@ -33,7 +33,7 @@ abstract interface class ArcadeOrmAdapterBase<T extends Record, U> {
     List<IncludeParam> includeParams = const [],
     List<String> groupParams = const [],
     List<Map<String, SortDirection>> sortParams = const [],
-    List<Map<String, dynamic>> updateWithParams = const [],
+    Map<String, dynamic> updateWithParams = const {},
     List<Map<String, dynamic>> insertWithParams = const [],
     int? limit,
     int? skip,

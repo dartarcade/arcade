@@ -79,7 +79,7 @@ void main() {
             includeParams: [],
             groupParams: [],
             sortParams: [],
-            updateWithParams: [],
+            updateWithParams: {},
             insertWithParams: [
               {"name": "foo", "age": 20},
               {"email": "foo@examle.com"},
@@ -123,7 +123,7 @@ void main() {
             includeParams: [],
             groupParams: [],
             sortParams: [],
-            updateWithParams: [],
+            updateWithParams: {},
             insertWithParams: [
               {"name": "foo", "age": 20},
             ],

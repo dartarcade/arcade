@@ -51,6 +51,7 @@ void main() {
             operator: TableOperator.update,
             transaction: null,
             isExplain: false,
+            whereParams: any(named: "whereParams"),
             updateWithParams: any(named: "updateWithParams"),
           ),
         ).thenAnswer(
@@ -64,7 +65,7 @@ void main() {
         reset(mockTransaction);
       });
 
-      test("operate", () async {
+      test("operate where", () async {
         final arcadeOrm = await ArcadeOrm.init(
           adapter: mockAdapter,
         );
@@ -96,60 +97,118 @@ void main() {
             includeParams: [],
             groupParams: [],
             sortParams: [],
+            updateWithParams: any(named: "updateWithParams"),
+            insertWithParams: [],
+          ),
+        ).captured;
+
+        final capturedWhereParams =
+            (captured.first as WhereExpressionNode).toMap();
+
+        final andExpr = capturedWhereParams[WhereExpressionOperator.and.name]
+            as List<Map<String, dynamic>>;
+
+        expect(
+          andExpr.first[UserTable.name],
+          equals(WhereParam(operator: WhereOperator.eq, value: "bar")),
+        );
+        expect(
+          andExpr.last[UserTable.age],
+          equals(WhereParam(operator: WhereOperator.gt, value: 20)),
+        );
+      });
+
+      test("operate updateWith", () async {
+        final arcadeOrm = await ArcadeOrm.init(
+          adapter: mockAdapter,
+        );
+        final table = UserTable(arcadeOrm);
+        final updateQuery = table.update()
+          ..where(
+            and([
+              {
+                UserTable.name: eq("bar"),
+                UserTable.age: gt(20),
+              }
+            ]),
+          )
+          ..updateWith({
+            UserTable.name: "foo",
+            UserTable.age: 20,
+          })
+          ..updateWith({
+            UserTable.age: 30,
+            UserTable.email: "foo@example.com",
+          });
+
+        await updateQuery.exec();
+
+        final captured = verify(
+          () => mockAdapter.operate(
+            operator: TableOperator.update,
+            transaction: null,
+            isExplain: false,
+            whereParams: any(named: "whereParams"),
+            // havingParams: [],
+            selectParams: [],
+            includeParams: [],
+            groupParams: [],
+            sortParams: [],
             updateWithParams: captureAny(named: "updateWithParams"),
             insertWithParams: [],
           ),
         ).captured;
 
-        // print(
-        //   const JsonEncoder.withIndent("  ")
-        //       .convert((captured[1] as WhereExpressionNode).toMap()),
-        // );
+        final updateWithParams = captured.first as Map<String, dynamic>;
+
+        expect(
+          updateWithParams,
+          equals({
+            UserTable.name: "foo",
+            UserTable.age: 30,
+            UserTable.email: "foo@example.com",
+          }),
+        );
       });
 
-      // test("data", () async {
-      //   final arcadeOrm = await ArcadeOrm.init(
-      //     adapter: mockAdapter,
-      //   );
-      //   final table = UserTable(arcadeOrm);
-      //   final insertQuery = table.insert()
-      //     ..insertWith({"name": "foo", "age": 20})
-      //     ..insertWith({"email": "foo@examle.com"});
-      //   final data = await insertQuery.exec();
-      //   expect(data, isA<ExecResultData>());
-      //   expect((data as ExecResultData).data, equals({"nInserted": 1}));
-      // });
+      test("data", () async {
+        final arcadeOrm = await ArcadeOrm.init(
+          adapter: mockAdapter,
+        );
+        final table = UserTable(arcadeOrm);
+        final udpateQuery = table.update()
+          ..updateWith({"name": "foo", "age": 20});
+        final data = await udpateQuery.exec();
+        expect(data, isA<ExecResultData>());
+        expect((data as ExecResultData).data, equals({"nUpdated": 1}));
+      });
 
-      // test("operate with transaction", () async {
-      //   when(() => mockTransaction.start())
-      //       .thenAnswer((_) async => Future.value());
-      //   final arcadeOrm = await ArcadeOrm.init(
-      //     adapter: mockAdapter,
-      //   );
-      //   final table = UserTable(arcadeOrm);
-      //   final trx = table.transaction();
-      //   await trx.start();
-      //   final insertQuery = table.insert(transaction: trx)
-      //     ..insertWith({"name": "foo", "age": 20});
-      //   await insertQuery.exec();
-      //   verify(
-      //     () => mockAdapter.operate(
-      //       operator: TableOperator.insert,
-      //       transaction: trx,
-      //       isExplain: false,
-      //       whereParams: [],
-      //       havingParams: [],
-      //       selectParams: [],
-      //       includeParams: [],
-      //       groupParams: [],
-      //       sortParams: [],
-      //       updateWithParams: [],
-      //       insertWithParams: [
-      //         {"name": "foo", "age": 20},
-      //       ],
-      //     ),
-      //   ).called(1);
-      // });
+      test("operate with transaction", () async {
+        when(() => mockTransaction.start())
+            .thenAnswer((_) async => Future.value());
+        final arcadeOrm = await ArcadeOrm.init(
+          adapter: mockAdapter,
+        );
+        final table = UserTable(arcadeOrm);
+        final trx = table.transaction();
+        await trx.start();
+        final insertQuery = table.update(transaction: trx)
+          ..updateWith({"name": "foo", "age": 20});
+        await insertQuery.exec();
+        verify(
+          () => mockAdapter.operate(
+            operator: TableOperator.update,
+            transaction: trx,
+            isExplain: false,
+            whereParams: any(named: "whereParams"),
+            selectParams: [],
+            includeParams: [],
+            groupParams: [],
+            sortParams: [],
+            updateWithParams: {"name": "foo", "age": 20},
+          ),
+        ).called(1);
+      });
     });
   });
 }
