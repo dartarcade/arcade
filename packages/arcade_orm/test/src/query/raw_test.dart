@@ -168,5 +168,30 @@ void main() {
         ).called(1);
       });
     });
+
+    test("db record - failure", () async {
+      when(
+        () => mockAdapter.operate(
+          operator: TableOperator.raw,
+          transaction: null,
+          isVerbose: false,
+          rawParams: any(named: "rawParams"),
+          rawSql: any(named: "rawSql"),
+          rawNoSqlAggregate: any(named: "rawNoSqlAggregate"),
+          rawNoSqlAggregateOptions: any(named: "rawNoSqlAggregateOptions"),
+        ),
+      ).thenThrow(
+        ArcadeOrmException(message: "Operation Failed", originalError: null),
+      );
+      final arcadeOrm = await ArcadeOrm.init(
+        adapter: mockAdapter,
+      );
+      final table = UserTable(arcadeOrm);
+      final rawQuery = table.raw()
+        ..sql("SELECT * FROM user WHERE id = @id", params: {"id": 1});
+      final data = await rawQuery.exec();
+      expect(data, isA<ExecResultFailure>());
+      expect((data as ExecResultFailure).exception.message, "Operation Failed");
+    });
   });
 }
