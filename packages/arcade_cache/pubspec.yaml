@@ -5,3 +5,5 @@ repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_cache
 
 environment:
   sdk: ^3.0.5
+dev_dependencies:
+  lint: ^2.3.0

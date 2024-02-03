@@ -9,3 +9,5 @@ environment:
 dependencies:
   arcade_cache: ^0.0.2
   redis: ^4.0.0
+dev_dependencies:
+  lint: ^2.3.0

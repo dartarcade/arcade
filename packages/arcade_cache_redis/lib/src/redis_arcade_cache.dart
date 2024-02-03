@@ -56,8 +56,11 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
 
   @override
   FutureOr<Map<String, dynamic>?> getJson(String key) {
-    return get(key)
-        .then((value) => value != null ? jsonDecode(value.toString()) : value);
+    return get(key).then(
+      (value) => value != null
+          ? jsonDecode(value.toString()) as Map<String, dynamic>
+          : null,
+    );
   }
 
   @override

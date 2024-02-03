@@ -39,23 +39,23 @@ packages:
       path: "../../packages/arcade"
       relative: true
     source: path
-    version: "0.1.1"
+    version: "0.1.2"
   arcade_config:
     dependency: transitive
     description:
       name: arcade_config
-      sha256: "3a438bcc5b77919ff10051fbb8305c43d58c64e08538eeee940d0252a0984e35"
+      sha256: e4b90c2a25f7b9803eaaa78bf51553732eaf4e4fced15421e3f91648caa08b0d
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.3"
+    version: "0.0.4"
   arcade_logger:
     dependency: transitive
     description:
       name: arcade_logger
-      sha256: "87b8cb36d23c8904e4eea2cadfab32375dedc9a97abc86f66ed0cd9c323b9707"
+      sha256: f1dc96a0a687b97049bb2465af0ae6feeb10278daf9bc1a819c9af9cae4e3ee6
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.3"
+    version: "0.0.4"
   args:
     dependency: transitive
     description:
