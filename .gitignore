@@ -4,3 +4,4 @@
 pubspec_overrides.yaml
 melos_arcade.iml
 .DS_Store
+packages/*/pubspec.lock
