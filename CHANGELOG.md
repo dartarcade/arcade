@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`arcade` - `v0.1.4`](#arcade---v014)
+
+---
+
+#### `arcade` - `v0.1.4`
+
+ - **FEAT**(arcade): add support for setting status code.
+
+
+## 2024-06-27
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`arcade` - `v0.1.3`](#arcade---v013)
  - [`arcade_cli` - `v0.0.4`](#arcade_cli---v004)
  - [`arcade_config` - `v0.0.5`](#arcade_config---v005)
