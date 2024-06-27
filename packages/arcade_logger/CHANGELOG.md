@@ -1,3 +1,7 @@
+## 0.0.5
+
+ - **FEAT**: update dependencies.
+
 ## 0.0.4
 
  - **FEAT**: match wildcard routes on any sub path segment.

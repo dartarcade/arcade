@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-06-27
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade` - `v0.1.3`](#arcade---v013)
+ - [`arcade_cli` - `v0.0.4`](#arcade_cli---v004)
+ - [`arcade_config` - `v0.0.5`](#arcade_config---v005)
+ - [`arcade_logger` - `v0.0.5`](#arcade_logger---v005)
+ - [`arcade_views` - `v0.0.7`](#arcade_views---v007)
+
+---
+
+#### `arcade` - `v0.1.3`
+
+ - **FEAT**: update dependencies.
+
+#### `arcade_cli` - `v0.0.4`
+
+ - **FEAT**: update dependencies.
+
+#### `arcade_config` - `v0.0.5`
+
+ - **FEAT**: update dependencies.
+
+#### `arcade_logger` - `v0.0.5`
+
+ - **FEAT**: update dependencies.
+
+#### `arcade_views` - `v0.0.7`
+
+ - **FEAT**: update dependencies.
+
+
 ## 2023-12-24
 
 ### Changes

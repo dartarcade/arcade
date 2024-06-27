@@ -1,3 +1,7 @@
+## 0.0.4
+
+ - **FEAT**: update dependencies.
+
 ## 0.0.3+1
 
  - **REFACTOR**: fix samples and examples.
