@@ -64,6 +64,10 @@ class RequestContext {
 
   List<File> get files => _files;
 
+  int get statusCode => _request.response.statusCode;
+
+  set statusCode(int value) => _request.response.statusCode = value;
+
   Future<String> body() async {
     final body = await rawBody;
     return String.fromCharCodes(body.expand((e) => e));
