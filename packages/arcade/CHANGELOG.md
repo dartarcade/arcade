@@ -1,3 +1,7 @@
+## 0.1.4+1
+
+ - **FIX**: Run global hooks.
+
 ## 0.1.4
 
  - **FEAT**(arcade): add support for setting status code.
