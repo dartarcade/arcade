@@ -28,7 +28,6 @@ Future<void> runServer({
 
   await init();
   validatePreviousRouteHasHandler();
-  addGlobalHooks();
 
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,

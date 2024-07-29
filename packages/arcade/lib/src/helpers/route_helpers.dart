@@ -107,17 +107,3 @@ void validatePreviousRouteHasHandler() {
     );
   }
 }
-
-void addGlobalHooks() {
-  for (final route in routes) {
-    route.beforeHooks.addAll(globalBeforeHooks);
-   
-    if (route is AfterRoute) {
-      route.afterHooks.addAll(globalAfterHooks);
-    }
-
-    if (route is AfterWebSocketRoute) {
-      route.afterWebSocketHooks.addAll(globalAfterWebSocketHooks);
-    }
-  }
-}
