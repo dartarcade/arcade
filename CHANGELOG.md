@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`arcade` - `v0.1.4+2`](#arcade---v0142)
+
+---
+
+#### `arcade` - `v0.1.4+2`
+
+ - **FIX**: Duplicate global hooks.
+
+
+## 2024-07-29
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`arcade` - `v0.1.4+1`](#arcade---v0141)
 
 ---

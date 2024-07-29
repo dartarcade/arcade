@@ -1,3 +1,7 @@
+## 0.1.4+2
+
+ - **FIX**: Duplicate global hooks.
+
 ## 0.1.4+1
 
  - **FIX**: Run global hooks.
