@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:arcade/arcade.dart';
+import 'package:arcade/src/helpers/route_helpers.dart';
 import 'package:arcade_logger/arcade_logger.dart';
 
 void sendErrorResponse(HttpResponse response, ArcadeHttpException error) {
@@ -17,6 +18,10 @@ Future<RequestContext> runBeforeHooks(
 ) async {
   var ctx = context;
 
+  for (final globalHook in globalBeforeHooks) {
+    ctx = await globalHook(ctx);
+  }
+
   for (final hook in route.beforeHooks) {
     ctx = await hook(ctx);
   }
@@ -30,6 +35,12 @@ Future<({RequestContext context, Object? handleResult})> runAfterHooks(
   dynamic result,
 ) async {
   var (ctx, r) = (context, result);
+
+  for (final globalHook in globalAfterHooks) {
+    final (newCtx, newR) = await globalHook(ctx, r);
+    ctx = newCtx;
+    r = newR;
+  }
 
   for (final hook in route.afterHooks) {
     final (newCtx, newR) = await hook(ctx, r);
@@ -48,6 +59,13 @@ Future<({RequestContext context, Object? handleResult, String wsId})>
   String wsId,
 ) async {
   var (ctx, r, id) = (context, result, wsId);
+
+  for (final globalHook in globalAfterWebSocketHooks) {
+    final (newCtx, newR, newId) = await globalHook(ctx, r, id);
+    ctx = newCtx;
+    r = newR;
+    id = newId;
+  }
 
   for (final hook in route.afterWebSocketHooks) {
     final (newCtx, newR, newId) = await hook(ctx, r, id);

@@ -35,7 +35,7 @@ Future<void> runServer({
     port,
   );
 
-  server.listen(handleRequest);
+  server.listen(_handleRequest);
   Logger.root.log(
     LogRecord(
       level: LogLevel.none,
@@ -46,7 +46,7 @@ Future<void> runServer({
   setupProcessSignalWatchers(server);
 }
 
-Future<void> handleRequest(HttpRequest request) async {
+Future<void> _handleRequest(HttpRequest request) async {
   final HttpRequest(response: response, uri: uri, method: methodString) =
       request;
 
