@@ -49,8 +49,10 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
   @override
   Future<List<T>?> getList<T>(String key) {
     return get(key)
-        .then((value) =>
-            value != null ? jsonDecode(value.toString()) as List : null,)
+        .then(
+          (value) =>
+              value != null ? jsonDecode(value.toString()) as List : null,
+        )
         .then((value) => value?.cast());
   }
 
