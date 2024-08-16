@@ -1,2 +1,2 @@
-include: package:lint/analysis_options.yaml
+include: package:lint/strict.yaml
 

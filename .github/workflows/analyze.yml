@@ -1,0 +1,23 @@
+name: Analyze Dart Packages
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      - name: Install Melos
+        run: dart pub global activate melos
+      - name: Bootstrap Melos
+        run: melos bootstrap
+      - name: Analyze
+        run: melos analyze --fatal-infos
