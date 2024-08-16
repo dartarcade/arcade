@@ -7,10 +7,10 @@ class ArcadeConfiguration {
   /// The directory where the static files are located.
   static Directory get staticFilesDirectory => _staticFilesDirectory;
 
-  /// The directory where the views are located. To be used with [`dartseid_views`](https://pub.dev/packages/dartseid_views).
+  /// The directory where the views are located. To be used with [`arcade_views`](https://pub.dev/packages/arcade_views).
   static Directory get viewsDirectory => _viewsDirectory;
 
-  /// The extension of the views files. To be used with [`dartseid_views`](https://pub.dev/packages/dartseid_views).
+  /// The extension of the views files. To be used with [`arcade_views`](https://pub.dev/packages/arcade_views).
   static String get viewsExtension => _viewsExtension;
 
   /// The file where the environment variables are located.

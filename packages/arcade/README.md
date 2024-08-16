@@ -1,3 +1,3 @@
-# Dartseid
+# Arcade
 
-See the [documentation](https://dartseid.ex3.dev) for more information.
+See the [documentation](https://arcade.ex3.dev) for more information.
