@@ -50,7 +50,7 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
   Future<List<T>?> getList<T>(String key) {
     return get(key)
         .then((value) =>
-            value != null ? jsonDecode(value.toString()) as List : null)
+            value != null ? jsonDecode(value.toString()) as List : null,)
         .then((value) => value?.cast());
   }
 
@@ -70,13 +70,13 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
 
   @override
   Future<void> set(String key, dynamic value) async {
-    dynamic _value = value;
-    if (_value is Map) {
-      _value = jsonEncode(_value);
-    } else if (_value is Iterable) {
-      _value = jsonEncode(_value);
+    dynamic v = value;
+    if (v is Map) {
+      v = jsonEncode(v);
+    } else if (v is Iterable) {
+      v = jsonEncode(v);
     }
-    await _command.send_object(['SET', key, _value]);
+    await _command.send_object(['SET', key, v]);
   }
 
   @override
