@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "pub"
+    directories:
+      - "/packages/aracde"
+      - "/packages/aracde_cache"
+      - "/packages/aracde_cache_redis"
+      - "/packages/aracde_cli"
+      - "/packages/aracde_logger"
+      - "/packages/aracde_views"
+    schedule:
+      interval: "weekly"
