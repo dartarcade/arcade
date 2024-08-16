@@ -21,3 +21,5 @@ jobs:
         run: melos bootstrap
       - name: Analyze
         run: melos analyze --fatal-infos
+      - name: Format
+        run: melos format --set-exit-if-changed
