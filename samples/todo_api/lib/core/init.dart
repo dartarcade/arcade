@@ -1,10 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:todo_api/config/injection.config.dart';
+import 'package:todo_api/core/init.config.dart';
 
 final getIt = GetIt.instance;
 
 @injectableInit
-void configureDependencies() {
+Future<void> init() async {
+  await getIt.reset();
   getIt.init();
 }

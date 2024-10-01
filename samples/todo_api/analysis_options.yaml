@@ -1,9 +1,9 @@
 include: package:lint/analysis_options.yaml
 
 analyzer:
+  errors:
+    implicit_call_tearoffs: ignore
   exclude:
-    - lib/core/orm/*.dart
-    - "**/*.g.dart"
-    - "**/*.freezed.dart"
     - "**/*.config.dart"
-
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"

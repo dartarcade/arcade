@@ -1,35 +1,33 @@
 import 'dart:io';
 
 import 'package:arcade/arcade.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:todo_api/common/contexts/is_auth_context.dart';
+import 'package:todo_api/common/contexts/authenticated_request_context.dart';
 import 'package:todo_api/common/services/jwt_service.dart';
+import 'package:todo_api/core/init.dart';
 
 @singleton
 class AuthHook {
-  final JwtService _jwtService;
-
   const AuthHook(this._jwtService);
 
-  IsAuthContext hook(RequestContext context) {
-    final token = context.requestHeaders[HttpHeaders.authorizationHeader]?.firstOrNull
-        ?.split(' ')
-        .lastOrNull;
-    if (token == null) {
-      throw const UnauthorizedException(
-        message: 'Authorization header missing',
-      );
+  final JwtService _jwtService;
+
+  AuthenticatedRequestContext call(RequestContext context) {
+    final authHeader =
+        context.requestHeaders[HttpHeaders.authorizationHeader]?.firstOrNull;
+    if (authHeader == null) {
+      throw const UnauthorizedException();
     }
 
-    final payload = _jwtService.verifyToken(token);
-    if (payload == null) {
-      throw const UnauthorizedException(message: 'Invalid token');
-    }
+    final payload = _jwtService.verifyToken(
+      authHeader.replaceFirst('Bearer ', ''),
+    );
 
-    return IsAuthContext(
-      request: context.rawRequest,
+    return AuthenticatedRequestContext(
       route: context.route,
-      userId: payload.id,
+      request: context.rawRequest,
+      id: payload.id,
     );
   }
 }

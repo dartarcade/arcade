@@ -3,8 +3,32 @@ repository: https://github.com/dartarcade/arcade
 
 packages:
   - packages/*
+  - samples/*
+
+categories:
+  packages:
+    - packages/*
+  samples:
+    - samples/*
 
 scripts:
-  analyze:
-    run: dart analyze
-
+  todo:build_runner_clean:
+    exec: dart run build_runner clean
+    packageFilters:
+      scope:
+        - todo_api
+  todo:build_runner:
+    exec: dart run build_runner watch --delete-conflicting-outputs
+    packageFilters:
+      scope:
+        - todo_api
+  todo:docker:
+    exec: docker compose up
+    packageFilters:
+      scope:
+        - todo_api
+  todo:serve:
+    exec: arcade serve
+    packageFilters:
+      scope:
+        - todo_api

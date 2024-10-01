@@ -7,7 +7,7 @@ part 'jwt_payload.g.dart';
 @freezed
 class JwtPayload with _$JwtPayload {
   const factory JwtPayload({
-    required int id,
+    required String id,
   }) = _JwtPayload;
 
   factory JwtPayload.fromJson(Map<String, dynamic> json) =>

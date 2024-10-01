@@ -1,0 +1,22 @@
+# See https://drift.simonbinder.eu/docs/generation-options/in_other_builders/
+targets:
+  drift:
+    auto_apply_builders: false
+    builders:
+      drift_dev:analyzer:
+        enabled: true
+        options: &options
+          store_date_time_values_as_text: true
+          named_parameters: true
+          sql:
+            dialect: postgres
+      drift_dev:modular:
+        enabled: true
+        options: *options
+
+  $default:
+    dependencies:
+      - ":drift"
+    builders:
+      drift_dev:
+        enabled: false

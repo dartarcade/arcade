@@ -1,27 +1,28 @@
 import 'package:arcade/arcade.dart';
 import 'package:injectable/injectable.dart';
-import 'package:todo_api/common/dtos/response_with_message.dart';
-import 'package:todo_api/common/extensions/parse_with_luthor.dart';
-import 'package:todo_api/modules/auth/dtos/login_request.dart';
-import 'package:todo_api/modules/auth/dtos/register_request.dart';
+import 'package:todo_api/common/extensions/luthor_validation.dart';
+import 'package:todo_api/modules/auth/dtos/auth_dto.dart';
 import 'package:todo_api/modules/auth/services/auth_service.dart';
 
 @singleton
 class AuthController {
+  AuthController(this._authService) {
+    Route.group(
+      '/auth',
+      defineRoutes: () {
+        Route.post('/signup').handle(_signup);
+        Route.post('/login').handle(_login);
+      },
+    );
+  }
+
   final AuthService _authService;
 
-  AuthController(this._authService) {
-    Route.post('/auth/register').handle(register);
-    Route.post('/auth/login').handle(login);
+  Future<AuthResponseDto> _signup(RequestContext context) async {
+    return _authService.signup(await $AuthRequestDtoValidate.validate(context));
   }
 
-  Future<ResponseWithMessage> register(RequestContext context) async {
-    return _authService
-        .register(await context.parseWithLuthor(RegisterRequest.validate));
-  }
-
-  Future<LoginResponse> login(RequestContext context) async {
-    return _authService
-        .login(await context.parseWithLuthor(LoginRequest.validate));
+  Future<AuthResponseDto> _login(RequestContext context) async {
+    return _authService.login(await $AuthRequestDtoValidate.validate(context));
   }
 }

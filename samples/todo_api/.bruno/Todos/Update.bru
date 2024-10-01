@@ -1,0 +1,25 @@
+meta {
+  name: Update
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{url}}/todos/:id
+  body: json
+  auth: bearer
+}
+
+params:path {
+  id: d95e55b7-6e33-4cce-8bbb-cb439ca6e22a
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "title": "I updated this one"
+  }
+}

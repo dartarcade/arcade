@@ -1,0 +1,19 @@
+meta {
+  name: Delete
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{url}}/todos/:id
+  body: none
+  auth: bearer
+}
+
+params:path {
+  id: d95e55b7-6e33-4cce-8bbb-cb439ca6e22a
+}
+
+auth:bearer {
+  token: {{token}}
+}

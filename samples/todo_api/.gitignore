@@ -1,17 +1,12 @@
 # https://dart.dev/guides/libraries/private-files
 # Created by `dart pub`
 .dart_tool/
-
-# Node
-node_modules
-
+.idea
 .env
-dev.db
 
-
-# Generated files
-
-lib/core/orm/
-**/*.freezed.dart
-**/*.g.dart
-**/*.config.dart
+lib/**/*.config.dart
+lib/**/*.drift.dart
+lib/**/*.freezed.dart
+lib/**/*.g.dart
+lib/**/*.superclass.dart
+.DS_Store
