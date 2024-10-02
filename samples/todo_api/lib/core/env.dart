@@ -4,7 +4,7 @@ part 'env.g.dart';
 
 @Envied()
 class Env {
-  @EnviedField()
+  @EnviedField(varName: 'PORT')
   static const int port = _Env.port;
 
   @EnviedField()
