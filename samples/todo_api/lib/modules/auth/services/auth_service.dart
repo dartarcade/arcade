@@ -32,7 +32,7 @@ class AuthService {
     final insertedUser = await _db.users
         .insertReturning(
           request
-              .copyWith(password: await _hashService.hash(request.password))
+              .copyWith(password: _hashService.hash(request.password))
               .insertCompanion,
         )
         .then((user) => user.withoutPassword);
@@ -55,7 +55,7 @@ class AuthService {
       throw const BadRequestException(message: 'Invalid credentials');
     }
 
-    if (!await _hashService.verify(request.password, user.password)) {
+    if (!_hashService.verify(request.password, user.password)) {
       throw const BadRequestException(message: 'Invalid credentials');
     }
 

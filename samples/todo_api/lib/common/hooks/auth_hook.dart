@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:arcade/arcade.dart';
-import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:todo_api/common/contexts/authenticated_request_context.dart';
 import 'package:todo_api/common/services/jwt_service.dart';
-import 'package:todo_api/core/init.dart';
 
 @singleton
 class AuthHook {

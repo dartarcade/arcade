@@ -8,16 +8,11 @@ import 'package:injectable/injectable.dart';
 class HashService {
   const HashService();
 
-  Future<String> hash(String password) {
-    // We use Isolates to improve performance as hashing is computationally expensive
-    return Isolate.run(
-      () => argon2id(password.codeUnits, randomString(16).codeUnits).encoded(),
-    );
+  String hash(String password) {
+    return argon2id(password.codeUnits, randomString(16).codeUnits).encoded();
   }
 
-  Future<bool> verify(String password, String hash) {
-    return Isolate.run(
-      () => argon2Verify(hash, password.codeUnits),
-    );
+  bool verify(String password, String hash) {
+    return argon2Verify(hash, password.codeUnits);
   }
 }
