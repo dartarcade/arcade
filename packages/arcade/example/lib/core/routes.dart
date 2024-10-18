@@ -26,11 +26,13 @@ void defineRoutes() {
   route.get('/').handle(exampleController.index);
 
   route.get('/get').before(checkAuthMiddleware).handle(exampleController.get);
-  route.get('/get/:message')
+  route
+      .get('/get/:message')
       .before(checkAuthMiddleware)
       .handle(exampleController.get);
 
-  route.post('/')
+  route
+      .post('/')
       .before(checkAuthMiddleware)
       .before(printUserIdMiddleware)
       .handle(exampleController.post)
@@ -45,7 +47,8 @@ void defineRoutes() {
 
   route.post('/print-body').handle(exampleController.printBodyAsString);
 
-  route.get('/ws')
+  route
+      .get('/ws')
       .before(checkAuthMiddleware)
       .handleWebSocket(
         exampleController.ws,
@@ -71,9 +74,9 @@ void defineRoutes() {
     defineRoutes: (route) {
       route.get('/').handle((context) => 'Group route');
       route.get('/hello/:name').handle(
-        (context) =>
-            'Group route with path parameter: ${context.pathParameters['name']}',
-      );
+            (context) =>
+                'Group route with path parameter: ${context.pathParameters['name']}',
+          );
     },
     after: [
       (context, handleResult) {
