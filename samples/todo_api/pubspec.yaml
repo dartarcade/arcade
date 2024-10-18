@@ -1,12 +1,12 @@
 name: todo_api
 description: Starter Arcade application using recommended code generation libraries
-version: 1.0.0
+version: 1.0.1
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
-  arcade: ^0.1.4+2
+  arcade: ^0.2.0
   dart_jsonwebtoken: ^2.14.1
   drift: ^2.20.3
   drift_postgres: ^1.3.0

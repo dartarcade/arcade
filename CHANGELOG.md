@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-10-18
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - [`arcade` - `v0.2.0`](#arcade---v020)
+
+---
+
+#### `arcade` - `v0.2.0`
+
+ - **BREAKING** **FEAT**: Move Route to route, add types to route.group ([#36](https://github.com/dartarcade/arcade/issues/36)).
+
+
 ## 2024-07-29
 
 ### Changes
