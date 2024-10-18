@@ -1,3 +1,9 @@
+## 0.2.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FEAT**: Move Route to route, add types to route.group ([#36](https://github.com/dartarcade/arcade/issues/36)).
+
 ## 0.1.4+2
 
  - **FIX**: Duplicate global hooks.
