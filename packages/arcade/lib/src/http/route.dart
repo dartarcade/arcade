@@ -53,7 +53,7 @@ abstract class BaseRoute<T extends RequestContext> {
 
 String _routeGroupPrefix = '';
 
-class Route<T extends RequestContext> extends BaseRoute<T> {
+class _Route<T extends RequestContext> extends BaseRoute<T> {
   @override
   final HttpMethod? method;
 
@@ -81,172 +81,62 @@ class Route<T extends RequestContext> extends BaseRoute<T> {
   @override
   OnConnection<T>? onWebSocketConnect;
 
-  Route._(this.method, this.path, {this.notFoundHandler});
-
-  static void registerGlobalBeforeHook(BeforeHookHandler hook) {
-    globalBeforeHooks.add(hook);
-  }
-
-  static void registerAllGlobalBeforeHooks(List<BeforeHookHandler> hooks) {
-    globalBeforeHooks.addAll(hooks);
-  }
-
-  static void registerGlobalAfterHook(AfterHookHandler hook) {
-    globalAfterHooks.add(hook);
-  }
-
-  static void registerAllGlobalAfterHooks(List<AfterHookHandler> hooks) {
-    globalAfterHooks.addAll(hooks);
-  }
-
-  static void registerGlobalAfterWebSocketHook(AfterWebSocketHookHandler hook) {
-    globalAfterWebSocketHooks.add(hook);
-  }
-
-  static void registerAllGlobalAfterWebSocketHooks(
-    List<AfterWebSocketHookHandler> hooks,
-  ) {
-    globalAfterWebSocketHooks.addAll(hooks);
-  }
-
-  static void group(
-    String path, {
-    required FutureOr<void> Function() defineRoutes,
-    List<BeforeHookHandler> before = const [],
-    List<AfterHookHandler> after = const [],
-  }) {
-    validatePreviousRouteHasHandler();
-    final lastRouteIndex = routes.length - 1;
-    final previousRouteGroupPrefix = _routeGroupPrefix;
-    _routeGroupPrefix = previousRouteGroupPrefix + path;
-    defineRoutes();
-    _routeGroupPrefix = previousRouteGroupPrefix;
-    validatePreviousRouteHasHandler();
-    routes.sublist(lastRouteIndex + 1).forEach((route) {
-      route.beforeHooks.addAll(before);
-      route.afterHooks.addAll(after);
-    });
-  }
-
-  static BeforeRoute any(String path) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute =
-        BeforeRoute._(HttpMethod.any, _routeGroupPrefix + path, []);
-    return currentProcessingRoute! as BeforeRoute;
-  }
-
-  static BeforeRoute get(String path) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute =
-        BeforeRoute._(HttpMethod.get, _routeGroupPrefix + path, []);
-    return currentProcessingRoute! as BeforeRoute;
-  }
-
-  static BeforeRoute post(String path) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute =
-        BeforeRoute._(HttpMethod.post, _routeGroupPrefix + path, []);
-    return currentProcessingRoute! as BeforeRoute;
-  }
-
-  static BeforeRoute put(String path) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute =
-        BeforeRoute._(HttpMethod.put, _routeGroupPrefix + path, []);
-    return currentProcessingRoute! as BeforeRoute;
-  }
-
-  static BeforeRoute delete(String path) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute =
-        BeforeRoute._(HttpMethod.delete, _routeGroupPrefix + path, []);
-    return currentProcessingRoute! as BeforeRoute;
-  }
-
-  static BeforeRoute patch(String path) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute =
-        BeforeRoute._(HttpMethod.patch, _routeGroupPrefix + path, []);
-    return currentProcessingRoute! as BeforeRoute;
-  }
-
-  static BeforeRoute head(String path) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute =
-        BeforeRoute._(HttpMethod.head, _routeGroupPrefix + path, []);
-    return currentProcessingRoute! as BeforeRoute;
-  }
-
-  static BeforeRoute options(String path) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute =
-        BeforeRoute._(HttpMethod.options, _routeGroupPrefix + path, []);
-    return currentProcessingRoute! as BeforeRoute;
-  }
-
-  static AfterRoute notFound<T extends RequestContext>(
-    RouteHandler<T> handler,
-  ) {
-    validatePreviousRouteHasHandler();
-    currentProcessingRoute = AfterRoute<T>._(null, '', [], [])
-      ..notFoundHandler = handler;
-    return currentProcessingRoute! as AfterRoute;
-  }
+  _Route._(this.method, this.path, {this.notFoundHandler});
 }
 
-class BeforeRoute<T extends RequestContext> extends Route<T> {
-  BeforeRoute._(super.method, super.path, List<BeforeHookHandler> beforeHooks)
+class _BeforeRoute<T extends RequestContext> extends _Route<T> {
+  _BeforeRoute._(super.method, super.path, List<BeforeHookHandler> beforeHooks)
       : super._() {
     this.beforeHooks.addAll(beforeHooks);
   }
 
-  BeforeRoute<U> before<U extends RequestContext>(
+  _BeforeRoute<U> before<U extends RequestContext>(
     BeforeHookHandler<T, U> hook,
   ) {
     beforeHooks.add((context) => hook(context as T));
-    currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
+    currentProcessingRoute = _BeforeRoute<U>._(method, path, beforeHooks)
       ..handler = handler as RouteHandler<RequestContext>?
       ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
       ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
-    return currentProcessingRoute! as BeforeRoute<U>;
+    return currentProcessingRoute! as _BeforeRoute<U>;
   }
 
-  BeforeRoute<U> beforeAll<U extends RequestContext>(
+  _BeforeRoute<U> beforeAll<U extends RequestContext>(
     List<BeforeHookHandler> hooks,
   ) {
     beforeHooks.addAll(hooks);
-    currentProcessingRoute = BeforeRoute<U>._(method, path, beforeHooks)
+    currentProcessingRoute = _BeforeRoute<U>._(method, path, beforeHooks)
       ..handler = handler as RouteHandler<RequestContext>?
       ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
       ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
-    return currentProcessingRoute! as BeforeRoute<U>;
+    return currentProcessingRoute! as _BeforeRoute<U>;
   }
 
-  AfterRoute<T> handle(RouteHandler<T> handler) {
+  _AfterRoute<T> handle(RouteHandler<T> handler) {
     this.handler = handler;
-    currentProcessingRoute = AfterRoute<T>._(method, path, beforeHooks, [])
+    currentProcessingRoute = _AfterRoute<T>._(method, path, beforeHooks, [])
       ..handler = handler as RouteHandler<RequestContext>?
       ..wsHandler = wsHandler
       ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
-    return currentProcessingRoute! as AfterRoute<T>;
+    return currentProcessingRoute! as _AfterRoute<T>;
   }
 
-  AfterWebSocketRoute<T> handleWebSocket(
+  _AfterWebSocketRoute<T> handleWebSocket(
     WebSocketHandler<T> wsHandler, {
     OnConnection<T>? onConnect,
   }) {
     this.wsHandler = wsHandler;
     currentProcessingRoute =
-        AfterWebSocketRoute<T>._(method, path, beforeHooks, [])
+        _AfterWebSocketRoute<T>._(method, path, beforeHooks, [])
           ..wsHandler = wsHandler
           ..onWebSocketConnect = onConnect
           ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
-    return currentProcessingRoute! as AfterWebSocketRoute<T>;
+    return currentProcessingRoute! as _AfterWebSocketRoute<T>;
   }
 }
 
-class AfterRoute<T extends RequestContext> extends Route<T> {
-  AfterRoute._(
+class _AfterRoute<T extends RequestContext> extends _Route<T> {
+  _AfterRoute._(
     super.method,
     super.path,
     List<BeforeHookHandler> beforeHooks,
@@ -256,34 +146,34 @@ class AfterRoute<T extends RequestContext> extends Route<T> {
     this.afterHooks.addAll(afterHooks);
   }
 
-  AfterRoute<U> after<U extends RequestContext, V, W>(
+  _AfterRoute<U> after<U extends RequestContext, V, W>(
     AfterHookHandler<T, U, V, W> hook,
   ) {
     afterHooks
         .add((context, handleResult) => hook(context as T, handleResult as V));
     currentProcessingRoute =
-        AfterRoute<U>._(method, path, beforeHooks, afterHooks)
+        _AfterRoute<U>._(method, path, beforeHooks, afterHooks)
           ..handler = handler as RouteHandler<RequestContext>?
           ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
           ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
-    return currentProcessingRoute! as AfterRoute<U>;
+    return currentProcessingRoute! as _AfterRoute<U>;
   }
 
-  AfterRoute<U> afterAll<U extends RequestContext>(
+  _AfterRoute<U> afterAll<U extends RequestContext>(
     List<AfterHookHandler> hooks,
   ) {
     afterHooks.addAll(hooks);
     currentProcessingRoute =
-        AfterRoute<U>._(method, path, beforeHooks, afterHooks)
+        _AfterRoute<U>._(method, path, beforeHooks, afterHooks)
           ..handler = handler as RouteHandler<RequestContext>?
           ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
           ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
-    return currentProcessingRoute! as AfterRoute<U>;
+    return currentProcessingRoute! as _AfterRoute<U>;
   }
 }
 
-class AfterWebSocketRoute<T extends RequestContext> extends Route<T> {
-  AfterWebSocketRoute._(
+class _AfterWebSocketRoute<T extends RequestContext> extends _Route<T> {
+  _AfterWebSocketRoute._(
     super.method,
     super.path,
     List<BeforeHookHandler> beforeHooks,
@@ -293,31 +183,149 @@ class AfterWebSocketRoute<T extends RequestContext> extends Route<T> {
     this.afterWebSocketHooks.addAll(afterWebSocketHooks);
   }
 
-  AfterWebSocketRoute<U> after<U extends RequestContext, V, W>(
+  _AfterWebSocketRoute<U> after<U extends RequestContext, V, W>(
     AfterWebSocketHookHandler<T, U, V, W> hook,
   ) {
     afterWebSocketHooks.add(
       (context, handleResult, id) => hook(context as T, handleResult as V, id),
     );
-    currentProcessingRoute =
-        AfterWebSocketRoute<U>._(method, path, beforeHooks, afterWebSocketHooks)
-          ..handler = handler as RouteHandler<RequestContext>?
-          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
-          ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
-          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
-    return currentProcessingRoute! as AfterWebSocketRoute<U>;
+    currentProcessingRoute = _AfterWebSocketRoute<U>._(
+      method,
+      path,
+      beforeHooks,
+      afterWebSocketHooks,
+    )
+      ..handler = handler as RouteHandler<RequestContext>?
+      ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
+      ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
+      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    return currentProcessingRoute! as _AfterWebSocketRoute<U>;
   }
 
-  AfterRoute<U> afterAll<U extends RequestContext>(
+  _AfterRoute<U> afterAll<U extends RequestContext>(
     List<AfterWebSocketHookHandler> hooks,
   ) {
     afterWebSocketHooks.addAll(hooks);
     currentProcessingRoute =
-        AfterRoute<U>._(method, path, beforeHooks, afterHooks)
+        _AfterRoute<U>._(method, path, beforeHooks, afterHooks)
           ..handler = handler as RouteHandler<RequestContext>?
           ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
           ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
           ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
-    return currentProcessingRoute! as AfterRoute<U>;
+    return currentProcessingRoute! as _AfterRoute<U>;
   }
 }
+
+final class _RouteBuilder<T extends RequestContext> {
+  const _RouteBuilder._();
+
+  void registerGlobalBeforeHook(BeforeHookHandler hook) {
+    globalBeforeHooks.add(hook);
+  }
+
+  void registerAllGlobalBeforeHooks(List<BeforeHookHandler> hooks) {
+    globalBeforeHooks.addAll(hooks);
+  }
+
+  void registerGlobalAfterHook(AfterHookHandler hook) {
+    globalAfterHooks.add(hook);
+  }
+
+  void registerAllGlobalAfterHooks(List<AfterHookHandler> hooks) {
+    globalAfterHooks.addAll(hooks);
+  }
+
+  void registerGlobalAfterWebSocketHook(AfterWebSocketHookHandler hook) {
+    globalAfterWebSocketHooks.add(hook);
+  }
+
+  void registerAllGlobalAfterWebSocketHooks(
+    List<AfterWebSocketHookHandler> hooks,
+  ) {
+    globalAfterWebSocketHooks.addAll(hooks);
+  }
+
+  void group<R extends RequestContext>(
+    String path, {
+    required FutureOr<void> Function(_RouteBuilder<R> route) defineRoutes,
+    List<BeforeHookHandler> before = const [],
+    List<AfterHookHandler> after = const [],
+  }) {
+    validatePreviousRouteHasHandler();
+    final lastRouteIndex = routes.length - 1;
+    final previousRouteGroupPrefix = _routeGroupPrefix;
+    _routeGroupPrefix = previousRouteGroupPrefix + path;
+    defineRoutes(_RouteBuilder<R>._());
+    _routeGroupPrefix = previousRouteGroupPrefix;
+    validatePreviousRouteHasHandler();
+    routes.sublist(lastRouteIndex + 1).forEach((route) {
+      route.beforeHooks.addAll(before);
+      route.afterHooks.addAll(after);
+    });
+  }
+
+  _BeforeRoute<T> any(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute =
+        _BeforeRoute._(HttpMethod.any, _routeGroupPrefix + path, []);
+    return currentProcessingRoute! as _BeforeRoute<T>;
+  }
+
+  _BeforeRoute<T> get(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute =
+        _BeforeRoute<T>._(HttpMethod.get, _routeGroupPrefix + path, []);
+    return currentProcessingRoute! as _BeforeRoute<T>;
+  }
+
+  _BeforeRoute<T> post(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute =
+        _BeforeRoute<T>._(HttpMethod.post, _routeGroupPrefix + path, []);
+    return currentProcessingRoute! as _BeforeRoute<T>;
+  }
+
+  _BeforeRoute<T> put(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute =
+        _BeforeRoute<T>._(HttpMethod.put, _routeGroupPrefix + path, []);
+    return currentProcessingRoute! as _BeforeRoute<T>;
+  }
+
+  _BeforeRoute<T> delete(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute =
+        _BeforeRoute<T>._(HttpMethod.delete, _routeGroupPrefix + path, []);
+    return currentProcessingRoute! as _BeforeRoute<T>;
+  }
+
+  _BeforeRoute<T> patch(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute =
+        _BeforeRoute<T>._(HttpMethod.patch, _routeGroupPrefix + path, []);
+    return currentProcessingRoute! as _BeforeRoute<T>;
+  }
+
+  _BeforeRoute<T> head(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute =
+        _BeforeRoute<T>._(HttpMethod.head, _routeGroupPrefix + path, []);
+    return currentProcessingRoute! as _BeforeRoute<T>;
+  }
+
+  _BeforeRoute<T> options(String path) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute =
+        _BeforeRoute<T>._(HttpMethod.options, _routeGroupPrefix + path, []);
+    return currentProcessingRoute! as _BeforeRoute<T>;
+  }
+
+  _AfterRoute notFound(RouteHandler handler) {
+    validatePreviousRouteHasHandler();
+    currentProcessingRoute = _AfterRoute<T>._(null, '', [], [])
+      ..notFoundHandler = handler;
+    return currentProcessingRoute! as _AfterRoute;
+  }
+}
+
+const route = _RouteBuilder._();

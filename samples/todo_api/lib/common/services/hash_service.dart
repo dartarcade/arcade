@@ -1,5 +1,3 @@
-import 'dart:isolate';
-
 import 'package:hashlib/hashlib.dart';
 import 'package:hashlib/random.dart';
 import 'package:injectable/injectable.dart';

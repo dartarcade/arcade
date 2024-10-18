@@ -7,11 +7,11 @@ import 'package:todo_api/modules/auth/services/auth_service.dart';
 @singleton
 class AuthController {
   AuthController(this._authService) {
-    Route.group(
+    route.group<RequestContext>(
       '/auth',
-      defineRoutes: () {
-        Route.post('/signup').handle(_signup);
-        Route.post('/login').handle(_login);
+      defineRoutes: (route) {
+        route.post('/signup').handle(_signup);
+        route.post('/login').handle(_login);
       },
     );
   }
