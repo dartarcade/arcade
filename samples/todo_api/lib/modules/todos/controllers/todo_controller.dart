@@ -11,25 +11,14 @@ import 'package:todo_api/modules/todos/services/todo_service.dart';
 @singleton
 class TodoController {
   TodoController(AuthHook authHook, this._todoService) {
-    Route.group(
+    route.group<AuthenticatedRequestContext>(
       '/todos',
       before: [authHook],
-      defineRoutes: () {
-        Route.post('/').handle(
-          (context) => _createTodo(context as AuthenticatedRequestContext),
-        );
-
-        Route.get('/').handle(
-          (context) => _getTodos(context as AuthenticatedRequestContext),
-        );
-
-        Route.patch('/:id').handle(
-          (context) => _updateTodo(context as AuthenticatedRequestContext),
-        );
-
-        Route.delete('/:id').handle(
-          (context) => _deleteTodo(context as AuthenticatedRequestContext),
-        );
+      defineRoutes: (route) {
+        route.post('/').handle(_createTodo);
+        route.get('/').handle(_getTodos);
+        route.patch('/:id').handle(_updateTodo);
+        route.delete('/:id').handle(_deleteTodo);
       },
     );
   }
@@ -37,7 +26,7 @@ class TodoController {
   final TodoService _todoService;
 
   Future<TodoWithoutUser> _createTodo(
-    AuthenticatedRequestContext context,
+    covariant AuthenticatedRequestContext context,
   ) async {
     return _todoService.createTodo(
       context.id,
@@ -46,13 +35,13 @@ class TodoController {
   }
 
   Future<List<TodoWithoutUser>> _getTodos(
-    AuthenticatedRequestContext context,
+    covariant AuthenticatedRequestContext context,
   ) {
     return _todoService.getTodos(context.id);
   }
 
   Future<TodoWithoutUser> _updateTodo(
-    AuthenticatedRequestContext context,
+    covariant AuthenticatedRequestContext context,
   ) async {
     final id = context.pathParameters['id']!;
     return _todoService.updateTodo(
@@ -63,7 +52,7 @@ class TodoController {
   }
 
   Future<TodoWithoutUser> _deleteTodo(
-    AuthenticatedRequestContext context,
+    covariant AuthenticatedRequestContext context,
   ) async {
     final id = context.pathParameters['id']!;
     return _todoService.deleteTodo(id, context.id);

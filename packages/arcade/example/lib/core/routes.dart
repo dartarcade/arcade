@@ -8,29 +8,29 @@ import 'package:arcade_example/core/middlewares.dart';
 final exampleController = ExampleController();
 
 void defineRoutes() {
-  Route.registerGlobalBeforeHook((context) {
+  route.registerGlobalBeforeHook((context) {
     print('Global before hook');
     return context;
   });
 
-  Route.registerGlobalAfterHook((context, handleResult) {
+  route.registerGlobalAfterHook((context, handleResult) {
     print('Global after hook');
     return (context, handleResult);
   });
 
-  Route.registerGlobalAfterWebSocketHook((context, handleResult, id) {
+  route.registerGlobalAfterWebSocketHook((context, handleResult, id) {
     print('Global after websocket hook for $id');
     return (context, handleResult, id);
   });
 
-  Route.get('/').handle(exampleController.index);
+  route.get('/').handle(exampleController.index);
 
-  Route.get('/get').before(checkAuthMiddleware).handle(exampleController.get);
-  Route.get('/get/:message')
+  route.get('/get').before(checkAuthMiddleware).handle(exampleController.get);
+  route.get('/get/:message')
       .before(checkAuthMiddleware)
       .handle(exampleController.get);
 
-  Route.post('/')
+  route.post('/')
       .before(checkAuthMiddleware)
       .before(printUserIdMiddleware)
       .handle(exampleController.post)
@@ -41,11 +41,11 @@ void defineRoutes() {
         ),
       );
 
-  Route.get('/hello/:name').handle(exampleController.hello);
+  route.get('/hello/:name').handle(exampleController.hello);
 
-  Route.post('/print-body').handle(exampleController.printBodyAsString);
+  route.post('/print-body').handle(exampleController.printBodyAsString);
 
-  Route.get('/ws')
+  route.get('/ws')
       .before(checkAuthMiddleware)
       .handleWebSocket(
         exampleController.ws,
@@ -58,9 +58,9 @@ void defineRoutes() {
     },
   );
 
-  Route.get('/any/*').handle((context) => 'Any route');
+  route.get('/any/*').handle((context) => 'Any route');
 
-  Route.group(
+  route.group<RequestContext>(
     '/group',
     before: [
       (context) {
@@ -68,9 +68,9 @@ void defineRoutes() {
         return context;
       },
     ],
-    defineRoutes: () {
-      Route.get('/').handle((context) => 'Group route');
-      Route.get('/hello/:name').handle(
+    defineRoutes: (route) {
+      route.get('/').handle((context) => 'Group route');
+      route.get('/hello/:name').handle(
         (context) =>
             'Group route with path parameter: ${context.pathParameters['name']}',
       );
@@ -83,7 +83,7 @@ void defineRoutes() {
     ],
   );
 
-  Route.notFound((RequestContext context) {
+  route.notFound((RequestContext context) {
     context.responseHeaders.contentType = ContentType.json;
     return jsonEncode({'message': 'Not found'});
   });
