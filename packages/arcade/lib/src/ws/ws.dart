@@ -64,3 +64,9 @@ Future<void> setupWsConnection<T extends RequestContext>({
 void emitTo(String id, dynamic message) {
   wsMap[id]?.add(message);
 }
+
+void emitToAll(dynamic message) {
+  for (final ws in wsMap.values) {
+    ws.add(message);
+  }
+}
