@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-10-24
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade` - `v0.2.1`](#arcade---v021)
+
+---
+
+#### `arcade` - `v0.2.1`
+
+ - **FEAT**: Add emitToAll function for websockets.
+
+
 ## 2024-10-18
 
 ### Changes

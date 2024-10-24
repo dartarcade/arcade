@@ -52,7 +52,7 @@ packages:
       path: "../../packages/arcade"
       relative: true
     source: path
-    version: "0.1.4+2"
+    version: "0.2.0"
   arcade_config:
     dependency: "direct overridden"
     description:
