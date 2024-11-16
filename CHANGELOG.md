@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-11-16
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - [`arcade_config` - `v0.1.0`](#arcade_config---v010)
+ - [`arcade_views` - `v0.1.0`](#arcade_views---v010)
+ - [`todo_api` - `v2.0.0`](#todo_api---v200)
+
+Packages with other changes:
+
+ - [`arcade` - `v0.2.1+2`](#arcade---v0212)
+ - [`arcade_logger` - `v0.0.5+1`](#arcade_logger---v0051)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `arcade` - `v0.2.1+2`
+ - `arcade_logger` - `v0.0.5+1`
+
+---
+
+#### `arcade_config` - `v0.1.0`
+
+ - **BREAKING** **FEAT**: Move views to jinja templates ([#38](https://github.com/dartarcade/arcade/issues/38)).
+
+#### `arcade_views` - `v0.1.0`
+
+ - **BREAKING** **FEAT**: Move views to jinja templates ([#38](https://github.com/dartarcade/arcade/issues/38)).
+
+#### `todo_api` - `v2.0.0`
+
+ - **BREAKING** **FEAT**: Move views to jinja templates ([#38](https://github.com/dartarcade/arcade/issues/38)).
+
+
 ## 2024-10-24
 
 ### Changes
