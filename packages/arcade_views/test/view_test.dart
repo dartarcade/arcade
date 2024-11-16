@@ -54,28 +54,16 @@ void main() {
     });
   });
 
-  group('partials', () {
-    test('should return a string for partials', () async {
-      final result = view('partial', {'name': '_'});
+  group('inheritance', () {
+    test('should return a string for inheritance', () async {
+      final result = view('inheritance', {'name': '_'});
       expect(result, isA<String>());
     });
 
-    test('should return a string with data for partials', () async {
-      final result = view('partial', {'name': 'John'});
+    test('should return a string with data for inheritance', () async {
+      final result = view('inheritance', {'name': 'John'});
       expect(result, isA<String>());
       expect(result, contains('John'));
-    });
-
-    test('partials should be relative', () {
-      final result = view('nested/partial');
-      expect(result, isA<String>());
-      expect(result, contains('Partial'));
-    });
-
-    test('partials starting with a / should be absolute', () {
-      final result = view('nested/absolute', {'name': 'Absolute'});
-      expect(result, isA<String>());
-      expect(result, contains('Absolute'));
     });
   });
 }

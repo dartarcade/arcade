@@ -19,7 +19,7 @@ class ArcadeConfiguration {
   static String _rootLoggerName = 'ROOT';
   static Directory _staticFilesDirectory = Directory('static');
   static Directory _viewsDirectory = Directory('views');
-  static String _viewsExtension = '.html';
+  static String _viewsExtension = '.jinja';
   static File? _envFile;
 
   ArcadeConfiguration._();
