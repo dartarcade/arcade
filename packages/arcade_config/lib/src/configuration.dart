@@ -7,6 +7,8 @@ class ArcadeConfiguration {
   /// The directory where the static files are located.
   static Directory get staticFilesDirectory => _staticFilesDirectory;
 
+  static Map<String, Object> get staticFilesHeaders => _staticFilesHeaders;
+
   /// The directory where the views are located. To be used with [`arcade_views`](https://pub.dev/packages/arcade_views).
   static Directory get viewsDirectory => _viewsDirectory;
 
@@ -18,6 +20,7 @@ class ArcadeConfiguration {
 
   static String _rootLoggerName = 'ROOT';
   static Directory _staticFilesDirectory = Directory('static');
+  static Map<String, Object> _staticFilesHeaders = {};
   static Directory _viewsDirectory = Directory('views');
   static String _viewsExtension = '.jinja';
   static File? _envFile;
@@ -27,6 +30,7 @@ class ArcadeConfiguration {
   static void override({
     String? rootLoggerName,
     Directory? staticFilesDirectory,
+    Map<String, Object>? staticFilesHeaders,
     Directory? viewsDirectory,
     String? viewsExtension,
     File? envFile,
@@ -36,6 +40,9 @@ class ArcadeConfiguration {
     }
     if (staticFilesDirectory != null) {
       ArcadeConfiguration._staticFilesDirectory = staticFilesDirectory;
+    }
+    if (staticFilesHeaders != null) {
+      ArcadeConfiguration._staticFilesHeaders = staticFilesHeaders;
     }
     if (viewsDirectory != null) {
       ArcadeConfiguration._viewsDirectory = viewsDirectory;
