@@ -1,3 +1,7 @@
+## 2.1.0
+
+ - **FEAT**: add support for custom headers in static file responses ([#39](https://github.com/dartarcade/arcade/issues/39)).
+
 ## 2.0.0
 
 > Note: This release has breaking changes.

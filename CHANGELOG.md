@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-11-19
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade` - `v0.2.2`](#arcade---v022)
+ - [`arcade_config` - `v0.1.1`](#arcade_config---v011)
+ - [`todo_api` - `v2.1.0`](#todo_api---v210)
+ - [`arcade_views` - `v0.1.0+1`](#arcade_views---v0101)
+ - [`arcade_logger` - `v0.0.5+2`](#arcade_logger---v0052)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `arcade_views` - `v0.1.0+1`
+ - `arcade_logger` - `v0.0.5+2`
+
+---
+
+#### `arcade` - `v0.2.2`
+
+ - **FEAT**: add support for custom headers in static file responses ([#39](https://github.com/dartarcade/arcade/issues/39)).
+
+#### `arcade_config` - `v0.1.1`
+
+ - **FEAT**: add support for custom headers in static file responses ([#39](https://github.com/dartarcade/arcade/issues/39)).
+
+#### `todo_api` - `v2.1.0`
+
+ - **FEAT**: add support for custom headers in static file responses ([#39](https://github.com/dartarcade/arcade/issues/39)).
+
+
 ## 2024-11-16
 
 ### Changes
