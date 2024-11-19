@@ -149,6 +149,11 @@ Future<void> serveStaticFile({
   final length = await file.length();
   response.headers.contentLength = length;
 
+  for (final MapEntry(:key, :value)
+      in ArcadeConfiguration.staticFilesHeaders.entries) {
+    response.headers.add(key, value);
+  }
+
   await file.openRead().pipe(response);
   response.close();
 }
