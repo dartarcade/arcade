@@ -5,7 +5,7 @@ import 'package:arcade/arcade.dart';
 import 'package:arcade/src/helpers/response_helpers.dart';
 import 'package:uuid/uuid.dart';
 
-final wsMap = <String, WebSocket>{};
+final _wsMap = <String, WebSocket>{};
 
 typedef Emit = FutureOr<void> Function(dynamic message);
 typedef Close = FutureOr<void> Function();
@@ -40,7 +40,7 @@ Future<void> setupWsConnection<T extends RequestContext>({
   final wsId = const Uuid().v4();
   final ws = await WebSocketTransformer.upgrade(context.rawRequest);
 
-  wsMap[wsId] = ws;
+  _wsMap[wsId] = ws;
 
   final WebSocketManager manager = (
     id: wsId,
@@ -55,18 +55,18 @@ Future<void> setupWsConnection<T extends RequestContext>({
       wsHandler(ctx, message, manager);
     },
     onDone: () {
-      wsMap.remove(wsId);
+      _wsMap.remove(wsId);
       runAfterWebSocketHooks(ctx, route, null, wsId);
     },
   );
 }
 
 void emitTo(String id, dynamic message) {
-  wsMap[id]?.add(message);
+  _wsMap[id]?.add(message);
 }
 
 void emitToAll(dynamic message) {
-  for (final ws in wsMap.values) {
+  for (final ws in _wsMap.values) {
     ws.add(message);
   }
 }
