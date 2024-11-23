@@ -53,13 +53,6 @@ packages:
       relative: true
     source: path
     version: "0.2.2"
-  arcade_cache:
-    dependency: "direct overridden"
-    description:
-      path: "../../packages/arcade_cache"
-      relative: true
-    source: path
-    version: "0.0.2"
   arcade_config:
     dependency: "direct overridden"
     description:

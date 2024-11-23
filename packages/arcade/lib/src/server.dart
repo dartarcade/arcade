@@ -21,6 +21,11 @@ Future<void> runServer({
   required int port,
   required InitApplication init,
 }) async {
+  const isDev = bool.fromEnvironment('dart.vm.product');
+  if (isDev) {
+    ArcadeConfiguration.override(logLevel: LogLevel.debug);
+  }
+
   await Logger.init();
 
   _canServeStaticFiles =
