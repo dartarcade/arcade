@@ -6,6 +6,9 @@ repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_confi
 environment:
   sdk: ^3.0.5
 
+dependencies:
+  arcade_logger: ^0.0.5+2
+
 dev_dependencies:
   lint: ^2.3.0
   test: ^1.25.7

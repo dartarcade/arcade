@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:arcade_logger/arcade_logger.dart';
+
 class ArcadeConfiguration {
   /// The name of the default logger.
   static String get rootLoggerName => _rootLoggerName;
@@ -18,12 +20,16 @@ class ArcadeConfiguration {
   /// The file where the environment variables are located.
   static File? get envFile => _envFile;
 
+  /// The log level to be used.
+  static LogLevel get logLevel => _logLevel;
+
   static String _rootLoggerName = 'ROOT';
   static Directory _staticFilesDirectory = Directory('static');
   static Map<String, Object> _staticFilesHeaders = {};
   static Directory _viewsDirectory = Directory('views');
   static String _viewsExtension = '.jinja';
   static File? _envFile;
+  static LogLevel _logLevel = LogLevel.none;
 
   ArcadeConfiguration._();
 
@@ -34,6 +40,7 @@ class ArcadeConfiguration {
     Directory? viewsDirectory,
     String? viewsExtension,
     File? envFile,
+    LogLevel? logLevel,
   }) {
     if (rootLoggerName != null) {
       ArcadeConfiguration._rootLoggerName = rootLoggerName;
@@ -52,6 +59,9 @@ class ArcadeConfiguration {
     }
     if (envFile != null) {
       ArcadeConfiguration._envFile = envFile;
+    }
+    if (logLevel != null) {
+      ArcadeConfiguration._logLevel = logLevel;
     }
   }
 }
