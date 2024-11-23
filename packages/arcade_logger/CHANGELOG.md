@@ -1,3 +1,7 @@
+## 0.0.5+3
+
+ - **REFACTOR**: Update log level order and output method.
+
 ## 0.0.5+2
 
  - Update a dependency to the latest release.

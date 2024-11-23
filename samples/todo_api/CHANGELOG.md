@@ -1,3 +1,8 @@
+## 2.1.1
+
+ - **REFACTOR**: Add debug log level for development environment.
+ - **REFACTOR**: Update variable names for WebSocket map.
+
 ## 2.1.0
 
  - **FEAT**: add support for custom headers in static file responses ([#39](https://github.com/dartarcade/arcade/issues/39)).

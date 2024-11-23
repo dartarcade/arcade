@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-11-23
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade` - `v0.2.2+1`](#arcade---v0221)
+ - [`arcade_config` - `v0.1.2`](#arcade_config---v012)
+ - [`arcade_logger` - `v0.0.5+3`](#arcade_logger---v0053)
+ - [`todo_api` - `v2.1.1`](#todo_api---v211)
+ - [`arcade_views` - `v0.1.0+2`](#arcade_views---v0102)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `arcade_views` - `v0.1.0+2`
+
+---
+
+#### `arcade` - `v0.2.2+1`
+
+ - **REFACTOR**: Add debug log level for development environment.
+ - **REFACTOR**: Update variable names for WebSocket map.
+
+#### `arcade_config` - `v0.1.2`
+
+ - **FEAT**: Add log level configuration to ArcadeConfiguration.
+
+#### `arcade_logger` - `v0.0.5+3`
+
+ - **REFACTOR**: Update log level order and output method.
+
+#### `todo_api` - `v2.1.1`
+
+ - **REFACTOR**: Add debug log level for development environment.
+ - **REFACTOR**: Update variable names for WebSocket map.
+
+
 ## 2024-11-19
 
 ### Changes

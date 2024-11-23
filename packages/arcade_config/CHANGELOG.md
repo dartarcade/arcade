@@ -1,3 +1,7 @@
+## 0.1.2
+
+ - **FEAT**: Add log level configuration to ArcadeConfiguration.
+
 ## 0.1.1
 
  - **FEAT**: add support for custom headers in static file responses ([#39](https://github.com/dartarcade/arcade/issues/39)).
