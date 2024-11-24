@@ -14,5 +14,6 @@ Future<void> main(List<String> arguments) {
   return runServer(
     port: 8080,
     init: defineRoutes,
+    logLevel: LogLevel.debug,
   );
 }

@@ -90,4 +90,13 @@ void defineRoutes() {
     context.responseHeaders.contentType = ContentType.json;
     return jsonEncode({'message': 'Not found'});
   });
+
+  route.get('/error').handle((context) => throw Exception('Test error'));
+
+  overrideErrorHandler(
+    (context, error, stackTrace) {
+      context.statusCode = HttpStatus.badRequest;
+      return 'error';
+    },
+  );
 }
