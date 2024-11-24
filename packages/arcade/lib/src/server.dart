@@ -55,7 +55,10 @@ Future<void> _handleRequest(HttpRequest request) async {
 
   final method = getHttpMethod(methodString);
 
+  Logger.root.info('Request: $methodString ${request.uri.path}');
+
   if (method == null) {
+    Logger.root.debug('Unknown method: $methodString');
     return writeErrorResponse(
       null,
       response,
@@ -65,6 +68,7 @@ Future<void> _handleRequest(HttpRequest request) async {
   }
 
   if (_canServeStaticFiles) {
+    Logger.root.debug('Checking static files: ${uri.pathSegments}');
     final pathSegments = uri.pathSegments;
     final file = File(
       joinAll([
@@ -73,6 +77,7 @@ Future<void> _handleRequest(HttpRequest request) async {
       ]),
     );
     if (await file.exists()) {
+      Logger.root.debug('Serving static file: $file');
       return serveStaticFile(
         file: file,
         response: response,
@@ -86,26 +91,12 @@ Future<void> _handleRequest(HttpRequest request) async {
     uri: uri,
   );
 
-  Logger.root.info('Request: $methodString ${request.uri.path}');
-
   if (route == null) {
-    if (_canServeStaticFiles) {
-      final pathSegments = uri.pathSegments;
-      final file = File(
-        joinAll([
-          ArcadeConfiguration.staticFilesDirectory.path,
-          ...pathSegments,
-        ]),
-      );
-      if (await file.exists()) {
-        return serveStaticFile(
-          file: file,
-          response: response,
-        );
-      }
-    }
-
+    Logger.root.debug('No route found for: $methodString ${request.uri.path}');
     if (notFoundRoute == null) {
+      Logger.root.debug(
+        'No not found route found for: $methodString ${request.uri.path}',
+      );
       return writeErrorResponse(
         null,
         response,
@@ -116,6 +107,7 @@ Future<void> _handleRequest(HttpRequest request) async {
 
     final context = RequestContext(request: request, route: notFoundRoute);
 
+    Logger.root.debug('Writing not found response');
     return writeNotFoundResponse(
       context: context,
       response: response,
@@ -127,6 +119,7 @@ Future<void> _handleRequest(HttpRequest request) async {
 
   try {
     if (route.wsHandler != null) {
+      Logger.root.debug('Setting up WS connection');
       await setupWsConnection(
         context: context,
         route: route,
@@ -135,6 +128,7 @@ Future<void> _handleRequest(HttpRequest request) async {
     }
 
     if (route.handler != null) {
+      Logger.root.debug('Writing response');
       await writeResponse(
         context: context,
         route: route,
@@ -143,6 +137,7 @@ Future<void> _handleRequest(HttpRequest request) async {
       return;
     }
 
+    Logger.root.debug('Writing error response');
     writeErrorResponse(
       context,
       response,
