@@ -1,13 +1,13 @@
 name: arcade_config
 description: Configuration for your Arcade app
-version: 0.1.2
+version: 0.1.2+1
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_config
 
 environment:
   sdk: ^3.0.5
 
 dependencies:
-  arcade_logger: ^0.0.5+3
+  arcade_logger: ^0.0.5+4
 
 dev_dependencies:
   lint: ^2.3.0

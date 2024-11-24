@@ -1,3 +1,8 @@
+## 0.2.3
+
+ - **FEAT**(example): Add support for new errorHandler.
+ - **FEAT**: Add error handling and response utilities.
+
 ## 0.2.2+1
 
  - **REFACTOR**: Add debug log level for development environment.

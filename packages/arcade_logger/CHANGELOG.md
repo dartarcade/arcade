@@ -1,3 +1,7 @@
+## 0.0.5+4
+
+ - **REFACTOR**: Update method for logging level comparison.
+
 ## 0.0.5+3
 
  - **REFACTOR**: Update log level order and output method.

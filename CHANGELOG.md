@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-11-24
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade` - `v0.2.3`](#arcade---v023)
+ - [`arcade_logger` - `v0.0.5+4`](#arcade_logger---v0054)
+ - [`todo_api` - `v2.1.2`](#todo_api---v212)
+ - [`arcade_config` - `v0.1.2+1`](#arcade_config---v0121)
+ - [`arcade_views` - `v0.1.0+3`](#arcade_views---v0103)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `todo_api` - `v2.1.2`
+ - `arcade_config` - `v0.1.2+1`
+ - `arcade_views` - `v0.1.0+3`
+
+---
+
+#### `arcade` - `v0.2.3`
+
+ - **FEAT**(example): Add support for new errorHandler.
+ - **FEAT**: Add error handling and response utilities.
+
+#### `arcade_logger` - `v0.0.5+4`
+
+ - **REFACTOR**: Update method for logging level comparison.
+
+
 ## 2024-11-23
 
 ### Changes
