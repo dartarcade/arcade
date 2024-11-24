@@ -15,6 +15,35 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`arcade` - `v0.2.3+1`](#arcade---v0231)
+ - [`todo_api` - `v2.1.3`](#todo_api---v213)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `todo_api` - `v2.1.3`
+
+---
+
+#### `arcade` - `v0.2.3+1`
+
+ - **REFACTOR**: Improve logging messages.
+ - **FIX**(arcade): Close response for success case.
+
+
+## 2024-11-24
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`arcade` - `v0.2.3`](#arcade---v023)
  - [`arcade_logger` - `v0.0.5+4`](#arcade_logger---v0054)
  - [`todo_api` - `v2.1.2`](#todo_api---v212)

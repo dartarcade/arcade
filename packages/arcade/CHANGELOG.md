@@ -1,3 +1,8 @@
+## 0.2.3+1
+
+ - **REFACTOR**: Improve logging messages.
+ - **FIX**(arcade): Close response for success case.
+
 ## 0.2.3
 
  - **FEAT**(example): Add support for new errorHandler.
