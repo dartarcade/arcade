@@ -5,11 +5,93 @@ import 'package:arcade/arcade.dart';
 import 'package:arcade/src/helpers/route_helpers.dart';
 import 'package:arcade_logger/arcade_logger.dart';
 
-void sendErrorResponse(HttpResponse response, ArcadeHttpException error) {
+void _setContentType(HttpResponse response, Object? result) {
+  if (response.headers.contentType?.mimeType != ContentType.text.mimeType) {
+    return;
+  }
+
+  if (result is String) {
+    response.headers.set(
+      HttpHeaders.contentTypeHeader,
+      ContentType.html.mimeType,
+    );
+  } else {
+    response.headers.set(
+      HttpHeaders.contentTypeHeader,
+      ContentType.json.mimeType,
+    );
+  }
+}
+
+void setResponse(HttpResponse response, Object? result) {
+  late String resultStr;
+
+  if (result == null) {
+    resultStr = '';
+  }
+
+  _setContentType(response, result);
+
+  if (result is! String) {
+    resultStr = jsonEncode(result);
+  } else {
+    resultStr = result;
+  }
+
+  response.write(resultStr);
+}
+
+Future<void> setErrorResponse(
+  RequestContext? context,
+  HttpResponse response,
+  ArcadeHttpException error, {
+  StackTrace? stackTrace,
+  BaseRoute? notFoundRoute,
+  bool shouldRunErrorHandler = true,
+}) async {
   response.statusCode = error.statusCode;
-  response.headers.contentType = ContentType.json;
-  response.writeln(jsonEncode(error.toJson()));
-  response.close();
+
+  try {
+    late final Object? errorResponse;
+    if (error is NotFoundException &&
+        notFoundRoute != null &&
+        context != null) {
+      errorResponse = await notFoundRoute.notFoundHandler!(context);
+    } else if (shouldRunErrorHandler &&
+        errorHandler != null &&
+        context != null) {
+      errorResponse = await errorHandler!(
+        context,
+        error,
+        stackTrace ?? StackTrace.current,
+      );
+    } else {
+      errorResponse = {
+        'error': error,
+        if (stackTrace != null) 'stackTrace': stackTrace.toString(),
+      };
+    }
+
+    setResponse(response, errorResponse);
+  } on ArcadeHttpException catch (e, s) {
+    Logger.root.error('$e\n$s');
+    setErrorResponse(
+      null,
+      response,
+      e,
+      stackTrace: isDev ? s : null,
+      shouldRunErrorHandler: false,
+    );
+  } catch (e, s) {
+    Logger.root.error('$e\n$s');
+    setErrorResponse(
+      null,
+      response,
+      const InternalServerErrorException(),
+      stackTrace: isDev ? s : null,
+      shouldRunErrorHandler: false,
+    );
+  }
 }
 
 Future<RequestContext> runBeforeHooks(
@@ -77,24 +159,36 @@ Future<({RequestContext context, Object? handleResult, String wsId})>
   return (context: ctx, handleResult: r, wsId: id);
 }
 
-void writeNotFoundResponse({
+Future<void> writeNotFoundResponse({
   required RequestContext context,
   required HttpResponse response,
-  required RouteHandler? notFoundRouteHandler,
-}) {
+  required BaseRoute? notFoundRoute,
+}) async {
   response.statusCode = HttpStatus.notFound;
 
-  if (notFoundRouteHandler != null) {
+  if (notFoundRoute != null) {
     try {
-      response.write(notFoundRouteHandler(context));
+      response.write(notFoundRoute.notFoundHandler!(context));
       response.close();
       return;
     } on ArcadeHttpException catch (e, s) {
       Logger.root.error('$e\n$s');
-      return sendErrorResponse(response, e);
+      return writeErrorResponse(
+        context,
+        response,
+        e,
+        stackTrace: isDev ? s : null,
+        notFoundRoute: notFoundRoute,
+      );
     } catch (e, s) {
       Logger.root.error('$e\n$s');
-      return sendErrorResponse(response, const InternalServerErrorException());
+      return writeErrorResponse(
+        context,
+        response,
+        const InternalServerErrorException(),
+        stackTrace: isDev ? s : null,
+        notFoundRoute: notFoundRoute,
+      );
     }
   }
 }
@@ -124,6 +218,21 @@ Future<void> writeResponse({
   }
 
   response.write(result);
+}
 
+Future<void> writeErrorResponse(
+  RequestContext? context,
+  HttpResponse response,
+  ArcadeHttpException error, {
+  StackTrace? stackTrace,
+  BaseRoute? notFoundRoute,
+}) async {
+  await setErrorResponse(
+    context,
+    response,
+    error,
+    stackTrace: isDev ? stackTrace : null,
+    notFoundRoute: notFoundRoute,
+  );
   response.close();
 }

@@ -13,6 +13,7 @@ import 'package:arcade_logger/arcade_logger.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 
+const isDev = !bool.fromEnvironment('dart.vm.product');
 typedef InitApplication = FutureOr<void> Function();
 
 late bool _canServeStaticFiles;
@@ -20,10 +21,12 @@ late bool _canServeStaticFiles;
 Future<void> runServer({
   required int port,
   required InitApplication init,
+  LogLevel? logLevel,
 }) async {
-  const isDev = bool.fromEnvironment('dart.vm.product');
   if (isDev) {
-    ArcadeConfiguration.override(logLevel: LogLevel.debug);
+    ArcadeConfiguration.override(logLevel: logLevel ?? LogLevel.debug);
+  } else {
+    ArcadeConfiguration.override(logLevel: logLevel ?? LogLevel.info);
   }
 
   await Logger.init();
@@ -40,12 +43,8 @@ Future<void> runServer({
   );
 
   server.listen(_handleRequest);
-  Logger.root.log(
-    LogRecord(
-      level: LogLevel.none,
-      message: 'Server running on port $port',
-    ),
-  );
+  // ignore: avoid_print
+  print('Server running on port $port');
 
   setupProcessSignalWatchers(server);
 }
@@ -57,7 +56,12 @@ Future<void> _handleRequest(HttpRequest request) async {
   final method = getHttpMethod(methodString);
 
   if (method == null) {
-    return sendErrorResponse(response, const MethodNotAllowedException());
+    return writeErrorResponse(
+      null,
+      response,
+      const MethodNotAllowedException(),
+      stackTrace: isDev ? StackTrace.current : null,
+    );
   }
 
   if (_canServeStaticFiles) {
@@ -102,7 +106,12 @@ Future<void> _handleRequest(HttpRequest request) async {
     }
 
     if (notFoundRoute == null) {
-      return sendErrorResponse(response, const NotFoundException());
+      return writeErrorResponse(
+        null,
+        response,
+        const NotFoundException(),
+        stackTrace: isDev ? StackTrace.current : null,
+      );
     }
 
     final context = RequestContext(request: request, route: notFoundRoute);
@@ -110,7 +119,7 @@ Future<void> _handleRequest(HttpRequest request) async {
     return writeNotFoundResponse(
       context: context,
       response: response,
-      notFoundRouteHandler: notFoundRoute.notFoundHandler,
+      notFoundRoute: notFoundRoute,
     );
   }
 
@@ -134,13 +143,31 @@ Future<void> _handleRequest(HttpRequest request) async {
       return;
     }
 
-    sendErrorResponse(response, const InternalServerErrorException());
+    writeErrorResponse(
+      context,
+      response,
+      const InternalServerErrorException(),
+      stackTrace: isDev ? StackTrace.current : null,
+      notFoundRoute: notFoundRoute,
+    );
   } on ArcadeHttpException catch (e, s) {
     Logger.root.error('$e\n$s');
-    return sendErrorResponse(response, e);
+    return writeErrorResponse(
+      context,
+      response,
+      e,
+      stackTrace: isDev ? s : null,
+      notFoundRoute: notFoundRoute,
+    );
   } catch (e, s) {
     Logger.root.error('$e\n$s');
-    return sendErrorResponse(response, const InternalServerErrorException());
+    return writeErrorResponse(
+      context,
+      response,
+      const InternalServerErrorException(),
+      stackTrace: isDev ? s : null,
+      notFoundRoute: notFoundRoute,
+    );
   }
 }
 

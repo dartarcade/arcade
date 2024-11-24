@@ -1,3 +1,6 @@
+export 'package:arcade_logger/arcade_logger.dart' show LogLevel;
+
+export 'src/core/error_handler.dart';
 export 'src/core/exceptions.dart';
 export 'src/core/hooks.dart';
 export 'src/http/body_parse_result.dart';
