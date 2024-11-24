@@ -1,17 +1,14 @@
-import 'dart:io';
 import 'dart:isolate';
 
 import 'package:ansi_styles/extension.dart';
 import 'package:arcade_config/arcade_config.dart';
 
 enum LogLevel {
-  error,
-  warning,
-  info,
   debug,
-  none;
-
-  bool operator >=(LogLevel other) => index >= other.index;
+  info,
+  warning,
+  error,
+  none,
 }
 
 class LogRecord {
@@ -101,7 +98,8 @@ class Logger {
         LogLevel.warning => '[WARNING]: $name: ${record.message}'.yellow,
         LogLevel.error => '[ERROR]: $name: ${record.message}'.red,
       };
-      stdout.writeln(message);
+      // ignore: avoid_print
+      print(message);
     }
   }
 
@@ -112,5 +110,7 @@ class Logger {
 
   static final root = Logger(ArcadeConfiguration.rootLoggerName);
 
-  bool _shouldLog(LogLevel level) => level >= ArcadeConfiguration.logLevel;
+  bool _shouldLog(LogLevel level) {
+    return level.index >= ArcadeConfiguration.logLevel.index;
+  }
 }
