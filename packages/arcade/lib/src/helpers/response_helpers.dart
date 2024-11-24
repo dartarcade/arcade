@@ -218,6 +218,8 @@ Future<void> writeResponse({
   }
 
   response.write(result);
+
+  await response.close();
 }
 
 Future<void> writeErrorResponse(
@@ -234,5 +236,5 @@ Future<void> writeErrorResponse(
     stackTrace: isDev ? stackTrace : null,
     notFoundRoute: notFoundRoute,
   );
-  response.close();
+  await response.close();
 }
