@@ -52,21 +52,21 @@ packages:
       path: "../../packages/arcade"
       relative: true
     source: path
-    version: "0.2.2+1"
+    version: "0.2.3"
   arcade_config:
     dependency: "direct overridden"
     description:
       path: "../../packages/arcade_config"
       relative: true
     source: path
-    version: "0.1.2"
+    version: "0.1.2+1"
   arcade_logger:
     dependency: "direct overridden"
     description:
       path: "../../packages/arcade_logger"
       relative: true
     source: path
-    version: "0.0.5+3"
+    version: "0.0.5+4"
   args:
     dependency: transitive
     description:
