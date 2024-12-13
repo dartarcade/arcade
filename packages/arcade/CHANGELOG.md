@@ -1,3 +1,7 @@
+## 0.2.4
+
+ - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
+
 ## 0.2.3+1
 
  - **REFACTOR**: Improve logging messages.

@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-12-14
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade` - `v0.2.4`](#arcade---v024)
+ - [`arcade_cli` - `v0.0.5`](#arcade_cli---v005)
+ - [`arcade_config` - `v0.1.3`](#arcade_config---v013)
+ - [`arcade_views` - `v0.1.1`](#arcade_views---v011)
+ - [`todo_api` - `v2.2.0`](#todo_api---v220)
+ - [`arcade_logger` - `v0.0.5+5`](#arcade_logger---v0055)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `arcade_logger` - `v0.0.5+5`
+
+---
+
+#### `arcade` - `v0.2.4`
+
+ - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
+
+#### `arcade_cli` - `v0.0.5`
+
+ - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
+
+#### `arcade_config` - `v0.1.3`
+
+ - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
+
+#### `arcade_views` - `v0.1.1`
+
+ - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
+
+#### `todo_api` - `v2.2.0`
+
+ - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
+
+
 ## 2024-11-24
 
 ### Changes

@@ -1,3 +1,7 @@
+## 0.1.3
+
+ - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
+
 ## 0.1.2+1
 
  - Update a dependency to the latest release.
