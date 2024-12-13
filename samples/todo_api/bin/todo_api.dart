@@ -4,7 +4,7 @@ import 'package:arcade/arcade.dart';
 import 'package:todo_api/core/env.dart';
 import 'package:todo_api/core/init.dart';
 
-Future<void> main() async {
+Future<void> main(List<String> arguments) async {
   final portFromEnvironment = Platform.environment['PORT'];
   var port = Env.port;
   if (portFromEnvironment != null) {
@@ -15,5 +15,9 @@ Future<void> main() async {
     throw StateError('port is not defined');
   }
 
-  return runServer(port: port, init: init);
+  return runServer(
+    port: port,
+    init: init,
+    closeServerAfterRoutesSetUp: arguments.contains('--export-routes'),
+  );
 }
