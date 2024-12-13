@@ -22,6 +22,7 @@ Future<void> runServer({
   required int port,
   required InitApplication init,
   LogLevel? logLevel,
+  bool closeServerAfterRoutesSetUp = false,
 }) async {
   if (isDev) {
     ArcadeConfiguration.override(logLevel: logLevel ?? LogLevel.debug);
@@ -36,6 +37,10 @@ Future<void> runServer({
 
   await init();
   validatePreviousRouteHasHandler();
+
+  if (closeServerAfterRoutesSetUp) {
+    return;
+  }
 
   final server = await HttpServer.bind(
     InternetAddress.anyIPv6,
