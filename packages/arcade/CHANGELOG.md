@@ -1,3 +1,7 @@
+## 0.2.4+1
+
+ - **FIX**(arcade): Route export not taking groups into account.
+
 ## 0.2.4
 
  - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
