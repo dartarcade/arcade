@@ -310,13 +310,18 @@ final class _RouteBuilder<T extends RequestContext> {
     });
   }
 
-  _BeforeRoute<T> any(String path, {RouteMetadata? metadata}) {
+  _BeforeRoute<T> any(String path, {Map<String, dynamic>? extra}) {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.any,
       _routeGroupPrefix + path,
       [],
-      metadata: metadata,
+      metadata: RouteMetadata(
+        type: 'handler',
+        path: _routeGroupPrefix + path,
+        method: HttpMethod.any,
+        extra: extra,
+      ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
   }
@@ -329,7 +334,7 @@ final class _RouteBuilder<T extends RequestContext> {
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: path,
+        path: _routeGroupPrefix + path,
         method: HttpMethod.get,
         extra: extra,
       ),
@@ -345,7 +350,7 @@ final class _RouteBuilder<T extends RequestContext> {
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: path,
+        path: _routeGroupPrefix + path,
         method: HttpMethod.post,
         extra: extra,
       ),
@@ -361,7 +366,7 @@ final class _RouteBuilder<T extends RequestContext> {
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: path,
+        path: _routeGroupPrefix + path,
         method: HttpMethod.put,
         extra: extra,
       ),
@@ -377,7 +382,7 @@ final class _RouteBuilder<T extends RequestContext> {
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: path,
+        path: _routeGroupPrefix + path,
         method: HttpMethod.delete,
         extra: extra,
       ),
@@ -393,7 +398,7 @@ final class _RouteBuilder<T extends RequestContext> {
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: path,
+        path: _routeGroupPrefix + path,
         method: HttpMethod.patch,
         extra: extra,
       ),
@@ -409,7 +414,7 @@ final class _RouteBuilder<T extends RequestContext> {
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: path,
+        path: _routeGroupPrefix + path,
         method: HttpMethod.head,
         extra: extra,
       ),
@@ -425,7 +430,7 @@ final class _RouteBuilder<T extends RequestContext> {
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: path,
+        path: _routeGroupPrefix + path,
         method: HttpMethod.options,
         extra: extra,
       ),
