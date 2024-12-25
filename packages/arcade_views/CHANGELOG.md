@@ -1,3 +1,7 @@
+## 0.1.2
+
+ - **FEAT**: Swagger support ([#41](https://github.com/dartarcade/arcade/issues/41)).
+
 ## 0.1.1
 
  - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).

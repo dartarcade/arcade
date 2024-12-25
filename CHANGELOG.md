@@ -15,6 +15,32 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`arcade_swagger` - `v0.0.2`](#arcade_swagger---v002)
+ - [`arcade_views` - `v0.1.2`](#arcade_views---v012)
+
+---
+
+#### `arcade_swagger` - `v0.0.2`
+
+ - **FEAT**: Swagger support ([#41](https://github.com/dartarcade/arcade/issues/41)).
+
+#### `arcade_views` - `v0.1.2`
+
+ - **FEAT**: Swagger support ([#41](https://github.com/dartarcade/arcade/issues/41)).
+
+
+## 2024-12-25
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`arcade` - `v0.3.0`](#arcade---v030)
 
 ---
