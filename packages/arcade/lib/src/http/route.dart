@@ -262,8 +262,10 @@ class _AfterWebSocketRoute<T extends RequestContext> extends _Route<T> {
   }
 }
 
-final class _RouteBuilder<T extends RequestContext> {
-  const _RouteBuilder._();
+final class RouteBuilder<T extends RequestContext> {
+  RouteBuilder._();
+
+  final Map<String, dynamic> _extra = {};
 
   void registerGlobalBeforeHook(BeforeHookHandler hook) {
     globalBeforeHooks.add(hook);
@@ -291,9 +293,18 @@ final class _RouteBuilder<T extends RequestContext> {
     globalAfterWebSocketHooks.addAll(hooks);
   }
 
+  RouteBuilder<T> withExtra(Map<String, dynamic> extra, {bool merge = true}) {
+    if (!merge) {
+      _extra.clear();
+    }
+    _extra.addAll(extra);
+    return this;
+  }
+
   void group<R extends RequestContext>(
     String path, {
-    required FutureOr<void> Function(_RouteBuilder<R> route) defineRoutes,
+    required FutureOr<void> Function(RouteBuilder<R> Function() route)
+        defineRoutes,
     List<BeforeHookHandler> before = const [],
     List<AfterHookHandler> after = const [],
   }) {
@@ -301,7 +312,7 @@ final class _RouteBuilder<T extends RequestContext> {
     final lastRouteIndex = routes.length - 1;
     final previousRouteGroupPrefix = _routeGroupPrefix;
     _routeGroupPrefix = previousRouteGroupPrefix + path;
-    defineRoutes(_RouteBuilder<R>._());
+    defineRoutes(() => RouteBuilder<R>._());
     _routeGroupPrefix = previousRouteGroupPrefix;
     validatePreviousRouteHasHandler();
     routes.sublist(lastRouteIndex + 1).forEach((route) {
@@ -320,7 +331,7 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'handler',
         path: _routeGroupPrefix + path,
         method: HttpMethod.any,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
@@ -336,7 +347,7 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'handler',
         path: _routeGroupPrefix + path,
         method: HttpMethod.get,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
@@ -352,7 +363,7 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'handler',
         path: _routeGroupPrefix + path,
         method: HttpMethod.post,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
@@ -368,7 +379,7 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'handler',
         path: _routeGroupPrefix + path,
         method: HttpMethod.put,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
@@ -384,7 +395,7 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'handler',
         path: _routeGroupPrefix + path,
         method: HttpMethod.delete,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
@@ -400,7 +411,7 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'handler',
         path: _routeGroupPrefix + path,
         method: HttpMethod.patch,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
@@ -416,7 +427,7 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'handler',
         path: _routeGroupPrefix + path,
         method: HttpMethod.head,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
@@ -432,7 +443,7 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'handler',
         path: _routeGroupPrefix + path,
         method: HttpMethod.options,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     );
     return currentProcessingRoute! as _BeforeRoute<T>;
@@ -449,11 +460,18 @@ final class _RouteBuilder<T extends RequestContext> {
         type: 'notFound',
         path: '',
         method: HttpMethod.any,
-        extra: extra,
+        extra: _makeExtra(extra),
       ),
     )..notFoundHandler = handler;
     return currentProcessingRoute! as _AfterRoute;
   }
+
+  Map<String, dynamic>? _makeExtra(Map<String, dynamic>? extra) {
+    if (extra == null && _extra.isEmpty) {
+      return null;
+    }
+    return {..._extra, ...?extra};
+  }
 }
 
-const route = _RouteBuilder._();
+RouteBuilder<RequestContext> get route => RouteBuilder._();

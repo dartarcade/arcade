@@ -72,8 +72,8 @@ void defineRoutes() {
       },
     ],
     defineRoutes: (route) {
-      route.get('/').handle((context) => 'Group route');
-      route.get('/hello/:name').handle(
+      route().get('/').handle((context) => 'Group route');
+      route().get('/hello/:name').handle(
             (context) =>
                 'Group route with path parameter: ${context.pathParameters['name']}',
           );
