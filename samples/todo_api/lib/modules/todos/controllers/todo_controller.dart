@@ -1,6 +1,5 @@
 import 'package:arcade/arcade.dart';
 import 'package:arcade_swagger/arcade_swagger.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:injectable/injectable.dart';
 import 'package:luthor/luthor.dart';
 import 'package:todo_api/common/contexts/authenticated_request_context.dart';

@@ -52,7 +52,7 @@ packages:
       path: "../../packages/arcade"
       relative: true
     source: path
-    version: "0.2.4+1"
+    version: "0.3.0"
   arcade_config:
     dependency: "direct overridden"
     description:
@@ -73,14 +73,14 @@ packages:
       path: "../../packages/arcade_swagger"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
   arcade_views:
     dependency: "direct overridden"
     description:
       path: "../../packages/arcade_views"
       relative: true
     source: path
-    version: "0.1.1"
+    version: "0.1.2"
   args:
     dependency: transitive
     description:
