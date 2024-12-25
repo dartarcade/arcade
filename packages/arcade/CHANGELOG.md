@@ -1,3 +1,7 @@
+## 0.3.0
+
+ - **FEAT**: Swagger support ([#41](https://github.com/dartarcade/arcade/issues/41)).
+
 ## 0.2.4+1
 
  - **FIX**(arcade): Route export not taking groups into account.

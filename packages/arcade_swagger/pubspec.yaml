@@ -7,7 +7,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  arcade: ^0.2.4+1
+  arcade: ^0.3.0
   arcade_logger: ^0.0.5+5
   arcade_views: ^0.1.1
   luthor: ^0.5.2+1

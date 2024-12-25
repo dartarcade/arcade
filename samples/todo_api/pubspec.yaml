@@ -7,7 +7,7 @@ environment:
   sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
-  arcade: ^0.2.4+1
+  arcade: ^0.3.0
   arcade_swagger:
     path: ../../packages/arcade_swagger
   dart_jsonwebtoken: ^2.14.1
