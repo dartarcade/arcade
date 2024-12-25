@@ -1,4 +1,5 @@
 import 'package:arcade/arcade.dart';
+import 'package:arcade_swagger/arcade_swagger.dart';
 import 'package:injectable/injectable.dart';
 import 'package:todo_api/common/extensions/luthor_validation.dart';
 import 'package:todo_api/modules/auth/dtos/auth_dto.dart';
@@ -10,8 +11,29 @@ class AuthController {
     route.group<RequestContext>(
       '/auth',
       defineRoutes: (route) {
-        route.post('/signup').handle(_signup);
-        route.post('/login').handle(_login);
+        route()
+            .swagger(
+              summary: 'Signup',
+              tags: ['Auth'],
+              request: $AuthRequestDtoSchema,
+              responses: {
+                '201': AuthResponseDtoSchema,
+              },
+            )
+            .post('/signup')
+            .handle(_signup);
+
+        route()
+            .swagger(
+              summary: 'Login',
+              tags: ['Auth'],
+              request: $AuthRequestDtoSchema,
+              responses: {
+                '200': AuthResponseDtoSchema,
+              },
+            )
+            .post('/login')
+            .handle(_login);
       },
     );
   }
@@ -19,6 +41,7 @@ class AuthController {
   final AuthService _authService;
 
   Future<AuthResponseDto> _signup(RequestContext context) async {
+    context.statusCode = 201;
     return _authService.signup(await $AuthRequestDtoValidate.validate(context));
   }
 

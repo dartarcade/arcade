@@ -1,6 +1,7 @@
 name: todo_api
 description: Starter Arcade application using recommended code generation libraries
 version: 2.2.0
+publish_to: none
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -18,7 +19,7 @@ dependencies:
   hashlib: ^1.21.0
   injectable: ^2.4.2
   json_annotation: ^4.9.0
-  luthor: ^0.4.3
+  luthor: ^0.5.1
   postgres: ^3.4.0
   superclass: ^0.1.0
 
@@ -30,5 +31,5 @@ dev_dependencies:
   injectable_generator: ^2.6.1
   json_serializable: ^6.8.0
   lint: ^2.3.0
-  luthor_generator: ^0.4.6
+  luthor_generator: ^0.6.1
   superclass_generator: ^0.2.0
