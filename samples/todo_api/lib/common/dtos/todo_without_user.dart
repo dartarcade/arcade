@@ -1,5 +1,6 @@
 import 'package:drift_postgres/drift_postgres.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:luthor/luthor.dart';
 import 'package:superclass/superclass.dart';
 import 'package:todo_api/common/json_converters/pg_date_time_converter.dart';
 import 'package:todo_api/common/json_converters/uuid_converter.dart';
@@ -33,3 +34,11 @@ extension WithoutUser on Todo {
     );
   }
 }
+
+// ignore: non_constant_identifier_names
+final TodoWithoutUserSchema = l.withName('TodoWithoutUser').schema({
+  'id': l.string().required(),
+  'title': l.string().required(),
+  'completed': l.boolean().required(),
+  'createdAt': l.string().dateTime().required(),
+});

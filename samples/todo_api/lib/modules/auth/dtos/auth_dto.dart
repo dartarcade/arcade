@@ -35,3 +35,11 @@ class AuthResponseDto with _$AuthResponseDto {
   factory AuthResponseDto.fromJson(Map<String, dynamic> json) =>
       _$AuthResponseDtoFromJson(json);
 }
+
+// ignore: non_constant_identifier_names
+final AuthResponseDtoSchema = l.withName('AuthResponseDto').schema(
+  {
+    'token': l.string().required(),
+    'user': UserWithoutPasswordSchema.required(),
+  },
+);

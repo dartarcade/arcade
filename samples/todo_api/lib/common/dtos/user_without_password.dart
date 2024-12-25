@@ -1,5 +1,6 @@
 import 'package:drift_postgres/drift_postgres.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:luthor/luthor.dart';
 import 'package:superclass/superclass.dart';
 import 'package:todo_api/common/json_converters/pg_date_time_converter.dart';
 import 'package:todo_api/common/json_converters/uuid_converter.dart';
@@ -32,3 +33,10 @@ extension WithoutPassword on User {
     );
   }
 }
+
+// ignore: non_constant_identifier_names
+final UserWithoutPasswordSchema = l.schema({
+  'id': l.string().required(),
+  'email': l.string().required(),
+  'createdAt': l.string().dateTime().required(),
+});
