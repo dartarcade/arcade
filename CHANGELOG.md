@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`arcade_swagger` - `v0.0.4`](#arcade_swagger---v004)
+
+---
+
+#### `arcade_swagger` - `v0.0.4`
+
+ - **FIX**: Ensure request and response are compatible with swagger_parser ([#43](https://github.com/dartarcade/arcade/issues/43)).
+
+
+## 2024-12-30
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`arcade_swagger` - `v0.0.3`](#arcade_swagger---v003)
 
 ---

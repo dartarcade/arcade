@@ -1,3 +1,7 @@
+## 0.0.4
+
+ - **FIX**: Ensure request and response are compatible with swagger_parser ([#43](https://github.com/dartarcade/arcade/issues/43)).
+
 ## 0.0.3
 
  - **FEAT**(arcade_swagger): Add flag to disable global components (Request, Response) ([#42](https://github.com/dartarcade/arcade/issues/42)).
