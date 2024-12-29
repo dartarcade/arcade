@@ -66,7 +66,13 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
             );
             return MapEntry(
               key,
-              Response(ref: value.name),
+              Response(
+                content: {
+                  'application/json': MediaType(
+                    schema: Schema.object(ref: value.name),
+                  ),
+                },
+              ),
             );
           },
         ),
@@ -90,7 +96,15 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
               ),
             },
           );
-          requestBody = RequestBody(ref: swagger.request!.name);
+          requestBody = RequestBody(
+            content: {
+              'application/json': MediaType(
+                schema: Schema.object(
+                  ref: swagger.request!.name,
+                ),
+              ),
+            },
+          );
         }
         operation = operation.copyWith(
           requestBody: requestBody,
