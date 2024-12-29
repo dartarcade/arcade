@@ -18,7 +18,7 @@ extension ListGroupX<T> on List<T> {
   }
 }
 
-Map<String, PathItem> getPathItems() {
+Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
   final routeMetadata = getRouteMetadata();
   final groupedRoutes = routeMetadata.groupBy((r) => r.path);
   final pathItems = <String, PathItem>{};
@@ -48,7 +48,7 @@ Map<String, PathItem> getPathItems() {
         responses: swagger.responses.map(
           (key, value) {
             final schema = validatorToSwagger(value);
-            if (value.name == null) {
+            if (!autoGlobalComponents || value.name == null) {
               return MapEntry(
                 key,
                 Response(
@@ -74,7 +74,7 @@ Map<String, PathItem> getPathItems() {
 
       if (swagger.request != null) {
         late final RequestBody requestBody;
-        if (swagger.request!.name == null) {
+        if (!autoGlobalComponents || swagger.request!.name == null) {
           requestBody = RequestBody(
             content: {
               'application/json': MediaType(
