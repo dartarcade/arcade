@@ -72,8 +72,9 @@ void setupSwagger({
                 key,
                 Response(
                   content: {
-                    'application/json':
-                        MediaType(schema: validatorToSwagger(value)),
+                    'application/json': MediaType(
+                      schema: validatorToSwagger(value),
+                    ),
                   },
                 ),
               );
