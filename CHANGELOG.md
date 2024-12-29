@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-12-30
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade_swagger` - `v0.0.3`](#arcade_swagger---v003)
+
+---
+
+#### `arcade_swagger` - `v0.0.3`
+
+ - **FEAT**(arcade_swagger): Add flag to disable global components (Request, Response) ([#42](https://github.com/dartarcade/arcade/issues/42)).
+
+
 ## 2024-12-25
 
 ### Changes

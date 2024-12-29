@@ -1,6 +1,6 @@
 name: arcade_swagger
 description: Swagger support for Arcade
-version: 0.0.2
+version: 0.0.3
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_swagger
 
 environment:
