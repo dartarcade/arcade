@@ -17,10 +17,10 @@ void setupSwagger({
   Map<String, SecurityScheme>? securitySchemes,
   String uiPath = '/ui',
   String docPath = '/doc',
+  bool autoGlobalComponents = true,
 }) {
-  final pathItems = getPathItems();
+  final pathItems = getPathItems(autoGlobalComponents: autoGlobalComponents);
   route.get(docPath).handle((context) {
-    // Sample OpenAPI JSON
     return OpenApi(
       info: Info(title: title, version: version),
       servers: servers,
@@ -55,8 +55,9 @@ void setupSwagger({
                 key,
                 RequestBody(
                   content: {
-                    'application/json':
-                        MediaType(schema: validatorToSwagger(value)),
+                    'application/json': MediaType(
+                      schema: validatorToSwagger(value),
+                    ),
                   },
                 ),
               );

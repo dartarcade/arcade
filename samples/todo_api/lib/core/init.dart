@@ -15,6 +15,7 @@ Future<void> init() async {
   route.notFound((context) => 'Not found');
 
   setupSwagger(
+    autoGlobalComponents: false,
     title: 'Todo API',
     description: 'Todo API',
     version: '1.0.0',
