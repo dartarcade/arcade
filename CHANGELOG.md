@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2025-03-15
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`arcade_swagger` - `v0.0.5`](#arcade_swagger---v005)
+
+---
+
+#### `arcade_swagger` - `v0.0.5`
+
+ - **FEAT**(arcade_swagger): Update dependencies ([#44](https://github.com/dartarcade/arcade/issues/44)).
+
+
 ## 2024-12-30
 
 ### Changes
