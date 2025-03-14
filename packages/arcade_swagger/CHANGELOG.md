@@ -1,3 +1,7 @@
+## 0.0.5
+
+ - **FEAT**(arcade_swagger): Update dependencies ([#44](https://github.com/dartarcade/arcade/issues/44)).
+
 ## 0.0.4
 
  - **FIX**: Ensure request and response are compatible with swagger_parser ([#43](https://github.com/dartarcade/arcade/issues/43)).
