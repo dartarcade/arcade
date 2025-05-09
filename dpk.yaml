@@ -1,0 +1,27 @@
+catalog:
+  resolution: workspace
+  issue_tracker: https://github.com/dartarcade/arcade/issues
+  repository: https://github.com/dartarcade/arcade/tree/main/DPK_PACKAGE_PATH
+  environment:
+    sdk: ^3.5.0
+
+scripts:
+  todo:brc:
+    command: dart run build_runner clean
+    runInPackages:
+      - samples/todo_api
+
+  todo:br:
+    command: dart run build_runner watch --delete-conflicting-outputs
+    runInPackages:
+      - samples/todo_api
+
+  todo:docker:
+    command: docker compose up
+    runInPackages:
+      - samples/todo_api
+
+  todo:serve:
+    command: arcade serve
+    runInPackages:
+      - samples/todo_api

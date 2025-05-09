@@ -1,10 +1,12 @@
 name: arcade_views
 description: Add views to your Arcade application
 version: 0.1.2
-repository: https://github.com/dartarcade/arcade/tree/master/packages/arcade_views
+repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_views
+issue_tracker: https://github.com/dartarcade/arcade/issues
+resolution: workspace
 
 environment:
-  sdk: ^3.2.0
+  sdk: ^3.5.0
 
 dependencies:
   arcade_config: ^0.1.3

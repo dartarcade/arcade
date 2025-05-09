@@ -9,7 +9,7 @@ part 'auth_dto.g.dart';
 
 @luthor
 @freezed
-class AuthRequestDto with _$AuthRequestDto {
+abstract class AuthRequestDto with _$AuthRequestDto {
   const factory AuthRequestDto({
     @isEmail required String email,
     @HasMin(8) required String password,
@@ -26,7 +26,7 @@ class AuthRequestDto with _$AuthRequestDto {
 }
 
 @freezed
-class AuthResponseDto with _$AuthResponseDto {
+abstract class AuthResponseDto with _$AuthResponseDto {
   const factory AuthResponseDto({
     required String token,
     required UserWithoutPassword user,

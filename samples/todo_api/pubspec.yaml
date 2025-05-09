@@ -2,9 +2,12 @@ name: todo_api
 description: Starter Arcade application using recommended code generation libraries
 version: 2.2.0
 publish_to: none
+repository: https://github.com/dartarcade/arcade/tree/main/samples/todo_api
+issue_tracker: https://github.com/dartarcade/arcade/issues
+resolution: workspace
 
 environment:
-  sdk: ">=3.5.0 <4.0.0"
+  sdk: ^3.5.0
 
 dependencies:
   arcade: ^0.3.0
@@ -31,4 +34,4 @@ dev_dependencies:
   json_serializable: ^6.8.0
   lint: ^2.3.0
   luthor_generator: ^0.7.0
-  superclass_generator: ^0.3.0
+  superclass_generator: ^0.4.0

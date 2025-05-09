@@ -1,7 +1,15 @@
-name: arcade_workspace
+name: _
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
 
-dev_dependencies:
-  melos: ^6.2.0
+workspace:
+  - packages/arcade
+  - packages/arcade_cache
+  - packages/arcade_cache_redis
+  - packages/arcade_cli
+  - packages/arcade_config
+  - packages/arcade_logger
+  - packages/arcade_swagger
+  - packages/arcade_views
+  - samples/todo_api

@@ -2,7 +2,7 @@ import 'package:envied/envied.dart';
 
 part 'env.g.dart';
 
-@Envied()
+@Envied(useConstantCase: true)
 class Env {
   @EnviedField(optional: true)
   static const int? port = _Env.port;

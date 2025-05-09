@@ -5,7 +5,7 @@ part 'jwt_payload.freezed.dart';
 part 'jwt_payload.g.dart';
 
 @freezed
-class JwtPayload with _$JwtPayload {
+abstract class JwtPayload with _$JwtPayload {
   const factory JwtPayload({
     required String id,
   }) = _JwtPayload;
