@@ -1,84 +1,88 @@
+## 0.3.1
+
+- **FEAT**: Add before and after hooks for paths ([#47](https://github.com/dartarcade/arcade/issues/47)).
+
 ## 0.3.0
 
- - **FEAT**: Swagger support ([#41](https://github.com/dartarcade/arcade/issues/41)).
+- **FEAT**: Swagger support ([#41](https://github.com/dartarcade/arcade/issues/41)).
 
 ## 0.2.4+1
 
- - **FIX**(arcade): Route export not taking groups into account.
+- **FIX**(arcade): Route export not taking groups into account.
 
 ## 0.2.4
 
- - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
+- **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
 
 ## 0.2.3+1
 
- - **REFACTOR**: Improve logging messages.
- - **FIX**(arcade): Close response for success case.
+- **REFACTOR**: Improve logging messages.
+- **FIX**(arcade): Close response for success case.
 
 ## 0.2.3
 
- - **FEAT**(example): Add support for new errorHandler.
- - **FEAT**: Add error handling and response utilities.
+- **FEAT**(example): Add support for new errorHandler.
+- **FEAT**: Add error handling and response utilities.
 
 ## 0.2.2+1
 
- - **REFACTOR**: Add debug log level for development environment.
- - **REFACTOR**: Update variable names for WebSocket map.
+- **REFACTOR**: Add debug log level for development environment.
+- **REFACTOR**: Update variable names for WebSocket map.
 
 ## 0.2.2
 
- - **FEAT**: add support for custom headers in static file responses ([#39](https://github.com/dartarcade/arcade/issues/39)).
+- **FEAT**: add support for custom headers in static file responses ([#39](https://github.com/dartarcade/arcade/issues/39)).
 
 ## 0.2.1+2
 
- - Update a dependency to the latest release.
+- Update a dependency to the latest release.
 
 ## 0.2.1
 
- - **FEAT**: Add emitToAll function for websockets.
+- **FEAT**: Add emitToAll function for websockets.
 
 ## 0.2.0
 
 > Note: This release has breaking changes.
 
- - **BREAKING** **FEAT**: Move Route to route, add types to route.group ([#36](https://github.com/dartarcade/arcade/issues/36)).
+- **BREAKING** **FEAT**: Move Route to route, add types to route.group ([#36](https://github.com/dartarcade/arcade/issues/36)).
 
 ## 0.1.4+2
 
- - **FIX**: Duplicate global hooks.
+- **FIX**: Duplicate global hooks.
 
 ## 0.1.4+1
 
- - **FIX**: Run global hooks.
+- **FIX**: Run global hooks.
 
 ## 0.1.4
 
- - **FEAT**(arcade): add support for setting status code.
+- **FEAT**(arcade): add support for setting status code.
 
 ## 0.1.3
 
- - **FEAT**: update dependencies.
+- **FEAT**: update dependencies.
 
 ## 0.1.2
 
- - **FIX**: name clash.
- - **FEAT**: add support for global before, after and afterWebSocket hooks.
- - **FEAT**: optimize route matching and static file checking.
- - **FEAT**: group routes support.
- - **FEAT**: match wildcard routes on any sub path segment.
+- **FIX**: name clash.
+- **FEAT**: add support for global before, after and afterWebSocket hooks.
+- **FEAT**: optimize route matching and static file checking.
+- **FEAT**: group routes support.
+- **FEAT**: match wildcard routes on any sub path segment.
 
 ## 0.1.1+1
 
- - **REFACTOR**: fix samples and examples.
- - **FIX**(server_helper): process signal empty stream for platform windows.
+- **REFACTOR**: fix samples and examples.
+- **FIX**(server_helper): process signal empty stream for platform windows.
 
 ## 0.1.1
 
- - **FEAT**: rename to arcade.
+- **FEAT**: rename to arcade.
 
 ## 0.1.0+1
 
- - **FIX**: dartseid_cli will hot restart the app instead of hot reload for more reliability.
+- **FIX**: dartseid_cli will hot restart the app instead of hot reload for more reliability.
 
 ## 0.1.0
 
@@ -90,29 +94,29 @@
 
 ## 0.0.9+2
 
- - **FIX**(core): updated to logger dependencies. Need to solve cyclic deps.
- - **FIX**(all): Licenses copyright.
+- **FIX**(core): updated to logger dependencies. Need to solve cyclic deps.
+- **FIX**(all): Licenses copyright.
 
 ## 0.0.9+1
 
- - **FIX**(dartseid): update imports for config dependency.
+- **FIX**(dartseid): update imports for config dependency.
 
 ## 0.0.9
 
- - **FEAT**(config): new configuration package.
+- **FEAT**(config): new configuration package.
 
 ## 0.0.8
 
- - **FIX**: hot reloading now initializes the application.
- - **FIX**: not found route not closed.
- - **FIX**: normalized routes when matching, decode path params during construction of context.pathParameters.
- - **FEAT**: detect prod (compiled) or dev (JIT) environment.
- - **FEAT**: add before and after hooks, and remove middleware. Before hooks are a replacement for middlewares, separate request and response headers in RequestContext.
- - **FEAT**: add records and levels to logging.
- - **FEAT**: add a rudimentary logger that uses a separate isolate to log.
- - **FEAT**: add file upload support.
- - **FEAT**: add todo API sample.
- - **FEAT**: add support for custom exceptions.
+- **FIX**: hot reloading now initializes the application.
+- **FIX**: not found route not closed.
+- **FIX**: normalized routes when matching, decode path params during construction of context.pathParameters.
+- **FEAT**: detect prod (compiled) or dev (JIT) environment.
+- **FEAT**: add before and after hooks, and remove middleware. Before hooks are a replacement for middlewares, separate request and response headers in RequestContext.
+- **FEAT**: add records and levels to logging.
+- **FEAT**: add a rudimentary logger that uses a separate isolate to log.
+- **FEAT**: add file upload support.
+- **FEAT**: add todo API sample.
+- **FEAT**: add support for custom exceptions.
 
 ## 0.0.7
 
