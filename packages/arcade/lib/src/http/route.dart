@@ -293,6 +293,24 @@ final class RouteBuilder<T extends RequestContext> {
     globalAfterWebSocketHooks.addAll(hooks);
   }
 
+  void addBeforeHookForPath(String path, BeforeHookHandler hook) {
+    final route = routes.firstWhere((route) => route.path == path);
+    route.beforeHooks.add(hook);
+  }
+
+  void addAfterHookForPath(String path, AfterHookHandler hook) {
+    final route = routes.firstWhere((route) => route.path == path);
+    route.afterHooks.add(hook);
+  }
+
+  void addAfterWebSocketHookForPath(
+    String path,
+    AfterWebSocketHookHandler hook,
+  ) {
+    final route = routes.firstWhere((route) => route.path == path);
+    route.afterWebSocketHooks.add(hook);
+  }
+
   RouteBuilder<T> withExtra(Map<String, dynamic> extra, {bool merge = true}) {
     if (!merge) {
       _extra.clear();
