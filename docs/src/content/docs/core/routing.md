@@ -88,14 +88,14 @@ route.get('/search').handle((context) {
 Organize related routes using groups:
 
 ```dart
-route.group('/api/v1', defineRoutes: (route) {
+route.group<RequestContext>('/api/v1', defineRoutes: (route) {
   // All routes in this group will be prefixed with /api/v1
   
   route().get('/users').handle((context) => 'List users');
   route().post('/users').handle((context) => 'Create user');
   
   // Nested groups
-  route().group('/admin', defineRoutes: (route) {
+  route().group<RequestContext>('/admin', defineRoutes: (route) {
     // This will be /api/v1/admin/dashboard
     route().get('/dashboard').handle((context) => 'Admin dashboard');
   });
@@ -107,7 +107,7 @@ route.group('/api/v1', defineRoutes: (route) {
 Apply hooks to all routes in a group:
 
 ```dart
-route.group(
+route.group<RequestContext>(
   '/api',
   before: [
     (context) {
@@ -183,7 +183,7 @@ For complex applications, organize routes in separate functions:
 
 ```dart
 void defineUserRoutes() {
-  route.group('/users', defineRoutes: (route) {
+  route.group<RequestContext>('/users', defineRoutes: (route) {
     route().get('/').handle(listUsers);
     route().get('/:id').handle(getUser);
     route().post('/').handle(createUser);
@@ -229,6 +229,41 @@ Arcade validates routes at startup:
 - Routes without handlers will cause an error
 - Invalid path patterns will be caught early
 
+## Generic Type Annotations
+
+When using route groups, it's recommended to specify the generic type parameter for better type inference:
+
+```dart
+route.group<RequestContext>('/api/v1', defineRoutes: (route) {
+  // The route parameter here will have proper type inference
+  route().get('/users').handle((context) => 'List users');
+});
+```
+
+**Why use the generic type?**
+- Improves IDE autocomplete and type checking
+- Enables better type inference in the `defineRoutes` function
+- Makes the code more explicit and self-documenting
+- Helps prevent type-related runtime errors
+
+**Without generic type:**
+```dart
+route.group('/api', defineRoutes: (route) {
+  // route parameter may have limited type inference
+  route().get('/users').handle((context) => 'Users');
+});
+```
+
+**With generic type:**
+```dart
+route.group<RequestContext>('/api', defineRoutes: (route) {
+  // route parameter has full type inference
+  route().get('/users').handle((context) => 'Users');
+});
+```
+
+This pattern is especially important when using custom context types or when working with hooks that transform the context type.
+
 ## Best Practices
 
 1. **Organize routes logically** - Use groups and separate functions
@@ -236,6 +271,7 @@ Arcade validates routes at startup:
 3. **Define specific routes first** - More generic patterns last
 4. **Use meaningful path parameters** - `:userId` instead of `:id`
 5. **Handle errors appropriately** - Define not found and error handlers
+6. **Use generic type annotations** - Specify `<RequestContext>` for better type inference
 
 ## Next Steps
 

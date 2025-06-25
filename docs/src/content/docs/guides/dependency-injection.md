@@ -324,7 +324,7 @@ class Routes {
   }
   
   void _registerAuthRoutes() {
-    route.group('/api/auth', defineRoutes: (route) {
+    route.group<RequestContext>('/api/auth', defineRoutes: (route) {
       route().post('/login').handle(authController.login);
       route().post('/register').handle(authController.register);
       
@@ -335,7 +335,7 @@ class Routes {
   }
   
   void _registerTodoRoutes() {
-    route.group('/api/todos',
+    route.group<RequestContext>('/api/todos',
       before: [authHooks.requireAuth()],
       defineRoutes: (route) {
         route().get('/').handle(todoController.list);

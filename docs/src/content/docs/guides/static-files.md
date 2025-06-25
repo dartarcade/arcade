@@ -103,7 +103,7 @@ Serve SPAs with client-side routing:
 ```dart
 void configureSPA() {
   // API routes first
-  route.group('/api', defineRoutes: (route) {
+  route.group<RequestContext>('/api', defineRoutes: (route) {
     route().get('/users').handle((context) => []);
     route().post('/login').handle((context) => {'token': 'xxx'});
   });

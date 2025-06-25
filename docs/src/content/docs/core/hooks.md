@@ -176,7 +176,7 @@ route.registerAllGlobalAfterHooks([
 Apply hooks to all routes in a group:
 
 ```dart
-route.group(
+route.group<RequestContext>(
   '/api',
   before: [
     (context) {
@@ -263,7 +263,7 @@ route.registerGlobalBeforeHook((ctx) {
   return ctx;
 });
 
-route.group('/api', 
+route.group<RequestContext>('/api', 
   before: [(ctx) {
     print('2. Group before');
     return ctx;

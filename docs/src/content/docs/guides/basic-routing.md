@@ -17,7 +17,7 @@ final tasks = <String, Map<String, dynamic>>{};
 int nextId = 1;
 
 void defineTaskRoutes() {
-  route.group('/api/tasks', defineRoutes: (route) {
+  route.group<RequestContext>('/api/tasks', defineRoutes: (route) {
     // GET /api/tasks - List all tasks
     route().get('/').handle((context) {
       return {
@@ -215,7 +215,7 @@ Implement API versioning using route groups:
 ```dart
 void defineVersionedApi() {
   // Version 1
-  route.group('/api/v1', defineRoutes: (route) {
+  route.group<RequestContext>('/api/v1', defineRoutes: (route) {
     route().get('/users').handle((context) {
       return {
         'version': 1,
@@ -230,7 +230,7 @@ void defineVersionedApi() {
   });
   
   // Version 2 with breaking changes
-  route.group('/api/v2', defineRoutes: (route) {
+  route.group<RequestContext>('/api/v2', defineRoutes: (route) {
     route().get('/users').handle((context) {
       return {
         'version': 2,
