@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2025-06-25
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+- There are no breaking changes in this release.
+
+Packages with other changes:
+
+- [`arcade` - `v0.3.2`](#arcade---v032)
+
+---
+
+#### `arcade` - `v0.3.2`
+
+- **FIX**: Last route not added to routes list when using hooks for paths.
+
 ## 2025-06-23
 
 ### Changes

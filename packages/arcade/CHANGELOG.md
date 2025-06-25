@@ -1,3 +1,7 @@
+## 0.3.2
+
+- **FIX**: Last route not added to routes list when using hooks for paths.
+
 ## 0.3.1
 
 - **FEAT**: Add before and after hooks for paths ([#47](https://github.com/dartarcade/arcade/issues/47)).

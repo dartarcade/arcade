@@ -294,11 +294,13 @@ final class RouteBuilder<T extends RequestContext> {
   }
 
   void addBeforeHookForPath(String path, BeforeHookHandler hook) {
+    validatePreviousRouteHasHandler();
     final route = routes.firstWhere((route) => route.path == path);
     route.beforeHooks.add(hook);
   }
 
   void addAfterHookForPath(String path, AfterHookHandler hook) {
+    validatePreviousRouteHasHandler();
     final route = routes.firstWhere((route) => route.path == path);
     route.afterHooks.add(hook);
   }
