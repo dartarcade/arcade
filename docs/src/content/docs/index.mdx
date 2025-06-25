@@ -1,0 +1,122 @@
+---
+title: Welcome to Arcade
+description: A minimal, Express-like web framework for Dart
+template: splash
+hero:
+  tagline: Build fast, scalable web applications with a familiar Express-like API in Dart
+  image:
+    file: ../../assets/arcade-logo.svg
+    alt: Arcade Framework Logo
+  actions:
+    - text: Get Started
+      link: /getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/dartarcade/arcade
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## What is Arcade?
+
+Arcade is a minimal web framework for Dart that brings the simplicity and familiarity of Express.js to the Dart ecosystem. It provides a clean, intuitive API for building web applications and APIs while leveraging Dart's strong typing and performance.
+
+## Key Features
+
+<CardGrid stagger>
+  <Card title="Express-like API" icon="rocket">
+    Familiar routing patterns and hook system that feels right at home for Express.js developers
+  </Card>
+  <Card title="Type Safety" icon="shield">
+    Full type safety with Dart's strong typing system, catching errors at compile time
+  </Card>
+  <Card title="WebSocket Support" icon="wifi">
+    Built-in WebSocket support for real-time applications with a clean, simple API
+  </Card>
+  <Card title="Minimal Core" icon="box">
+    Lightweight core that doesn't impose opinions, letting you structure your app your way
+  </Card>
+</CardGrid>
+
+## Quick Example
+
+```dart
+import 'package:arcade/arcade.dart';
+
+void main() async {
+  await runServer(
+    port: 3000,
+    init: () {
+      route.get('/').handle((context) => 'Hello, World!');
+      
+      route.get('/users/:id').handle((context) {
+        final userId = context.pathParameters['id'];
+        return {'userId': userId, 'name': 'John Doe'};
+      });
+      
+      route.post('/users')
+        .before((context) {
+          // Run authentication check before handler
+          print('Authenticating user...');
+          return context;
+        })
+        .handle((context) async {
+          final body = await context.jsonMap();
+          // Handle user creation
+          return {'created': true, 'user': body.value};
+        })
+        .after((context, result) {
+          // Log after handler completes
+          print('User created successfully');
+          return (context, result);
+        });
+    },
+  );
+}
+```
+
+## Why Arcade?
+
+### Familiar API
+If you've used Express.js, you'll feel right at home. Arcade brings the same intuitive routing patterns to Dart.
+
+### Production Ready
+Built with real-world applications in mind, Arcade includes features like:
+- Comprehensive error handling
+- Static file serving
+- Body parsing (JSON, form data, multipart)
+- Path parameters and query strings
+- Before/after hooks for request processing
+
+### Extensible
+Arcade's minimal core is designed to be extended. Use it standalone for simple applications, or combine it with dependency injection frameworks like Injectable for larger projects.
+
+### Great Developer Experience
+- Hot reload support in development
+- Clear error messages
+- Comprehensive logging
+- TypeScript-like type safety
+
+## Ecosystem
+
+Arcade comes with a growing ecosystem of packages:
+
+- **arcade_cli** - CLI tools for development
+- **arcade_logger** - Structured logging
+- **arcade_config** - Configuration management
+- **arcade_cache** - Caching utilities
+- **arcade_swagger** - OpenAPI documentation generation
+- **arcade_views** - Template rendering
+
+## Getting Help
+
+- 📖 Read the [documentation](/getting-started/)
+- 💬 Join the community discussions on GitHub
+- 🐛 Report issues on [GitHub](https://github.com/dartarcade/arcade/issues)
+- ⭐ Star the project on [GitHub](https://github.com/dartarcade/arcade)
+
+## Ready to dive in?
+
+Check out the [Getting Started](/getting-started/) guide to create your first Arcade application!

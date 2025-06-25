@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <!-- Gradient for the "A" -->
+    <linearGradient id="arcadeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#22d3ee"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Letter "A" for Arcade -->
+  <path d="M25 75 L50 25 L75 75 M35 60 L65 60" 
+        fill="none" 
+        stroke="url(#arcadeGradient)" 
+        stroke-width="8" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+</svg>

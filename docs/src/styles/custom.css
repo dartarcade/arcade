@@ -1,0 +1,64 @@
+/* Prevent flash of white content by setting immediate background */
+html {
+  background-color: rgb(16, 15, 15) !important;
+  color-scheme: dark;
+}
+
+/* Override for light theme users */
+@media (prefers-color-scheme: light) {
+  html {
+    background-color: rgb(255, 252, 240) !important;
+    color-scheme: light;
+  }
+}
+
+/* Theme-specific overrides */
+[data-theme='dark'] {
+  background-color: rgb(16, 15, 15) !important;
+}
+
+[data-theme='light'] {
+  background-color: rgb(255, 252, 240) !important;
+}
+
+/* Smooth theme transitions after initial load */
+html.loaded {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.loaded * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Ensure body inherits background */
+body {
+  background-color: inherit;
+}
+
+/* Prevent layout shift during loading */
+main {
+  min-height: 100vh;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  html.loaded,
+  html.loaded * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Fix any white backgrounds in components */
+.sl-container,
+.content-panel,
+.main-frame {
+  background-color: inherit;
+}
+
+/* Ensure navigation elements inherit theme */
+nav,
+aside,
+header {
+  background-color: inherit;
+}
