@@ -1,11 +1,129 @@
 import 'package:arcade/arcade.dart';
 import 'package:arcade/src/http/route.dart';
 
+/// Cache for normalized paths to avoid repeated regex operations
+final Map<String, String> _normalizedPathCache = {};
+
+/// Pre-compiled regex patterns for better performance
+final RegExp _leadingSlashPattern = RegExp('^/+');
+final RegExp _trailingSlashPattern = RegExp(r'/+$');
+
 String _normalizePath(String path) {
-  String p = path;
-  p = p.replaceAll(RegExp('^/+'), '');
-  p = p.replaceAll(RegExp(r'/+$'), '');
-  return p;
+  // Check cache first
+  final cached = _normalizedPathCache[path];
+  if (cached != null) return cached;
+
+  // Fast path for already normalized paths
+  if (path.isEmpty ||
+      (path != '/' && !path.startsWith('/') && !path.endsWith('/'))) {
+    _normalizedPathCache[path] = path;
+    return path;
+  }
+
+  // Normalize and cache
+  String normalized = path;
+  normalized = normalized.replaceAll(_leadingSlashPattern, '');
+  normalized = normalized.replaceAll(_trailingSlashPattern, '');
+
+  // Limit cache size to prevent memory leaks
+  if (_normalizedPathCache.length > 1000) {
+    _normalizedPathCache.clear();
+  }
+
+  _normalizedPathCache[path] = normalized;
+  return normalized;
+}
+
+class _TrieNode {
+  final Map<String, _TrieNode> children = {};
+  final Map<String, _TrieNode> paramChildren = {};
+  _TrieNode? wildcardChild;
+  BaseRoute? route;
+  String? paramName;
+
+  bool get isLeaf => route != null;
+}
+
+class _RadixTrie {
+  final _TrieNode _root = _TrieNode();
+
+  void insert(BaseRoute route) {
+    final segments = _normalizePath(route.path).split('/');
+    _TrieNode current = _root;
+
+    for (int i = 0; i < segments.length; i++) {
+      final segment = segments[i];
+
+      if (segment == '*') {
+        current.wildcardChild ??= _TrieNode();
+        current = current.wildcardChild!;
+        break;
+      } else if (segment.startsWith(':')) {
+        final paramName = segment.substring(1);
+        current.paramChildren[paramName] ??= _TrieNode()..paramName = paramName;
+        current = current.paramChildren[paramName]!;
+      } else {
+        current.children[segment] ??= _TrieNode();
+        current = current.children[segment]!;
+      }
+    }
+
+    current.route = route;
+  }
+
+  BaseRoute? search(String path) {
+    final segments = _normalizePath(path).split('/');
+    final result = _searchRecursive(_root, segments, 0, {});
+    return result.$1;
+  }
+
+  (BaseRoute?, Map<String, String>) searchWithParams(String path) {
+    final segments = _normalizePath(path).split('/');
+    return _searchRecursive(_root, segments, 0, {});
+  }
+
+  (BaseRoute?, Map<String, String>) _searchRecursive(
+    _TrieNode node,
+    List<String> segments,
+    int index,
+    Map<String, String> params,
+  ) {
+    if (index >= segments.length) {
+      return (node.route, params);
+    }
+
+    final segment = segments[index];
+
+    // Try exact match first
+    final exactChild = node.children[segment];
+    if (exactChild != null) {
+      final result = _searchRecursive(exactChild, segments, index + 1, params);
+      if (result.$1 != null) return result;
+    }
+
+    // Try parameter match
+    for (final paramChild in node.paramChildren.values) {
+      final newParams = Map<String, String>.from(params);
+      newParams[paramChild.paramName!] = Uri.decodeFull(segment);
+      final result =
+          _searchRecursive(paramChild, segments, index + 1, newParams);
+      if (result.$1 != null) return result;
+    }
+
+    // Try wildcard match
+    if (node.wildcardChild != null) {
+      return (node.wildcardChild!.route, params);
+    }
+
+    return (null, {});
+  }
+
+  void clear() {
+    _root.children.clear();
+    _root.paramChildren.clear();
+    _root.wildcardChild = null;
+    _root.route = null;
+  }
 }
 
 bool routeMatchesPath(String routePath, String path) {
@@ -36,14 +154,28 @@ bool routeMatchesPath(String routePath, String path) {
   return true;
 }
 
+/// Optimized path parameter extraction using pre-computed parameters from route matching
 Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
+  // Try to get parameters from optimized route matching first
+  final result = _optimizedRouter.findRouteWithParams(
+    method: route?.method ?? HttpMethod.any,
+    uri: uri,
+  );
+
+  if (result.$1 == route && result.$3.isNotEmpty) {
+    return result.$3;
+  }
+
+  // Fallback to original implementation for backward compatibility
   final Map<String, String> pathParameters = {};
 
   if (route != null) {
     final routePathSegments = _normalizePath(route.path).split('/');
     final pathSegments = _normalizePath(uri.path).split('/');
 
-    for (var i = 0; i < routePathSegments.length; i++) {
+    for (var i = 0;
+        i < routePathSegments.length && i < pathSegments.length;
+        i++) {
       final routePathSegment = routePathSegments[i];
       final pathSegment = pathSegments[i];
 
@@ -62,29 +194,106 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
   required HttpMethod method,
   required Uri uri,
 }) {
-  (BaseRoute? route, BaseRoute? notFoundRoute) result = (null, null);
+  return _optimizedRouter.findRoute(method: method, uri: uri);
+}
 
-  for (final route in routes) {
-    final methodMatches =
-        route.method == method || route.method == HttpMethod.any;
+/// Invalidates the route cache when routes are modified.
+/// Call this whenever routes are added, removed, or changed.
+void invalidateRouteCache() {
+  _optimizedRouter.invalidate();
+  _normalizedPathCache.clear();
+}
 
-    if (route.path == '*' && methodMatches) {
-      return (route, null);
+/// Exposes optimized route finding with path parameters for external use
+(BaseRoute? route, BaseRoute? notFoundRoute, Map<String, String> pathParams)
+    findRouteWithPathParams({
+  required HttpMethod method,
+  required Uri uri,
+}) {
+  return _optimizedRouter.findRouteWithParams(method: method, uri: uri);
+}
+
+class _OptimizedRouter {
+  final Map<HttpMethod, _RadixTrie> _triesByMethod = {};
+  BaseRoute? _cachedNotFoundRoute;
+  bool _isBuilt = false;
+
+  void _buildIndex() {
+    if (_isBuilt) return;
+
+    _triesByMethod.clear();
+    _cachedNotFoundRoute = null;
+
+    for (final route in routes) {
+      final method = route.method ?? HttpMethod.any;
+
+      // Cache the first notFoundHandler we find
+      _cachedNotFoundRoute ??= route.notFoundHandler != null ? route : null;
+
+      // Add all routes to trie (handles both static and dynamic)
+      _triesByMethod.putIfAbsent(method, () => _RadixTrie()).insert(route);
+
+      // Also add to 'any' method for routes that accept any method
+      if (method != HttpMethod.any) {
+        _triesByMethod
+            .putIfAbsent(HttpMethod.any, () => _RadixTrie())
+            .insert(route);
+      }
     }
 
-    if (result.$1 == null &&
-        methodMatches &&
-        routeMatchesPath(route.path, uri.path)) {
-      return (route, null);
-    }
-
-    if (result.$2 == null && route.notFoundHandler != null) {
-      result = (result.$1, route);
-    }
+    _isBuilt = true;
   }
 
-  return result;
+  void invalidate() {
+    _isBuilt = false;
+    _cachedNotFoundRoute = null;
+    for (final trie in _triesByMethod.values) {
+      trie.clear();
+    }
+    _triesByMethod.clear();
+  }
+
+  (BaseRoute? route, BaseRoute? notFoundRoute, Map<String, String> pathParams)
+      findRouteWithParams({
+    required HttpMethod method,
+    required Uri uri,
+  }) {
+    _buildIndex();
+
+    // Try method-specific trie first
+    final methodTrie = _triesByMethod[method];
+    if (methodTrie != null) {
+      final result = methodTrie.searchWithParams(uri.path);
+      if (result.$1 != null) {
+        return (result.$1, null, result.$2);
+      }
+    }
+
+    // Try 'any' method trie if not found
+    if (method != HttpMethod.any) {
+      final anyTrie = _triesByMethod[HttpMethod.any];
+      if (anyTrie != null) {
+        final result = anyTrie.searchWithParams(uri.path);
+        if (result.$1 != null) {
+          return (result.$1, null, result.$2);
+        }
+      }
+    }
+
+    return (null, _cachedNotFoundRoute, {});
+  }
+
+  // Backward compatibility method
+  (BaseRoute? route, BaseRoute? notFoundRoute) findRoute({
+    required HttpMethod method,
+    required Uri uri,
+  }) {
+    final result = findRouteWithParams(method: method, uri: uri);
+    return (result.$1, result.$2);
+  }
 }
+
+final _optimizedRouter = _OptimizedRouter();
 
 final List<BeforeHookHandler> globalBeforeHooks = [];
 final List<AfterHookHandler> globalAfterHooks = [];
@@ -95,6 +304,7 @@ BaseRoute? currentProcessingRoute;
 void validatePreviousRouteHasHandler() {
   if (currentProcessingRoute != null) {
     routes.add(currentProcessingRoute!);
+    invalidateRouteCache();
     currentProcessingRoute = null;
   }
 
