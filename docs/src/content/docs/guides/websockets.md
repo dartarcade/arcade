@@ -5,6 +5,93 @@ description: Building real-time applications with Arcade's WebSocket support
 
 Arcade provides built-in WebSocket support for creating real-time applications. This guide covers everything from basic connections to advanced patterns.
 
+## WebSocket Storage Initialization
+
+Before using WebSockets with room management and persistence features, you need to initialize the WebSocket storage system:
+
+### Basic Initialization (Memory Storage)
+
+```dart
+import 'package:arcade/arcade.dart';
+
+void main() async {
+  // Initialize WebSocket storage with default memory cache
+  initializeWebSocketStorage();
+  
+  await runServer(
+    port: 3000,
+    init: () {
+      // Your WebSocket routes...
+    },
+  );
+  
+  // Clean up on shutdown
+  await disposeWebSocketStorage();
+}
+```
+
+### Redis-backed Storage (Recommended for Production)
+
+```dart
+import 'package:arcade/arcade.dart';
+import 'package:arcade_cache_redis/arcade_cache_redis.dart';
+
+void main() async {
+  // Initialize Redis cache
+  final redisCache = RedisCacheManager();
+  await redisCache.init((
+    host: Platform.environment['REDIS_HOST'] ?? 'localhost',
+    port: int.parse(Platform.environment['REDIS_PORT'] ?? '6379'),
+    secure: Platform.environment['REDIS_SECURE'] == 'true',
+  ));
+  
+  // Initialize WebSocket storage with Redis
+  initializeWebSocketStorage(redisCache);
+  
+  await runServer(
+    port: 3000,
+    init: () {
+      // Your WebSocket routes with room support...
+    },
+  );
+  
+  // Clean up on shutdown
+  await disposeWebSocketStorage();
+}
+```
+
+### Custom Cache Implementation
+
+```dart
+import 'package:arcade/arcade.dart';
+import 'package:arcade_cache/arcade_cache.dart';
+
+void main() async {
+  // Use any BaseCacheManager implementation
+  final customCache = MyCustomCacheManager();
+  await customCache.init(MyCustomConfig());
+  
+  // Initialize WebSocket storage
+  initializeWebSocketStorage(customCache);
+  
+  await runServer(
+    port: 3000,
+    init: () {
+      // Your routes...
+    },
+  );
+  
+  // Clean up
+  await disposeWebSocketStorage();
+}
+```
+
+**Important Notes:**
+- Call `initializeWebSocketStorage()` **before** starting your server
+- Always call `disposeWebSocketStorage()` when shutting down
+- Without initialization, room management functions will be ignored
+- Redis storage enables WebSocket rooms across multiple server instances
+
 ## Basic WebSocket Server
 
 Create a simple WebSocket echo server:
@@ -169,165 +256,76 @@ route.post('/api/message/:userId').handle((context) async {
 });
 ```
 
-## Chat Room Example
+## Simple Chat with Native Rooms
 
-Build a complete chat room with rooms and user management:
+Build a chat application using Arcade's built-in room management:
 
 ```dart
-class ChatRoom {
-  final String id;
-  final String name;
-  final Set<String> users = {};
-  final List<ChatMessage> messages = [];
-  
-  ChatRoom({required this.id, required this.name});
-  
-  void addUser(String userId) {
-    users.add(userId);
-  }
-  
-  void removeUser(String userId) {
-    users.remove(userId);
-  }
-  
-  void addMessage(ChatMessage message) {
-    messages.add(message);
-    // Keep last 100 messages
-    if (messages.length > 100) {
-      messages.removeAt(0);
-    }
-  }
-}
-
-class ChatMessage {
-  final String id;
-  final String userId;
-  final String message;
-  final DateTime timestamp;
-  
-  ChatMessage({
-    required this.id,
-    required this.userId,
-    required this.message,
-    required this.timestamp,
-  });
-  
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'userId': userId,
-    'message': message,
-    'timestamp': timestamp.toIso8601String(),
-  };
-}
-
-final chatRooms = <String, ChatRoom>{};
-
 route.get('/ws/chat/:roomId')
   .handleWebSocket(
     (context, websocket, id) {
       final roomId = context.pathParameters['roomId']!;
-      var room = chatRooms[roomId];
       
-      if (room == null) {
-        websocket.add(jsonEncode({'error': 'Room not found'}));
-        websocket.close();
-        return;
-      }
-      
-      // Store room association
-      WebSocketManager.setConnectionData(id, {'roomId': roomId});
-      
-      websocket.listen(
-        (data) {
-          final json = jsonDecode(data);
-          final type = json['type'];
-          
-          switch (type) {
-            case 'message':
-              final message = ChatMessage(
-                id: Uuid().v4(),
-                userId: id,
-                message: json['message'],
-                timestamp: DateTime.now(),
-              );
-              
-              room.addMessage(message);
-              
-              // Broadcast to room members
-              for (final userId in room.users) {
-                emitTo(userId, 'message', message.toJson());
-              }
-              break;
-              
-            case 'typing':
-              // Notify others that user is typing
-              for (final userId in room.users) {
-                if (userId != id) {
-                  emitTo(userId, 'user-typing', {'userId': id});
-                }
-              }
-              break;
-          }
-        },
-        onDone: () {
-          // Remove user from room
-          room?.removeUser(id);
-          
-          // Notify others
-          for (final userId in room?.users ?? {}) {
-            emitTo(userId, 'user-left', {'userId': id});
-          }
-        },
-      );
+      websocket.listen((data) async {
+        final json = jsonDecode(data);
+        
+        switch (json['type']) {
+          case 'message':
+            // Broadcast message to all room members using native room support
+            await emitToRoom(roomId, jsonEncode({
+              'type': 'chat_message',
+              'from': id,
+              'message': json['message'],
+              'timestamp': DateTime.now().toIso8601String(),
+            }));
+            break;
+            
+          case 'typing':
+            // Notify others in room that user is typing
+            await emitToRoom(roomId, jsonEncode({
+              'type': 'user_typing',
+              'userId': id,
+            }));
+            break;
+        }
+      });
     },
-    onConnect: (context, websocket, id) {
+    onConnect: (context, websocket, id) async {
       final roomId = context.pathParameters['roomId']!;
-      final room = chatRooms[roomId]!;
       
-      // Add user to room
-      room.addUser(id);
+      // Join the room using native room support
+      await joinRoom(id, roomId);
       
-      // Send room info and history
+      // Get current room members
+      final members = await getRoomMembers(roomId);
+      
+      // Send room info to new user
       websocket.add(jsonEncode({
-        'type': 'room-info',
-        'room': {
-          'id': room.id,
-          'name': room.name,
-          'users': room.users.toList(),
-        },
-        'messages': room.messages.map((m) => m.toJson()).toList(),
+        'type': 'room_joined',
+        'roomId': roomId,
+        'members': members,
+        'memberCount': members.length,
       }));
       
-      // Notify others
-      for (final userId in room.users) {
-        if (userId != id) {
-          emitTo(userId, 'user-joined', {'userId': id});
-        }
-      }
+      // Notify other room members
+      await emitToRoom(roomId, jsonEncode({
+        'type': 'user_joined',
+        'userId': id,
+        'memberCount': members.length,
+      }));
     },
   );
 
-// Create room endpoint
-route.post('/api/rooms').handle((context) async {
-  final result = await context.jsonMap();
+// API to get room information
+route.get('/api/rooms/:roomId').handle((context) async {
+  final roomId = context.pathParameters['roomId']!;
+  final members = await getRoomMembers(roomId);
   
-  if (result case BodyParseSuccess(:final value)) {
-    final roomId = Uuid().v4();
-    final room = ChatRoom(
-      id: roomId,
-      name: value['name'],
-    );
-    
-    chatRooms[roomId] = room;
-    
-    return {
-      'id': roomId,
-      'name': room.name,
-      'wsUrl': '/ws/chat/$roomId',
-    };
-  }
-  
-  throw BadRequestException();
+  return {
+    'roomId': roomId,
+    'members': members,
+    'memberCount': members.length,
+  };
 });
 ```
 
@@ -425,44 +423,437 @@ route.get('/ws/protocol')
   });
 ```
 
-## Connection Management
+## Room Management
 
-Monitor and manage WebSocket connections:
+Arcade now supports advanced room-based WebSocket functionality with cache-backed storage:
+
+### Joining and Leaving Rooms
 
 ```dart
-// Get all connected clients
-route.get('/api/ws/connections').handle((context) {
-  final connections = WebSocketManager.getConnectedIds();
+route.get('/ws/chat/:roomId')
+  .handleWebSocket(
+    (context, websocket, id) {
+      final roomId = context.pathParameters['roomId']!;
+      
+      websocket.listen(
+        (data) async {
+          final json = jsonDecode(data);
+          final type = json['type'];
+          
+          switch (type) {
+            case 'message':
+              // Broadcast to all room members
+              await emitToRoom(roomId, jsonEncode({
+                'type': 'message',
+                'from': id,
+                'message': json['message'],
+                'timestamp': DateTime.now().toIso8601String(),
+              }));
+              break;
+          }
+        },
+        onDone: () async {
+          // Remove from room on disconnect
+          await leaveRoom(id, roomId);
+        },
+      );
+    },
+    onConnect: (context, websocket, id) async {
+      final roomId = context.pathParameters['roomId']!;
+      
+      // Join the room
+      await joinRoom(id, roomId);
+      
+      // Get room members
+      final members = await getRoomMembers(roomId);
+      
+      // Send room info to new member
+      websocket.add(jsonEncode({
+        'type': 'room-joined',
+        'roomId': roomId,
+        'members': members,
+      }));
+      
+      // Notify other room members
+      await emitToRoom(roomId, jsonEncode({
+        'type': 'user-joined',
+        'userId': id,
+        'memberCount': members.length,
+      }));
+    },
+  );
+```
+
+### Advanced Room Operations
+
+```dart
+// Get all room members
+route.get('/api/rooms/:roomId/members').handle((context) async {
+  final roomId = context.pathParameters['roomId']!;
+  final members = await getRoomMembers(roomId);
   
   return {
-    'count': connections.length,
-    'connections': connections.map((id) {
-      final data = WebSocketManager.getConnectionData(id);
-      return {
-        'id': id,
-        'data': data,
-      };
+    'roomId': roomId,
+    'members': members,
+    'count': members.length,
+  };
+});
+
+// Move user between rooms
+route.post('/api/users/:userId/move-room').handle((context) async {
+  final userId = context.pathParameters['userId']!;
+  final body = await context.jsonMap();
+  final fromRoom = body['from'];
+  final toRoom = body['to'];
+  
+  // Leave old room
+  if (fromRoom != null) {
+    await leaveRoom(userId, fromRoom);
+  }
+  
+  // Join new room
+  await joinRoom(userId, toRoom);
+  
+  return {'moved': true, 'from': fromRoom, 'to': toRoom};
+});
+```
+
+## Connection Management with Cache Storage
+
+The new WebSocket system includes cache-backed storage for connection persistence:
+
+### Initialize WebSocket Storage
+
+```dart
+import 'package:arcade/arcade.dart';
+import 'package:arcade_cache_redis/arcade_cache_redis.dart';
+
+void main() async {
+  // Initialize with Redis for distributed storage
+  final redisCache = RedisCacheManager();
+  await redisCache.init((
+    host: 'localhost',
+    port: 6379,
+    secure: false,
+  ));
+  
+  // Initialize WebSocket storage
+  initializeWebSocketStorage(redisCache);
+  
+  await runServer(
+    port: 3000,
+    init: () {
+      // Your WebSocket routes...
+    },
+  );
+  
+  // Clean up on shutdown
+  await disposeWebSocketStorage();
+}
+```
+
+### Connection Information and Metadata
+
+```dart
+// Get detailed connection information
+route.get('/api/ws/connections').handle((context) async {
+  final connections = await getAllConnections();
+  
+  return {
+    'total': connections.length,
+    'local': await getLocalConnections(),
+    'connections': connections.map((conn) => {
+      'id': conn.id,
+      'serverInstanceId': conn.serverInstanceId,
+      'connectTime': conn.connectTime.toIso8601String(),
+      'rooms': conn.rooms.toList(),
+      'metadata': conn.metadata,
     }).toList(),
   };
 });
 
-// Disconnect specific client
-route.delete('/api/ws/connections/:id').handle((context) {
+// Update connection metadata
+route.put('/api/ws/connections/:id/metadata').handle((context) async {
   final connectionId = context.pathParameters['id']!;
+  final metadata = await context.jsonMap();
   
-  // Send disconnect message
-  final sent = emitTo(connectionId, 'disconnect', {
-    'reason': 'Admin action',
-  });
+  await updateConnectionMetadata(connectionId, metadata);
   
-  if (!sent) {
+  return {'updated': true};
+});
+
+// Get specific connection info
+route.get('/api/ws/connections/:id').handle((context) async {
+  final connectionId = context.pathParameters['id']!;
+  final info = await getConnectionInfo(connectionId);
+  
+  if (info == null) {
     throw NotFoundException(message: 'Connection not found');
   }
   
-  // The client should close the connection upon receiving this message
-  
-  return {'disconnected': true};
+  return {
+    'id': info.id,
+    'serverInstanceId': info.serverInstanceId,
+    'connectTime': info.connectTime.toIso8601String(),
+    'rooms': info.rooms.toList(),
+    'metadata': info.metadata,
+  };
 });
+```
+
+### Multi-Server Support
+
+```dart
+// Check server instance information
+route.get('/api/ws/server-info').handle((context) async {
+  return {
+    'serverInstanceId': serverInstanceId,
+    'localConnections': localConnectionIds.length,
+    'hasLocalConnections': hasLocalConnections,
+    'allConnections': (await getAllConnections()).length,
+  };
+});
+
+// Broadcast to all servers
+route.post('/api/ws/broadcast-global').handle((context) async {
+  final message = await context.jsonMap();
+  
+  // Get all connections across all server instances
+  final allConnections = await getAllConnections();
+  
+  for (final conn in allConnections) {
+    // This will work across multiple server instances
+    // when using Redis or other distributed cache
+    await emitToConnection(conn.id, message);
+  }
+  
+  return {
+    'sent': true,
+    'recipients': allConnections.length,
+  };
+});
+```
+
+### Disconnect Management
+
+```dart
+// Disconnect specific client
+route.delete('/api/ws/connections/:id').handle((context) async {
+  final connectionId = context.pathParameters['id']!;
+  
+  // Get connection info
+  final info = await getConnectionInfo(connectionId);
+  if (info == null) {
+    throw NotFoundException(message: 'Connection not found');
+  }
+  
+  // Send disconnect message if it's a local connection
+  if (info.serverInstanceId == serverInstanceId) {
+    emitTo(connectionId, jsonEncode({
+      'type': 'disconnect',
+      'reason': 'Admin action',
+    }));
+  }
+  
+  return {
+    'connectionId': connectionId,
+    'serverInstance': info.serverInstanceId,
+    'wasLocal': info.serverInstanceId == serverInstanceId,
+  };
+});
+```
+
+## Room-Based Applications
+
+Build sophisticated multi-room applications with the new room management features:
+
+### Multi-Room Chat Application
+
+```dart
+class ChatService {
+  static final rooms = <String, Room>{};
+  
+  static Future<void> createRoom(String roomId, String name, String createdBy) async {
+    rooms[roomId] = Room(
+      id: roomId,
+      name: name,
+      createdBy: createdBy,
+      createdAt: DateTime.now(),
+    );
+  }
+  
+  static Future<void> handleUserMessage(
+    String connectionId,
+    String roomId,
+    Map<String, dynamic> message,
+  ) async {
+    final room = rooms[roomId];
+    if (room == null) return;
+    
+    final chatMessage = {
+      'type': 'chat_message',
+      'roomId': roomId,
+      'from': connectionId,
+      'message': message['text'],
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+    
+    // Store message in room history
+    room.addMessage(chatMessage);
+    
+    // Broadcast to all room members
+    await emitToRoom(roomId, jsonEncode(chatMessage));
+  }
+  
+  static Future<List<String>> getRoomList() async {
+    return rooms.keys.toList();
+  }
+}
+
+// WebSocket route for multi-room chat
+route.get('/ws/multi-chat')
+  .handleWebSocket(
+    (context, websocket, id) {
+      websocket.listen((data) async {
+        final message = jsonDecode(data);
+        
+        switch (message['action']) {
+          case 'join_room':
+            await joinRoom(id, message['roomId']);
+            await updateConnectionMetadata(id, {
+              'currentRoom': message['roomId'],
+              'username': message['username'],
+            });
+            break;
+            
+          case 'leave_room':
+            await leaveRoom(id, message['roomId']);
+            break;
+            
+          case 'send_message':
+            await ChatService.handleUserMessage(
+              id,
+              message['roomId'],
+              message,
+            );
+            break;
+            
+          case 'list_rooms':
+            final roomList = await ChatService.getRoomList();
+            websocket.add(jsonEncode({
+              'type': 'room_list',
+              'rooms': roomList,
+            }));
+            break;
+        }
+      });
+    },
+    onConnect: (context, websocket, id) async {
+      // Send available rooms
+      final rooms = await ChatService.getRoomList();
+      websocket.add(jsonEncode({
+        'type': 'connection_established',
+        'connectionId': id,
+        'availableRooms': rooms,
+      }));
+    },
+  );
+```
+
+### Gaming Lobbies
+
+```dart
+class GameLobby {
+  static final lobbies = <String, Lobby>{};
+  
+  static Future<void> createLobby(String lobbyId) async {
+    lobbies[lobbyId] = Lobby(id: lobbyId, maxPlayers: 4);
+  }
+  
+  static Future<bool> joinLobby(String connectionId, String lobbyId) async {
+    final lobby = lobbies[lobbyId];
+    if (lobby == null || lobby.isFull) return false;
+    
+    await joinRoom(connectionId, lobbyId);
+    lobby.addPlayer(connectionId);
+    
+    // Notify all players in lobby
+    await emitToRoom(lobbyId, jsonEncode({
+      'type': 'player_joined',
+      'playerId': connectionId,
+      'playerCount': lobby.playerCount,
+      'isGameReady': lobby.isGameReady,
+    }));
+    
+    return true;
+  }
+  
+  static Future<void> startGame(String lobbyId) async {
+    final lobby = lobbies[lobbyId];
+    if (lobby == null || !lobby.isGameReady) return;
+    
+    lobby.status = LobbyStatus.inGame;
+    
+    await emitToRoom(lobbyId, jsonEncode({
+      'type': 'game_started',
+      'gameId': lobby.gameId,
+      'players': lobby.players,
+    }));
+  }
+}
+```
+
+### Live Streaming with Rooms
+
+```dart
+// Stream viewer system
+route.get('/ws/stream/:streamId')
+  .handleWebSocket(
+    (context, websocket, id) {
+      final streamId = context.pathParameters['streamId']!;
+      
+      websocket.listen((data) async {
+        final message = jsonDecode(data);
+        
+        switch (message['type']) {
+          case 'chat':
+            // Broadcast chat to all viewers
+            await emitToRoom('stream:$streamId', jsonEncode({
+              'type': 'stream_chat',
+              'from': message['username'],
+              'message': message['text'],
+              'timestamp': DateTime.now().toIso8601String(),
+            }));
+            break;
+            
+          case 'reaction':
+            // Send reactions to streamer and other viewers
+            await emitToRoom('stream:$streamId', jsonEncode({
+              'type': 'viewer_reaction',
+              'reaction': message['reaction'],
+              'from': id,
+            }));
+            break;
+        }
+      });
+    },
+    onConnect: (context, websocket, id) async {
+      final streamId = context.pathParameters['streamId']!;
+      
+      // Join stream room
+      await joinRoom(id, 'stream:$streamId');
+      
+      // Update viewer count
+      final viewers = await getRoomMembers('stream:$streamId');
+      
+      // Notify about new viewer
+      await emitToRoom('stream:$streamId', jsonEncode({
+        'type': 'viewer_update',
+        'viewerCount': viewers.length,
+        'newViewer': id,
+      }));
+    },
+  );
 ```
 
 ## Best Practices
@@ -474,78 +865,15 @@ route.delete('/api/ws/connections/:id').handle((context) {
 5. **Use heartbeats** - Detect stale connections
 6. **Clean up resources** - Use after hooks for cleanup
 7. **Rate limit messages** - Prevent spam/DoS
+8. **Initialize storage early** - Call `initializeWebSocketStorage()` before starting server
+9. **Use Redis for scaling** - Enable distributed WebSocket support
+10. **Monitor room sizes** - Prevent rooms from growing too large
+11. **Clean up empty rooms** - Remove rooms when they become empty
+12. **Store user metadata** - Use connection metadata for user context
 
-## Client-Side Example
-
-JavaScript client for connecting to Arcade WebSocket:
-
-```javascript
-class ArcadeWebSocket {
-  constructor(url) {
-    this.url = url;
-    this.ws = null;
-    this.reconnectDelay = 1000;
-    this.maxReconnectDelay = 30000;
-  }
-  
-  connect() {
-    this.ws = new WebSocket(this.url);
-    
-    this.ws.onopen = () => {
-      console.log('Connected to Arcade WebSocket');
-      this.reconnectDelay = 1000;
-    };
-    
-    this.ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        this.handleMessage(data);
-      } catch (e) {
-        console.log('Received:', event.data);
-      }
-    };
-    
-    this.ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-    
-    this.ws.onclose = () => {
-      console.log('Disconnected from Arcade WebSocket');
-      this.reconnect();
-    };
-  }
-  
-  reconnect() {
-    setTimeout(() => {
-      console.log('Attempting to reconnect...');
-      this.connect();
-      this.reconnectDelay = Math.min(
-        this.reconnectDelay * 2,
-        this.maxReconnectDelay
-      );
-    }, this.reconnectDelay);
-  }
-  
-  send(type, data) {
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type, ...data }));
-    }
-  }
-  
-  handleMessage(data) {
-    // Override in subclass
-    console.log('Message:', data);
-  }
-}
-
-// Usage
-const ws = new ArcadeWebSocket('ws://localhost:3000/ws/chat/room123');
-ws.connect();
-ws.send('message', { message: 'Hello, Arcade!' });
-```
 
 ## Next Steps
 
 - Explore [Static Files](/guides/static-files/) for serving client apps
-- Learn about [Dependency Injection](/guides/dependency-injection/) for complex services
-- See [Error Handling](/core/error-handling/) for robust WebSocket apps
+- Learn about [Error Handling](/core/error-handling/) for robust WebSocket apps
+- See [Arcade Cache](/packages/arcade-cache/) for connection storage options

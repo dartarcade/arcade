@@ -58,6 +58,18 @@ export default defineConfig({
             },
           ],
         },
+        {
+          label: "Packages",
+          items: [
+            { label: "Arcade Cache", slug: "packages/arcade-cache" },
+            { label: "Arcade Cache Redis", slug: "packages/arcade-cache-redis" },
+            { label: "Arcade CLI", slug: "packages/arcade-cli" },
+            { label: "Arcade Config", slug: "packages/arcade-config" },
+            { label: "Arcade Logger", slug: "packages/arcade-logger" },
+            { label: "Arcade Swagger", slug: "packages/arcade-swagger" },
+            { label: "Arcade Views", slug: "packages/arcade-views" },
+          ],
+        },
       ],
     }),
   ],
