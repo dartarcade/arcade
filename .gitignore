@@ -7,3 +7,4 @@ melos_arcade.iml
 packages/*/pubspec.lock
 .asdf
 .tool-versions
+.claude

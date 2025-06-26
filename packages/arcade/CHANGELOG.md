@@ -1,3 +1,21 @@
+## 0.4.0
+
+- **FEAT**: Enhanced WebSocket system with cache-backed connection metadata
+  storage for distributed deployments.
+- **FEAT**: Add arcade_cache dependency for WebSocket connection management.
+- **FEAT**: Add room-based WebSocket messaging with `joinRoom()`,
+  `leaveRoom()`, and `emitToRoom()`.
+- **FEAT**: Add WebSocket connection discovery APIs: `getAllConnections()`,
+  `getLocalConnections()`, `getConnectionInfo()`.
+- **FEAT**: Add WebSocket connection metadata management with
+  `updateConnectionMetadata()`.
+- **FEAT**: Add `WebSocketStorageManager` for hybrid local/cache storage of
+  connection data.
+- **FEAT**: Add `initializeWebSocketStorage()` and `disposeWebSocketStorage()`
+  for cache provider configuration.
+- **FEAT**: Full backward compatibility with existing WebSocket APIs
+  (`emitTo`, `emitToAll`, `WebSocketManager`).
+
 ## 0.3.2
 
 - **FIX**: Last route not added to routes list when using hooks for paths.
@@ -113,9 +131,12 @@
 
 - **FIX**: hot reloading now initializes the application.
 - **FIX**: not found route not closed.
-- **FIX**: normalized routes when matching, decode path params during construction of context.pathParameters.
+- **FIX**: normalized routes when matching, decode path params during
+  construction of context.pathParameters.
 - **FEAT**: detect prod (compiled) or dev (JIT) environment.
-- **FEAT**: add before and after hooks, and remove middleware. Before hooks are a replacement for middlewares, separate request and response headers in RequestContext.
+- **FEAT**: add before and after hooks, and remove middleware. Before hooks are
+  a replacement for middlewares, separate request and response headers in
+  RequestContext.
 - **FEAT**: add records and levels to logging.
 - **FEAT**: add a rudimentary logger that uses a separate isolate to log.
 - **FEAT**: add file upload support.
@@ -124,11 +145,13 @@
 
 ## 0.0.7
 
-- Allow for compiling by disabling hot reloading when compiling for production using `dart compile exe`.
+- Allow for compiling by disabling hot reloading when compiling for production
+  using `dart compile exe`.
 
 ## 0.0.6
 
-- Introduce a new routing API based on hooks. This allows for more flexibility in defining routes.
+- Introduce a new routing API based on hooks. This allows for more flexibility
+  in defining routes.
 - Multiple bug fixes
 
 ## 0.0.5
@@ -138,8 +161,9 @@
 ## 0.0.4
 
 - Add a logger
-- Improve hot reloading. Now after reloading, the `init()` function is called again so that the application is
-  reinitialized. This allows routes to be redefined.
+- Improve hot reloading. Now after reloading, the `init()` function is called
+  again so that the application is reinitialized. This allows routes to be
+  redefined.
 
 ## 0.0.3
 
@@ -150,7 +174,8 @@
 
 ## 0.0.2
 
-- Added `rawRequest` to `RequestContext` to allow access to the raw request object for advanced use cases.
+- Added `rawRequest` to `RequestContext` to allow access to the raw request
+  object for advanced use cases.
 - Fixed a bug with not found route not closing the response.
 
 ## 0.0.1

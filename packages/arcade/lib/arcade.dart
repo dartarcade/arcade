@@ -9,4 +9,23 @@ export 'src/http/request_context.dart';
 export 'src/http/route.dart' hide routes;
 export 'src/server.dart';
 export 'src/ws/ws.dart'
-    show WebSocketHandler, WebSocketManager, emitTo, emitToAll;
+    show
+        WebSocketHandler,
+        WebSocketManager,
+        disposeWebSocketStorage,
+        emitTo,
+        emitToAll,
+        emitToRoom,
+        getAllConnections,
+        getConnectionInfo,
+        getLocalConnections,
+        getRoomMembers,
+        hasLocalConnections,
+        initializeWebSocketStorage,
+        joinRoom,
+        leaveRoom,
+        localConnectionIds,
+        serverInstanceId,
+        updateConnectionMetadata;
+export 'src/ws/ws_connection_info.dart' show WebSocketConnectionInfo;
+export 'src/ws/ws_storage_manager.dart' show WebSocketStorageManager;
