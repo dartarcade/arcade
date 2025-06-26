@@ -1,3 +1,7 @@
+## 0.0.7
+
+ - **FEAT**: Simplify route export file creation and add random filename generation.
+
 ## 0.0.6
 
  - **FEAT**: Update arcade dependency to 0.4.0 for enhanced WebSocket features.

@@ -10,6 +10,7 @@ import 'package:path/path.dart';
 
 Future<String> _makeRouteExportSource() async {
   return '''
+import 'dart:io';
 import 'dart:convert';
 import 'package:arcade/arcade.dart';
 import './${await getAppName()}.dart' as app;
@@ -18,6 +19,7 @@ Future<void> main() async {
   await app.main(['--export-routes']);
   // ignore: avoid_print
   print(jsonEncode(getRouteMetadata()));
+  exit(0);
 }
 ''';
 }
@@ -39,13 +41,6 @@ class RoutesCommand extends Command {
       'route-export-path',
       abbr: 'r',
       help: 'Path to export routes dir',
-      defaultsTo: 'routes.dart',
-    );
-
-    argParser.addFlag(
-      'create-route-export-file',
-      abbr: 'c',
-      help: 'Create route export file if it does not exist',
     );
   }
 
@@ -57,26 +52,17 @@ class RoutesCommand extends Command {
 
   @override
   Future run() async {
-    final (json, output, routeExportPath, createRouteExportFile) = (
+    var (json, output, routeExportPath) = (
       argResults!.flag('json'),
       argResults!.option('output'),
       argResults!.option('route-export-path'),
-      argResults!.flag('create-route-export-file'),
     );
+    routeExportPath ??= _randomFileName();
     final binDir = join(Directory.current.path, 'bin');
     final routeExportFile = File(join(binDir, routeExportPath));
 
-    if (!routeExportFile.existsSync() && !createRouteExportFile) {
-      throw UsageException(
-        'Route export file not found: $routeExportFile',
-        usage,
-      );
-    }
-
-    if (createRouteExportFile) {
-      routeExportFile.createSync(recursive: true);
-      routeExportFile.writeAsStringSync(await _makeRouteExportSource());
-    }
+    routeExportFile.createSync(recursive: true);
+    routeExportFile.writeAsStringSync(await _makeRouteExportSource());
 
     final routeExportResult = Process.runSync(
       'dart',
@@ -84,6 +70,8 @@ class RoutesCommand extends Command {
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );
+    routeExportFile.deleteSync();
+
     if (routeExportResult.exitCode != 0) {
       throw UsageException(
         'Failed to export routes: ${routeExportResult.stderr}',
@@ -104,5 +92,9 @@ class RoutesCommand extends Command {
       );
       print('\n${formatter.format()}');
     }
+  }
+
+  String _randomFileName() {
+    return 'routes_${DateTime.now().millisecondsSinceEpoch}.dart';
   }
 }
