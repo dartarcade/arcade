@@ -1,3 +1,7 @@
+## 0.0.6
+
+ - **FEAT**: Update arcade dependency to 0.4.0 for enhanced WebSocket features.
+
 ## 0.0.5
 
  - **FEAT**(arcade_swagger): Update dependencies ([#44](https://github.com/dartarcade/arcade/issues/44)).

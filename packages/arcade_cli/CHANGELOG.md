@@ -1,3 +1,7 @@
+## 0.0.6
+
+ - **FEAT**: Update arcade dependency to 0.4.0 for enhanced WebSocket features.
+
 ## 0.0.5
 
  - **FEAT**: Route export ([#40](https://github.com/dartarcade/arcade/issues/40)).
