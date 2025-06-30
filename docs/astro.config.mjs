@@ -67,6 +67,7 @@ export default defineConfig({
             { label: "Arcade Config", slug: "packages/arcade-config" },
             { label: "Arcade Logger", slug: "packages/arcade-logger" },
             { label: "Arcade Swagger", slug: "packages/arcade-swagger" },
+            { label: "Arcade Test", slug: "packages/arcade-test" },
             { label: "Arcade Views", slug: "packages/arcade-views" },
           ],
         },
