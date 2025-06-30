@@ -1,8 +1,9 @@
 import 'package:arcade/arcade.dart';
-import 'package:arcade/src/http/route.dart';
+import 'package:meta/meta.dart';
 
 /// Cache for normalized paths to avoid repeated regex operations
-final Map<String, String> _normalizedPathCache = {};
+@internal
+final Map<String, String> normalizedPathCache = {};
 
 /// Pre-compiled regex patterns for better performance
 final RegExp _leadingSlashPattern = RegExp('^/+');
@@ -10,13 +11,13 @@ final RegExp _trailingSlashPattern = RegExp(r'/+$');
 
 String _normalizePath(String path) {
   // Check cache first
-  final cached = _normalizedPathCache[path];
+  final cached = normalizedPathCache[path];
   if (cached != null) return cached;
 
   // Fast path for already normalized paths
   if (path.isEmpty ||
       (path != '/' && !path.startsWith('/') && !path.endsWith('/'))) {
-    _normalizedPathCache[path] = path;
+    normalizedPathCache[path] = path;
     return path;
   }
 
@@ -26,44 +27,46 @@ String _normalizePath(String path) {
   normalized = normalized.replaceAll(_trailingSlashPattern, '');
 
   // Limit cache size to prevent memory leaks
-  if (_normalizedPathCache.length > 1000) {
-    _normalizedPathCache.clear();
+  if (normalizedPathCache.length > 1000) {
+    normalizedPathCache.clear();
   }
 
-  _normalizedPathCache[path] = normalized;
+  normalizedPathCache[path] = normalized;
   return normalized;
 }
 
-class _TrieNode {
-  final Map<String, _TrieNode> children = {};
-  final Map<String, _TrieNode> paramChildren = {};
-  _TrieNode? wildcardChild;
+@internal
+class TrieNode {
+  final Map<String, TrieNode> children = {};
+  final Map<String, TrieNode> paramChildren = {};
+  TrieNode? wildcardChild;
   BaseRoute? route;
   String? paramName;
 
   bool get isLeaf => route != null;
 }
 
-class _RadixTrie {
-  final _TrieNode _root = _TrieNode();
+@internal
+class RadixTrie {
+  final TrieNode _root = TrieNode();
 
   void insert(BaseRoute route) {
     final segments = _normalizePath(route.path).split('/');
-    _TrieNode current = _root;
+    TrieNode current = _root;
 
     for (int i = 0; i < segments.length; i++) {
       final segment = segments[i];
 
       if (segment == '*') {
-        current.wildcardChild ??= _TrieNode();
+        current.wildcardChild ??= TrieNode();
         current = current.wildcardChild!;
         break;
       } else if (segment.startsWith(':')) {
         final paramName = segment.substring(1);
-        current.paramChildren[paramName] ??= _TrieNode()..paramName = paramName;
+        current.paramChildren[paramName] ??= TrieNode()..paramName = paramName;
         current = current.paramChildren[paramName]!;
       } else {
-        current.children[segment] ??= _TrieNode();
+        current.children[segment] ??= TrieNode();
         current = current.children[segment]!;
       }
     }
@@ -83,7 +86,7 @@ class _RadixTrie {
   }
 
   (BaseRoute?, Map<String, String>) _searchRecursive(
-    _TrieNode node,
+    TrieNode node,
     List<String> segments,
     int index,
     Map<String, String> params,
@@ -157,7 +160,7 @@ bool routeMatchesPath(String routePath, String path) {
 /// Optimized path parameter extraction using pre-computed parameters from route matching
 Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
   // Try to get parameters from optimized route matching first
-  final result = _optimizedRouter.findRouteWithParams(
+  final result = optimizedRouter.findRouteWithParams(
     method: route?.method ?? HttpMethod.any,
     uri: uri,
   );
@@ -194,14 +197,15 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
   required HttpMethod method,
   required Uri uri,
 }) {
-  return _optimizedRouter.findRoute(method: method, uri: uri);
+  return optimizedRouter.findRoute(method: method, uri: uri);
 }
 
 /// Invalidates the route cache when routes are modified.
 /// Call this whenever routes are added, removed, or changed.
+@internal
 void invalidateRouteCache() {
-  _optimizedRouter.invalidate();
-  _normalizedPathCache.clear();
+  optimizedRouter.invalidate();
+  normalizedPathCache.clear();
 }
 
 /// Exposes optimized route finding with path parameters for external use
@@ -210,11 +214,12 @@ void invalidateRouteCache() {
   required HttpMethod method,
   required Uri uri,
 }) {
-  return _optimizedRouter.findRouteWithParams(method: method, uri: uri);
+  return optimizedRouter.findRouteWithParams(method: method, uri: uri);
 }
 
-class _OptimizedRouter {
-  final Map<HttpMethod, _RadixTrie> _triesByMethod = {};
+@internal
+class OptimizedRouter {
+  final Map<HttpMethod, RadixTrie> _triesByMethod = {};
   BaseRoute? _cachedNotFoundRoute;
   bool _isBuilt = false;
 
@@ -231,12 +236,12 @@ class _OptimizedRouter {
       _cachedNotFoundRoute ??= route.notFoundHandler != null ? route : null;
 
       // Add all routes to trie (handles both static and dynamic)
-      _triesByMethod.putIfAbsent(method, () => _RadixTrie()).insert(route);
+      _triesByMethod.putIfAbsent(method, () => RadixTrie()).insert(route);
 
       // Also add to 'any' method for routes that accept any method
       if (method != HttpMethod.any) {
         _triesByMethod
-            .putIfAbsent(HttpMethod.any, () => _RadixTrie())
+            .putIfAbsent(HttpMethod.any, () => RadixTrie())
             .insert(route);
       }
     }
@@ -293,12 +298,17 @@ class _OptimizedRouter {
   }
 }
 
-final _optimizedRouter = _OptimizedRouter();
+@internal
+final optimizedRouter = OptimizedRouter();
 
+@internal
 final List<BeforeHookHandler> globalBeforeHooks = [];
+@internal
 final List<AfterHookHandler> globalAfterHooks = [];
+@internal
 final List<AfterWebSocketHookHandler> globalAfterWebSocketHooks = [];
 
+@internal
 BaseRoute? currentProcessingRoute;
 
 void validatePreviousRouteHasHandler() {

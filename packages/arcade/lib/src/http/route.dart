@@ -5,7 +5,9 @@ import 'package:arcade/src/core/metadata.dart';
 import 'package:arcade/src/helpers/route_helpers.dart';
 import 'package:arcade/src/http/request_context.dart';
 import 'package:arcade/src/ws/ws.dart';
+import 'package:meta/meta.dart';
 
+@internal
 final List<BaseRoute> routes = [];
 
 typedef RouteHandler<T extends RequestContext> = FutureOr<dynamic> Function(
@@ -54,7 +56,8 @@ abstract class BaseRoute<T extends RequestContext> {
   }
 }
 
-String _routeGroupPrefix = '';
+@internal
+String routeGroupPrefix = '';
 
 class _Route<T extends RequestContext> extends BaseRoute<T> {
   @override
@@ -265,7 +268,8 @@ class _AfterWebSocketRoute<T extends RequestContext> extends _Route<T> {
 final class RouteBuilder<T extends RequestContext> {
   RouteBuilder._();
 
-  final Map<String, dynamic> _extra = {};
+  @internal
+  final Map<String, dynamic> extra = {};
 
   void registerGlobalBeforeHook(BeforeHookHandler hook) {
     globalBeforeHooks.add(hook);
@@ -315,9 +319,9 @@ final class RouteBuilder<T extends RequestContext> {
 
   RouteBuilder<T> withExtra(Map<String, dynamic> extra, {bool merge = true}) {
     if (!merge) {
-      _extra.clear();
+      extra.clear();
     }
-    _extra.addAll(extra);
+    extra.addAll(extra);
     return this;
   }
 
@@ -330,10 +334,10 @@ final class RouteBuilder<T extends RequestContext> {
   }) {
     validatePreviousRouteHasHandler();
     final lastRouteIndex = routes.length - 1;
-    final previousRouteGroupPrefix = _routeGroupPrefix;
-    _routeGroupPrefix = previousRouteGroupPrefix + path;
+    final previousRouteGroupPrefix = routeGroupPrefix;
+    routeGroupPrefix = previousRouteGroupPrefix + path;
     defineRoutes(() => RouteBuilder<R>._());
-    _routeGroupPrefix = previousRouteGroupPrefix;
+    routeGroupPrefix = previousRouteGroupPrefix;
     validatePreviousRouteHasHandler();
     routes.sublist(lastRouteIndex + 1).forEach((route) {
       route.beforeHooks.addAll(before);
@@ -345,11 +349,11 @@ final class RouteBuilder<T extends RequestContext> {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.any,
-      _routeGroupPrefix + path,
+      routeGroupPrefix + path,
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: _routeGroupPrefix + path,
+        path: routeGroupPrefix + path,
         method: HttpMethod.any,
         extra: _makeExtra(extra),
       ),
@@ -361,11 +365,11 @@ final class RouteBuilder<T extends RequestContext> {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.get,
-      _routeGroupPrefix + path,
+      routeGroupPrefix + path,
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: _routeGroupPrefix + path,
+        path: routeGroupPrefix + path,
         method: HttpMethod.get,
         extra: _makeExtra(extra),
       ),
@@ -377,11 +381,11 @@ final class RouteBuilder<T extends RequestContext> {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.post,
-      _routeGroupPrefix + path,
+      routeGroupPrefix + path,
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: _routeGroupPrefix + path,
+        path: routeGroupPrefix + path,
         method: HttpMethod.post,
         extra: _makeExtra(extra),
       ),
@@ -393,11 +397,11 @@ final class RouteBuilder<T extends RequestContext> {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.put,
-      _routeGroupPrefix + path,
+      routeGroupPrefix + path,
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: _routeGroupPrefix + path,
+        path: routeGroupPrefix + path,
         method: HttpMethod.put,
         extra: _makeExtra(extra),
       ),
@@ -409,11 +413,11 @@ final class RouteBuilder<T extends RequestContext> {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.delete,
-      _routeGroupPrefix + path,
+      routeGroupPrefix + path,
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: _routeGroupPrefix + path,
+        path: routeGroupPrefix + path,
         method: HttpMethod.delete,
         extra: _makeExtra(extra),
       ),
@@ -425,11 +429,11 @@ final class RouteBuilder<T extends RequestContext> {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.patch,
-      _routeGroupPrefix + path,
+      routeGroupPrefix + path,
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: _routeGroupPrefix + path,
+        path: routeGroupPrefix + path,
         method: HttpMethod.patch,
         extra: _makeExtra(extra),
       ),
@@ -441,11 +445,11 @@ final class RouteBuilder<T extends RequestContext> {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.head,
-      _routeGroupPrefix + path,
+      routeGroupPrefix + path,
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: _routeGroupPrefix + path,
+        path: routeGroupPrefix + path,
         method: HttpMethod.head,
         extra: _makeExtra(extra),
       ),
@@ -457,11 +461,11 @@ final class RouteBuilder<T extends RequestContext> {
     validatePreviousRouteHasHandler();
     currentProcessingRoute = _BeforeRoute<T>._(
       HttpMethod.options,
-      _routeGroupPrefix + path,
+      routeGroupPrefix + path,
       [],
       metadata: RouteMetadata(
         type: 'handler',
-        path: _routeGroupPrefix + path,
+        path: routeGroupPrefix + path,
         method: HttpMethod.options,
         extra: _makeExtra(extra),
       ),
@@ -486,11 +490,11 @@ final class RouteBuilder<T extends RequestContext> {
     return currentProcessingRoute! as _AfterRoute;
   }
 
-  Map<String, dynamic>? _makeExtra(Map<String, dynamic>? extra) {
-    if (extra == null && _extra.isEmpty) {
+  Map<String, dynamic>? _makeExtra(Map<String, dynamic>? extraParam) {
+    if (extraParam == null && extra.isEmpty) {
       return null;
     }
-    return {..._extra, ...?extra};
+    return {...extra, ...?extraParam};
   }
 }
 

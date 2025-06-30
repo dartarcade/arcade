@@ -1,3 +1,11 @@
+## 0.4.1
+
+- **FEAT**: Expose internal APIs for testing framework integration
+  - Export route helpers (`routes`, `globalBeforeHooks`, `globalAfterHooks`, etc.)
+  - Export server state (`canServeStaticFiles`, `serverInstance`)
+  - Export WebSocket internals (`wsMap`, `wsStorageManager`)
+- **FEAT**: Add `meta` package dependency for `@internal` annotations
+
 ## 0.4.0
 
 - **FEAT**: Enhanced WebSocket system with cache-backed connection metadata

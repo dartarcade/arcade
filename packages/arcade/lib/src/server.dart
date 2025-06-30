@@ -6,17 +6,22 @@ import 'package:arcade/src/helpers/request_helpers.dart';
 import 'package:arcade/src/helpers/response_helpers.dart';
 import 'package:arcade/src/helpers/route_helpers.dart';
 import 'package:arcade/src/helpers/server_helpers.dart';
-import 'package:arcade/src/http/route.dart';
 import 'package:arcade/src/ws/ws.dart';
 import 'package:arcade_config/arcade_config.dart';
 import 'package:arcade_logger/arcade_logger.dart';
+import 'package:meta/meta.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 
+@internal
 const isDev = !bool.fromEnvironment('dart.vm.product');
 typedef InitApplication = FutureOr<void> Function();
 
-late bool _canServeStaticFiles;
+@internal
+bool canServeStaticFiles = false;
+
+@internal
+HttpServer? serverInstance;
 
 Future<void> runServer({
   required int port,
@@ -32,8 +37,7 @@ Future<void> runServer({
 
   await Logger.init();
 
-  _canServeStaticFiles =
-      await ArcadeConfiguration.staticFilesDirectory.exists();
+  canServeStaticFiles = await ArcadeConfiguration.staticFilesDirectory.exists();
 
   await init();
   validatePreviousRouteHasHandler();
@@ -46,6 +50,9 @@ Future<void> runServer({
     InternetAddress.anyIPv6,
     port,
   );
+
+  // Store server instance for testing purposes
+  serverInstance = server;
 
   server.listen(_handleRequest);
   // ignore: avoid_print
@@ -72,7 +79,7 @@ Future<void> _handleRequest(HttpRequest request) async {
     );
   }
 
-  if (_canServeStaticFiles) {
+  if (canServeStaticFiles) {
     Logger.root.debug('Checking static files: ${uri.pathSegments}');
     final pathSegments = uri.pathSegments;
     final file = File(

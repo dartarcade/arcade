@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:arcade/arcade.dart';
-import 'package:arcade/src/helpers/route_helpers.dart';
 import 'package:arcade_logger/arcade_logger.dart';
 
 void _setContentType(HttpResponse response, Object? result) {

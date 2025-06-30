@@ -11,5 +11,6 @@ workspace:
   - packages/arcade_config
   - packages/arcade_logger
   - packages/arcade_swagger
+  - packages/arcade_test
   - packages/arcade_views
   - samples/todo_api

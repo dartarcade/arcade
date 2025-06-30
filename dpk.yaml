@@ -6,6 +6,15 @@ catalog:
     sdk: ^3.5.0
 
 scripts:
+  format:
+    command: dart format --set-exit-if-changed .
+    runInPackages:
+      - packages/*
+  analyze:
+    command: dart analyze --fatal-infos --fatal-warnings
+    runInPackages:
+      - packages/*
+
   todo:brc:
     command: dart run build_runner clean
     runInPackages:
