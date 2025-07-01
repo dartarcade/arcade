@@ -22,6 +22,7 @@ dependencies:
 - **High Performance**: Leverages Redis's speed and efficiency
 - **Secure Connections**: Support for SSL/TLS connections
 - **Compatible API**: Drop-in replacement for MemoryCacheManager
+- **Pub-Sub**: Distributed pub-sub messaging across servers
 
 ## Quick Start
 
@@ -47,6 +48,35 @@ void main() async {
   await cache.dispose();
 }
 ```
+
+## Pub-Sub Usage
+
+Redis pub-sub allows real-time messaging between multiple server instances:
+
+```dart
+// Server 1: Subscribe to channels
+final subscription = cache.subscribe<String>(['chat', 'notifications']);
+
+subscription.listen((event) {
+  if (event is PubSubMessage<String>) {
+    print('Message on ${event.channel}: ${event.data}');
+    // Broadcast to WebSocket clients, update UI, etc.
+  }
+});
+
+// Server 2: Publish messages
+final subscriberCount = await cache.publish('chat', 'Hello from Server 2!');
+print('Message delivered to $subscriberCount subscribers');
+
+// Works with complex data
+await cache.publish('notifications', {
+  'type': 'order_update',
+  'orderId': '12345',
+  'status': 'shipped'
+});
+```
+
+Note: Redis creates a separate connection for pub-sub operations to comply with Redis protocol requirements.
 
 ## Configuration
 

@@ -23,14 +23,14 @@ The `BaseCacheManager<C>` abstract class defines the standard interface that all
 ```dart
 abstract interface class BaseCacheManager<C> {
   // Initialize the cache
-  FutureOr<void> init(C connectionInfo);
+  Future<void> init(C connectionInfo);
 
   // Core operations
-  FutureOr<void> set(String key, dynamic value);
-  FutureOr<void> setWithTtl(String key, dynamic value, Duration ttl);
+  Future<void> set(String key, dynamic value);
+  Future<void> setWithTtl(String key, dynamic value, Duration ttl);
   FutureOr<T?> get<T extends Object>(String key);
-  FutureOr<void> remove<T>(String key);
-  FutureOr<void> clear();
+  Future<void> remove<T>(String key);
+  Future<void> clear();
   FutureOr<bool> contains<T>(String key);
 
   // Type-specific getters
@@ -38,8 +38,16 @@ abstract interface class BaseCacheManager<C> {
   FutureOr<List<T>?> getList<T>(String key);
   FutureOr<Map<String, dynamic>?> getJson(String key);
 
+  // Pub-Sub operations
+  Stream<PubSubEvent<T>> subscribe<T>(
+    List<String> channels, {
+    T Function(dynamic data)? messageMapper,
+  });
+  Future<void> unsubscribe(List<String> channels);
+  Future<int> publish(String channel, dynamic message);
+
   // Cleanup
-  FutureOr<void> dispose();
+  Future<void> dispose();
 }
 ```
 
@@ -119,6 +127,47 @@ await cache.set('users', [
   {'id': 2, 'name': 'Bob'},
 ]);
 final users = await cache.getList<Map<String, dynamic>>('users');
+```
+
+### Pub-Sub Support
+
+The cache interface includes pub-sub (publish-subscribe) functionality for real-time messaging between different parts of your application:
+
+```dart
+// Subscribe to channels
+final subscription = cache.subscribe<String>(['notifications', 'updates']);
+
+subscription.listen((event) {
+  switch (event) {
+    case PubSubMessage<String>(:final channel, :final data):
+      print('Received on $channel: $data');
+    case PubSubSubscribed(:final channel, :final subscriberCount):
+      print('Subscribed to $channel');
+    case PubSubUnsubscribed(:final channel):
+      print('Unsubscribed from $channel');
+  }
+});
+
+// Publish messages
+await cache.publish('notifications', 'New message!');
+await cache.publish('updates', 'System updated');
+
+// With typed messages
+final jsonSubscription = cache.subscribe<Map<String, dynamic>>(
+  ['events'],
+  messageMapper: (data) => data as Map<String, dynamic>,
+);
+
+jsonSubscription.listen((event) {
+  if (event is PubSubMessage<Map<String, dynamic>>) {
+    print('Event: ${event.data}');
+  }
+});
+
+await cache.publish('events', {'type': 'user_login', 'userId': 123});
+
+// Unsubscribe when done
+await cache.unsubscribe(['notifications', 'updates']);
 ```
 
 ## Integration with Arcade
