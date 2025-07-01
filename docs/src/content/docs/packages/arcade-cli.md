@@ -17,7 +17,7 @@ Or add it as a dev dependency:
 
 ```yaml
 dev_dependencies:
-  arcade_cli: ^0.0.6
+  arcade_cli: ^<latest-version>
 ```
 
 ## Available Commands
@@ -38,6 +38,7 @@ arcade create my-app --template api
 ```
 
 The `create` command:
+
 - Clones the official Arcade starter template
 - Customizes the project name throughout the codebase
 - Runs initial setup (`dart pub get`, `dart fix`, `dart format`)
@@ -80,6 +81,7 @@ arcade serve
 ```
 
 Features:
+
 - **Auto Restart**: Automatically restarts on file changes
 - **Smart Watching**: Monitors `bin/` and `lib/` directories
 - **Fast Compilation**: Uses Dart compilation server for quick restarts
@@ -144,7 +146,6 @@ arcade create my-app --git-url https://github.com/user/arcade-template
 arcade create my-app -g https://github.com/user/arcade-template
 ```
 
-
 ### Docker Integration
 
 ```dockerfile
@@ -180,13 +181,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dart-lang/setup-dart@v1
-      
+
       - name: Install Arcade CLI
         run: dart pub global activate arcade_cli
-        
+
       - name: Generate route metadata
         run: arcade routes --export
-        
+
       - name: Check for uncommitted route changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
@@ -194,7 +195,6 @@ jobs:
             exit 1
           fi
 ```
-
 
 ## Troubleshooting
 
@@ -243,7 +243,6 @@ dart pub get
 # Try again
 arcade serve
 ```
-
 
 ## Next Steps
 

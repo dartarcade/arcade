@@ -10,13 +10,9 @@ environment:
 dependencies:
   arcade:
     path: ..
-  arcade_logger: ^0.0.2
+  arcade_logger: ^0.5.0
   json_annotation: ^4.8.1
   path: ^1.8.0
-
-dependency_overrides:
-  arcade_logger:
-    path: ../../arcade_logger
 
 dev_dependencies:
   build_runner: ^2.4.5

@@ -1,7 +1,7 @@
 name: _
 
 environment:
-  sdk: ">=3.5.0 <4.0.0"
+  sdk: '>=3.5.0 <4.0.0'
 
 workspace:
   - packages/arcade
@@ -14,3 +14,7 @@ workspace:
   - packages/arcade_test
   - packages/arcade_views
   - samples/todo_api
+
+dependencies:
+  luthor:
+    version: ^0.9.0

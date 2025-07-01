@@ -11,7 +11,7 @@ Add `arcade_cache` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  arcade_cache: ^0.0.3
+  arcade_cache: ^<latest-version>
 ```
 
 ## Core Concepts
@@ -24,7 +24,7 @@ The `BaseCacheManager<C>` abstract class defines the standard interface that all
 abstract interface class BaseCacheManager<C> {
   // Initialize the cache
   FutureOr<void> init(C connectionInfo);
-  
+
   // Core operations
   FutureOr<void> set(String key, dynamic value);
   FutureOr<void> setWithTtl(String key, dynamic value, Duration ttl);
@@ -32,12 +32,12 @@ abstract interface class BaseCacheManager<C> {
   FutureOr<void> remove<T>(String key);
   FutureOr<void> clear();
   FutureOr<bool> contains<T>(String key);
-  
+
   // Type-specific getters
   FutureOr<String?> getString(String key);
   FutureOr<List<T>?> getList<T>(String key);
   FutureOr<Map<String, dynamic>?> getJson(String key);
-  
+
   // Cleanup
   FutureOr<void> dispose();
 }
@@ -63,40 +63,40 @@ void main() async {
   // Create cache instance
   final cache = MemoryCacheManager();
   await cache.init(null);
-  
+
   // Store simple values
   await cache.set('user:123', 'John Doe');
   await cache.set('count', 42);
-  
+
   // Store with TTL
   await cache.setWithTtl('session:abc', 'active', Duration(hours: 1));
-  
+
   // Retrieve values
   final userName = await cache.getString('user:123'); // 'John Doe'
   final count = await cache.get<int>('count'); // 42
-  
+
   // Store complex objects
   await cache.set('user:profile', {
     'id': 123,
     'name': 'John Doe',
     'email': 'john@example.com',
   });
-  
+
   // Retrieve as JSON
   final profile = await cache.getJson('user:profile');
   print(profile?['email']); // 'john@example.com'
-  
+
   // Check existence
   if (await cache.contains('session:abc')) {
     print('Session is active');
   }
-  
+
   // Remove specific key
   await cache.remove('session:abc');
-  
+
   // Clear all cache
   await cache.clear();
-  
+
   // Clean up when done
   await cache.dispose();
 }
@@ -137,7 +137,7 @@ void main() async {
   final cache = MemoryCacheManager();
   await cache.init(null);
   getIt.registerSingleton<BaseCacheManager>(cache);
-  
+
   await runServer(
     port: 3000,
     init: () {
@@ -145,18 +145,18 @@ void main() async {
         final cache = getIt<BaseCacheManager>();
         final userId = context.pathParameters['id']!;
         final cacheKey = 'user:$userId';
-        
+
         // Try cache first
         var user = await cache.getJson(cacheKey);
-        
+
         if (user == null) {
           // Fetch from database
           user = await fetchUserFromDatabase(userId);
-          
+
           // Cache for 5 minutes
           await cache.setWithTtl(cacheKey, user, Duration(minutes: 5));
         }
-        
+
         return user;
       });
     },
@@ -170,28 +170,28 @@ void main() async {
 class CacheHooks {
   final BaseCacheManager cache;
   final Duration ttl;
-  
+
   CacheHooks({required this.cache, this.ttl = const Duration(minutes: 5)});
-  
+
   BeforeHook<RequestContext> createBeforeHook() {
     return (context) async {
       final cacheKey = _getCacheKey(context);
       final cached = await cache.getString(cacheKey);
-      
+
       if (cached != null) {
         // Return cached response
         context.responseHeaders.contentType = ContentType.json;
         context.response.write(cached);
         await context.response.close();
-        
+
         // Skip route handler
         throw CachedResponseException();
       }
-      
+
       return context;
     };
   }
-  
+
   AfterHook<RequestContext, dynamic> createAfterHook() {
     return (context, result) async {
       if (result != null) {
@@ -202,7 +202,7 @@ class CacheHooks {
       return result;
     };
   }
-  
+
   String _getCacheKey(RequestContext context) {
     return 'response:${context.request.method}:${context.request.uri.path}';
   }
@@ -247,17 +247,17 @@ await cache.set(CacheKeyBuilder.list('products', page: 1, limit: 20), products);
 ```dart
 class CacheWarmer {
   final BaseCacheManager cache;
-  
+
   CacheWarmer(this.cache);
-  
+
   Future<void> warmCache() async {
     // Pre-load frequently accessed data
     final popularProducts = await fetchPopularProducts();
     await cache.setWithTtl('products:popular', popularProducts, Duration(hours: 1));
-    
+
     final categories = await fetchAllCategories();
     await cache.setWithTtl('categories:all', categories, Duration(hours: 6));
-    
+
     // Pre-compute expensive calculations
     final statistics = await calculateDailyStatistics();
     await cache.setWithTtl('stats:daily', statistics, Duration(hours: 24));
@@ -268,10 +268,10 @@ class CacheWarmer {
 void main() async {
   final cache = MemoryCacheManager();
   await cache.init(null);
-  
+
   final warmer = CacheWarmer(cache);
   await warmer.warmCache();
-  
+
   // Start server...
 }
 ```
@@ -288,7 +288,7 @@ extension CacheStats on MemoryCacheManager {
       'newestEntry': _getNewestEntry(),
     };
   }
-  
+
   void logStatistics() {
     final stats = getStatistics();
     Logger.root.info('Cache statistics', stats);
@@ -303,71 +303,71 @@ To create your own cache adapter (e.g., for DynamoDB, MongoDB, etc.):
 ```dart
 class CustomCacheManager implements BaseCacheManager<CustomConfig> {
   late final CustomClient client;
-  
+
   @override
   FutureOr<void> init(CustomConfig connectionInfo) async {
     client = CustomClient(connectionInfo);
     await client.connect();
   }
-  
+
   @override
   FutureOr<void> set(String key, dynamic value) async {
     final encoded = jsonEncode(value);
     await client.put(key, encoded);
   }
-  
+
   @override
   FutureOr<void> setWithTtl(String key, dynamic value, Duration ttl) async {
     final encoded = jsonEncode(value);
     final expiry = DateTime.now().add(ttl).millisecondsSinceEpoch;
     await client.put(key, encoded, expiry: expiry);
   }
-  
+
   @override
   FutureOr<T?> get<T extends Object>(String key) async {
     final data = await client.get(key);
     if (data == null) return null;
-    
+
     // Check expiry
     if (data.expiry != null && data.expiry < DateTime.now().millisecondsSinceEpoch) {
       await remove(key);
       return null;
     }
-    
+
     return jsonDecode(data.value) as T?;
   }
-  
+
   @override
   FutureOr<void> remove<T>(String key) async {
     await client.delete(key);
   }
-  
+
   @override
   FutureOr<void> clear() async {
     await client.deleteAll();
   }
-  
+
   @override
   FutureOr<bool> contains<T>(String key) async {
     return await client.exists(key);
   }
-  
+
   @override
   FutureOr<void> dispose() async {
     await client.disconnect();
   }
-  
+
   @override
   FutureOr<String?> getString(String key) async {
     return await get<String>(key);
   }
-  
+
   @override
   FutureOr<List<T>?> getList<T>(String key) async {
     final result = await get<List>(key);
     return result?.cast<T>();
   }
-  
+
   @override
   FutureOr<Map<String, dynamic>?> getJson(String key) async {
     return await get<Map<String, dynamic>>(key);

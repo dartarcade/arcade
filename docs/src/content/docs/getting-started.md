@@ -28,7 +28,7 @@ Add Arcade to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  arcade: ^0.3.1
+  arcade: ^<latest-version>
 ```
 
 Then install the dependencies:
@@ -50,7 +50,7 @@ Future<void> main() async {
     init: () {
       // Define your routes here
       route.get('/').handle((context) => 'Hello, Arcade!');
-      
+
       route.get('/api/health').handle((context) {
         return {'status': 'ok', 'timestamp': DateTime.now().toIso8601String()};
       });
@@ -66,6 +66,7 @@ dart run bin/server.dart
 ```
 
 You should see:
+
 ```
 Server running on port 3000
 ```
@@ -97,6 +98,7 @@ route.<method>(path).<hooks>?.handle(handler);
 ```
 
 For example:
+
 ```dart
 // Simple GET route
 route.get('/users').handle((context) => 'List of users');
@@ -126,7 +128,7 @@ Every handler receives a `RequestContext` object that provides access to:
 route.get('/users/:id').handle((context) {
   final userId = context.pathParameters['id'];
   final filter = context.queryParameters['filter'];
-  
+
   return {
     'userId': userId,
     'filter': filter,
@@ -142,12 +144,12 @@ route.get('/users/:id').handle((context) {
 ```dart
 route.post('/api/users').handle((context) async {
   final result = await context.jsonMap();
-  
+
   if (result case BodyParseSuccess(:final value)) {
     // Process the JSON data
     final name = value['name'];
     final email = value['email'];
-    
+
     return {'id': 123, 'name': name, 'email': email};
   } else {
     context.statusCode = 400;
@@ -161,11 +163,11 @@ route.post('/api/users').handle((context) async {
 ```dart
 route.get('/api/protected').handle((context) {
   final token = context.requestHeaders.value('authorization');
-  
+
   if (token == null) {
     throw UnauthorizedException();
   }
-  
+
   return {'secret': 'data'};
 });
 
@@ -175,7 +177,7 @@ overrideErrorHandler((context, error, stackTrace) {
     context.statusCode = 401;
     return {'error': 'Unauthorized'};
   }
-  
+
   context.statusCode = 500;
   return {'error': 'Internal server error'};
 });
@@ -225,7 +227,7 @@ import 'dart:io';
 Future<void> main() async {
   final port = int.parse(Platform.environment['PORT'] ?? '3000');
   final dbUrl = Platform.environment['DATABASE_URL'] ?? 'localhost';
-  
+
   await runServer(
     port: port,
     init: () {

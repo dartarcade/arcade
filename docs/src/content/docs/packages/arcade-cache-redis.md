@@ -11,7 +11,7 @@ Add `arcade_cache_redis` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  arcade_cache_redis: ^0.0.2
+  arcade_cache_redis: ^<latest-version>
 ```
 
 ## Features
@@ -31,18 +31,18 @@ import 'package:arcade_cache_redis/arcade_cache_redis.dart';
 void main() async {
   // Create Redis cache instance
   final cache = RedisCacheManager();
-  
+
   // Initialize with connection info
   await cache.init((
     host: 'localhost',
     port: 6379,
     secure: false,
   ));
-  
+
   // Use exactly like MemoryCacheManager
   await cache.set('user:123', {'name': 'John Doe'});
   final user = await cache.getJson('user:123');
-  
+
   // Clean up
   await cache.dispose();
 }
@@ -92,10 +92,10 @@ void main() async {
     port: int.parse(Platform.environment['REDIS_PORT'] ?? '6379'),
     secure: Platform.environment['REDIS_SECURE'] == 'true',
   ));
-  
+
   // Register with get_it
   getIt.registerSingleton<BaseCacheManager>(cache);
-  
+
   await runServer(
     port: 3000,
     init: () {
@@ -111,24 +111,24 @@ void main() async {
 class RedisSessionStore {
   final BaseCacheManager cache;
   final Duration sessionTtl;
-  
+
   RedisSessionStore({
     required this.cache,
     this.sessionTtl = const Duration(hours: 24),
   });
-  
+
   Future<void> saveSession(String sessionId, Map<String, dynamic> data) async {
     await cache.set('session:$sessionId', data, ttl: sessionTtl);
   }
-  
+
   Future<Map<String, dynamic>?> getSession(String sessionId) async {
     return await cache.getJson('session:$sessionId');
   }
-  
+
   Future<void> destroySession(String sessionId) async {
     await cache.remove('session:$sessionId');
   }
-  
+
   Future<void> refreshSession(String sessionId) async {
     final data = await getSession(sessionId);
     if (data != null) {
@@ -142,18 +142,18 @@ route.before((context) async {
   final sessionId = context.requestHeaders.cookie
     ?.firstWhere((c) => c.name == 'session_id', orElse: () => null)
     ?.value;
-    
+
   if (sessionId != null) {
     final cache = getIt<BaseCacheManager>();
     final sessionStore = RedisSessionStore(cache: cache);
     final session = await sessionStore.getSession(sessionId);
-    
+
     if (session != null) {
       context.session = session;
       await sessionStore.refreshSession(sessionId);
     }
   }
-  
+
   return context;
 });
 ```
@@ -163,23 +163,23 @@ route.before((context) async {
 ```dart
 class RedisRateLimiter {
   final BaseCacheManager cache;
-  
+
   RedisRateLimiter(this.cache);
-  
+
   Future<bool> checkRateLimit({
     required String key,
     required int maxRequests,
     required Duration window,
   }) async {
     final windowKey = '$key:${DateTime.now().millisecondsSinceEpoch ~/ window.inMilliseconds}';
-    
+
     // Get current count
     final currentCount = await cache.get<int>(windowKey) ?? 0;
-    
+
     if (currentCount >= maxRequests) {
       return false;  // Rate limit exceeded
     }
-    
+
     // Increment counter
     await cache.set(windowKey, currentCount + 1, ttl: window);
     return true;
@@ -190,66 +190,65 @@ class RedisRateLimiter {
 route.before((context) async {
   final cache = getIt<BaseCacheManager>();
   final rateLimiter = RedisRateLimiter(cache);
-  final clientIp = context.requestHeaders.value('x-forwarded-for') ?? 
-                   context.rawRequest.connectionInfo?.remoteAddress.address ?? 
+  final clientIp = context.requestHeaders.value('x-forwarded-for') ??
+                   context.rawRequest.connectionInfo?.remoteAddress.address ??
                    'unknown';
-  
+
   final allowed = await rateLimiter.checkRateLimit(
     key: 'rate_limit:$clientIp',
     maxRequests: 100,
     window: Duration(minutes: 1),
   );
-  
+
   if (!allowed) {
     throw TooManyRequestsException('Rate limit exceeded');
   }
-  
+
   return context;
 });
 ```
 
 ## Advanced Usage
 
-
 ### Distributed Locking
 
 ```dart
 class RedisLock {
   final RedisCacheManager cache;
-  
+
   RedisLock(this.cache);
-  
+
   Future<bool> acquire(
-    String lockKey, 
+    String lockKey,
     String lockId,
     Duration ttl,
   ) async {
     final key = 'lock:$lockKey';
     final existing = await cache.getString(key);
-    
+
     if (existing != null) {
       return false;  // Lock already held
     }
-    
+
     await cache.setWithTtl(key, lockId, ttl);
-    
+
     // Verify we got the lock (handle race condition)
     final verify = await cache.getString(key);
     return verify == lockId;
   }
-  
+
   Future<bool> release(String lockKey, String lockId) async {
     final key = 'lock:$lockKey';
     final existing = await cache.getString(key);
-    
+
     if (existing == lockId) {
       await cache.remove(key);
       return true;
     }
-    
+
     return false;  // Lock not held by this ID
   }
-  
+
   Future<T> withLock<T>(
     String lockKey,
     Future<T> Function() action,
@@ -257,11 +256,11 @@ class RedisLock {
   ) async {
     final lockId = Uuid().v4();
     final acquired = await acquire(lockKey, lockId, timeout);
-    
+
     if (!acquired) {
       throw Exception('Could not acquire lock: $lockKey');
     }
-    
+
     try {
       return await action();
     } finally {
@@ -279,7 +278,6 @@ await lock.withLock('process:important-task', () async {
 });
 ```
 
-
 ## Performance Optimization
 
 ### Batch Operations
@@ -287,12 +285,12 @@ await lock.withLock('process:important-task', () async {
 ```dart
 class CacheBatchOperations {
   final BaseCacheManager cache;
-  
+
   CacheBatchOperations(this.cache);
-  
+
   Future<Map<String, dynamic>> multiGet(List<String> keys) async {
     final results = <String, dynamic>{};
-    
+
     // Execute all gets concurrently
     await Future.wait(keys.map((key) async {
       final value = await cache.get(key);
@@ -300,30 +298,29 @@ class CacheBatchOperations {
         results[key] = value;
       }
     }));
-    
+
     return results;
   }
-  
+
   Future<void> multiSet(Map<String, dynamic> items, {Duration? ttl}) async {
     // Execute all sets concurrently
     if (ttl != null) {
-      await Future.wait(items.entries.map((entry) => 
+      await Future.wait(items.entries.map((entry) =>
         cache.setWithTtl(entry.key, entry.value, ttl)
       ));
     } else {
-      await Future.wait(items.entries.map((entry) => 
+      await Future.wait(items.entries.map((entry) =>
         cache.set(entry.key, entry.value)
       ));
     }
   }
-  
+
   Future<void> multiRemove(List<String> keys) async {
     // Execute all removes concurrently
     await Future.wait(keys.map((key) => cache.remove(key)));
   }
 }
 ```
-
 
 ## Monitoring and Debugging
 
@@ -333,14 +330,14 @@ class CacheBatchOperations {
 class LoggingRedisCache implements BaseCacheManager<RedisConnectionInfo> {
   final RedisCacheManager _cache;
   final Logger logger;
-  
+
   LoggingRedisCache(this._cache, this.logger);
-  
+
   @override
   Future<void> init(RedisConnectionInfo connectionInfo) async {
     await _cache.init(connectionInfo);
   }
-  
+
   @override
   Future<void> set(String key, dynamic value) async {
     final start = DateTime.now();
@@ -353,7 +350,7 @@ class LoggingRedisCache implements BaseCacheManager<RedisConnectionInfo> {
       rethrow;
     }
   }
-  
+
   @override
   Future<void> setWithTtl(String key, dynamic value, Duration ttl) async {
     final start = DateTime.now();
@@ -366,7 +363,7 @@ class LoggingRedisCache implements BaseCacheManager<RedisConnectionInfo> {
       rethrow;
     }
   }
-  
+
   @override
   Future<T?> get<T extends Object>(String key) async {
     final start = DateTime.now();
@@ -380,26 +377,26 @@ class LoggingRedisCache implements BaseCacheManager<RedisConnectionInfo> {
       rethrow;
     }
   }
-  
+
   // Delegate other methods
   @override
   Future<void> dispose() => _cache.dispose();
-  
+
   @override
   Future<void> clear() => _cache.clear();
-  
+
   @override
   Future<void> remove<T>(String key) => _cache.remove(key);
-  
+
   @override
   Future<bool> contains<T>(String key) => _cache.contains(key);
-  
+
   @override
   Future<String?> getString(String key) => _cache.getString(key);
-  
+
   @override
   Future<List<T>?> getList<T>(String key) => _cache.getList<T>(key);
-  
+
   @override
   Future<Map<String, dynamic>?> getJson(String key) => _cache.getJson(key);
 }

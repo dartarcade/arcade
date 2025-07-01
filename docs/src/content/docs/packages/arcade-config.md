@@ -11,7 +11,7 @@ Add `arcade_config` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  arcade_config: ^0.1.3
+  arcade_config: ^<latest-version>
 ```
 
 ## Configuration Options

@@ -8,12 +8,14 @@ While Arcade's core is minimal and doesn't require dependency injection, using D
 ## Why Dependency Injection?
 
 As your Arcade application grows, you'll face challenges like:
+
 - Managing dependencies between services
 - Testing components in isolation
 - Configuring different implementations for different environments
 - Avoiding global state and singletons
 
 Dependency injection helps solve these problems by:
+
 - Centralizing dependency configuration
 - Making dependencies explicit
 - Enabling easy mocking for tests
@@ -25,7 +27,7 @@ Add Injectable to your project:
 
 ```yaml
 dependencies:
-  arcade: ^0.3.1
+  arcade: ^<latest-version>
   injectable: ^2.3.0
   get_it: ^7.6.0
 
@@ -110,29 +112,29 @@ class AuthServiceImpl implements AuthService {
   final UserRepository userRepository;
   final HashService hashService;
   final JwtService jwtService;
-  
+
   AuthServiceImpl({
     required this.userRepository,
     required this.hashService,
     required this.jwtService,
   });
-  
+
   @override
   Future<User?> authenticate(String email, String password) async {
     final user = await userRepository.findByEmail(email);
     if (user == null) return null;
-    
+
     final isValid = await hashService.verify(password, user.passwordHash);
     if (!isValid) return null;
-    
+
     return user;
   }
-  
+
   @override
   Future<String> generateToken(User user) async {
     return jwtService.sign({'userId': user.id, 'email': user.email});
   }
-  
+
   @override
   Future<User?> validateToken(String token) async {
     try {
@@ -163,7 +165,7 @@ class DevDatabaseConnection implements DatabaseConnection {
   Future<void> connect() async {
     // Connect to local development database
   }
-  
+
   @override
   Future<Database> get database => _devDatabase;
 }
@@ -172,14 +174,14 @@ class DevDatabaseConnection implements DatabaseConnection {
 @LazySingleton(as: DatabaseConnection)
 class ProdDatabaseConnection implements DatabaseConnection {
   final EnvConfig config;
-  
+
   ProdDatabaseConnection(this.config);
-  
+
   @override
   Future<void> connect() async {
     // Connect to production database using config
   }
-  
+
   @override
   Future<Database> get database => _prodDatabase;
 }
@@ -197,36 +199,36 @@ import 'package:injectable/injectable.dart';
 @injectable
 class AuthController {
   final AuthService authService;
-  
+
   AuthController(this.authService);
-  
+
   Future<dynamic> login(RequestContext context) async {
     final result = await context.jsonMap();
-    
+
     if (result case BodyParseSuccess(:final value)) {
       final email = value['email'] as String?;
       final password = value['password'] as String?;
-      
+
       if (email == null || password == null) {
         throw BadRequestException(message: 'Email and password required');
       }
-      
+
       final user = await authService.authenticate(email, password);
       if (user == null) {
         throw UnauthorizedException(message: 'Invalid credentials');
       }
-      
+
       final token = await authService.generateToken(user);
-      
+
       return {
         'token': token,
         'user': user.toJson(),
       };
     }
-    
+
     throw BadRequestException();
   }
-  
+
   Future<dynamic> me(AuthenticatedContext context) async {
     return context.user.toJson();
   }
@@ -244,7 +246,7 @@ import 'package:injectable/injectable.dart';
 
 class AuthenticatedContext extends RequestContext {
   final User user;
-  
+
   AuthenticatedContext({
     required super.request,
     required super.route,
@@ -255,24 +257,24 @@ class AuthenticatedContext extends RequestContext {
 @injectable
 class AuthHooks {
   final AuthService authService;
-  
+
   AuthHooks(this.authService);
-  
+
   BeforeHookHandler<RequestContext, AuthenticatedContext> requireAuth() {
     return (context) async {
       final authHeader = context.requestHeaders.value('authorization');
-      
+
       if (authHeader == null || !authHeader.startsWith('Bearer ')) {
         throw UnauthorizedException(message: 'Missing authorization header');
       }
-      
+
       final token = authHeader.substring(7);
       final user = await authService.validateToken(token);
-      
+
       if (user == null) {
         throw UnauthorizedException(message: 'Invalid token');
       }
-      
+
       return AuthenticatedContext(
         request: context.rawRequest,
         route: context.route,
@@ -280,16 +282,16 @@ class AuthHooks {
       );
     };
   }
-  
+
   BeforeHookHandler<RequestContext, AuthenticatedContext> requireRole(String role) {
     return (context) async {
       // First run regular auth
       final authedContext = await requireAuth()(context);
-      
+
       if (!authedContext.user.roles.contains(role)) {
         throw ForbiddenException(message: 'Insufficient permissions');
       }
-      
+
       return authedContext;
     };
   }
@@ -310,30 +312,30 @@ class Routes {
   final AuthController authController;
   final TodoController todoController;
   final AuthHooks authHooks;
-  
+
   Routes({
     required this.authController,
     required this.todoController,
     required this.authHooks,
   });
-  
+
   void register() {
     _registerAuthRoutes();
     _registerTodoRoutes();
     _registerHealthRoutes();
   }
-  
+
   void _registerAuthRoutes() {
     route.group<RequestContext>('/api/auth', defineRoutes: (route) {
       route().post('/login').handle(authController.login);
       route().post('/register').handle(authController.register);
-      
+
       route().get('/me')
         .before(authHooks.requireAuth())
         .handle(authController.me);
     });
   }
-  
+
   void _registerTodoRoutes() {
     route.group<RequestContext>('/api/todos',
       before: [authHooks.requireAuth()],
@@ -346,7 +348,7 @@ class Routes {
       },
     );
   }
-  
+
   void _registerHealthRoutes() {
     route.get('/health').handle((context) => {'status': 'ok'});
   }
@@ -367,24 +369,24 @@ import 'package:my_app/core/routes.dart';
 Future<void> main(List<String> args) async {
   // Determine environment
   final environment = Platform.environment['ENV'] ?? 'dev';
-  
+
   // Configure dependencies
   await configureDependencies(environment: environment);
-  
+
   // Get port
   final port = int.parse(Platform.environment['PORT'] ?? '3000');
-  
+
   await runServer(
     port: port,
     init: () async {
       // Initialize services
       final dbConnection = getIt<DatabaseConnection>();
       await dbConnection.connect();
-      
+
       // Register routes
       final routes = getIt<Routes>();
       routes.register();
-      
+
       // Set up error handler
       overrideErrorHandler(getIt<ErrorHandler>().handle);
     },
@@ -408,43 +410,43 @@ void main() {
   late MockUserRepository mockUserRepository;
   late MockHashService mockHashService;
   late MockJwtService mockJwtService;
-  
+
   setUp(() {
     mockUserRepository = MockUserRepository();
     mockHashService = MockHashService();
     mockJwtService = MockJwtService();
-    
+
     authService = AuthServiceImpl(
       userRepository: mockUserRepository,
       hashService: mockHashService,
       jwtService: mockJwtService,
     );
   });
-  
+
   group('authenticate', () {
     test('returns user for valid credentials', () async {
       final user = User(id: '1', email: 'test@example.com');
-      
+
       when(mockUserRepository.findByEmail('test@example.com'))
           .thenAnswer((_) async => user);
       when(mockHashService.verify('password', any))
           .thenAnswer((_) async => true);
-      
+
       final result = await authService.authenticate('test@example.com', 'password');
-      
+
       expect(result, equals(user));
     });
-    
+
     test('returns null for invalid password', () async {
       final user = User(id: '1', email: 'test@example.com');
-      
+
       when(mockUserRepository.findByEmail('test@example.com'))
           .thenAnswer((_) async => user);
       when(mockHashService.verify('wrong', any))
           .thenAnswer((_) async => false);
-      
+
       final result = await authService.authenticate('test@example.com', 'wrong');
-      
+
       expect(result, isNull);
     });
   });
@@ -459,11 +461,11 @@ void main() {
 @injectable
 class ServiceFactory {
   final GetIt getIt;
-  
+
   ServiceFactory(this.getIt);
-  
+
   T create<T extends Object>() => getIt<T>();
-  
+
   EmailService createEmailService(EmailProvider provider) {
     switch (provider) {
       case EmailProvider.sendgrid:
@@ -484,7 +486,7 @@ class ServiceFactory {
 class RequestScopedService {
   final String requestId;
   final DateTime startTime;
-  
+
   @factoryMethod
   static RequestScopedService create() {
     return RequestScopedService(
@@ -492,7 +494,7 @@ class RequestScopedService {
       startTime: DateTime.now(),
     );
   }
-  
+
   RequestScopedService({
     required this.requestId,
     required this.startTime,
@@ -504,13 +506,13 @@ BeforeHookHandler createRequestScope() {
   return (context) {
     // Create new scope for this request
     final scope = getIt.pushNewScope();
-    
+
     // Register request-scoped services
     scope.registerFactory(() => RequestScopedService.create());
-    
+
     // Store scope for cleanup
     context.extra['diScope'] = scope;
-    
+
     return context;
   };
 }
@@ -541,9 +543,9 @@ abstract class Repository<T> {
 @LazySingleton(as: Repository)
 class UserRepository implements Repository<User> {
   final DatabaseConnection db;
-  
+
   UserRepository(this.db);
-  
+
   // Implementation...
 }
 ```
@@ -556,13 +558,13 @@ class TodoService {
   final TodoRepository repository;
   final AuthService authService;
   final NotificationService notificationService;
-  
+
   TodoService({
     required this.repository,
     required this.authService,
     required this.notificationService,
   });
-  
+
   Future<Todo> createTodo(CreateTodoDto dto, User user) async {
     final todo = Todo(
       id: Uuid().v4(),
@@ -570,11 +572,11 @@ class TodoService {
       userId: user.id,
       createdAt: DateTime.now(),
     );
-    
+
     final saved = await repository.save(todo);
-    
+
     await notificationService.notifyNewTodo(user, saved);
-    
+
     return saved;
   }
 }

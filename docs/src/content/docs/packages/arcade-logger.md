@@ -11,7 +11,7 @@ Add `arcade_logger` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  arcade_logger: ^0.0.5+5
+  arcade_logger: ^<latest-version>
 ```
 
 ## Features

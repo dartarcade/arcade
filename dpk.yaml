@@ -5,6 +5,9 @@ catalog:
   environment:
     sdk: ^3.5.0
 
+  dependencies:
+    luthor: ^0.9.0
+
 scripts:
   format:
     command: dart format --set-exit-if-changed .
@@ -34,3 +37,23 @@ scripts:
     command: arcade serve
     runInPackages:
       - samples/todo_api
+
+  version:minor:
+    command: dart pub bump minor
+    runInPackages:
+      - packages/*
+
+  version:patch:
+    command: dart pub bump patch
+    runInPackages:
+      - packages/*
+
+  version:major:
+    command: dart pub bump major
+    runInPackages:
+      - packages/*
+
+  publish:all:
+    command: dart pub publish --force
+    runInPackages:
+      - packages/*

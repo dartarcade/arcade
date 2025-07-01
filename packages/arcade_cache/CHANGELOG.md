@@ -1,14 +1,18 @@
+## 0.5.0
+
+- **CHORE**: Update version to 0.5.0 to align with core arcade package.
+
 ## 0.0.3
 
- - **FEAT**: add MemoryCacheManager implementation for in-memory caching with TTL support.
+- **FEAT**: add MemoryCacheManager implementation for in-memory caching with TTL support.
 
 ## 0.0.2
 
- - **REFACTOR**: fix samples and examples.
- - **FEAT**: redis implementation.
- - **FEAT**: make ready for publishing.
- - **FEAT**: export BaseCacheManager.
- - **FEAT**: rename to arcade.
+- **REFACTOR**: fix samples and examples.
+- **FEAT**: redis implementation.
+- **FEAT**: make ready for publishing.
+- **FEAT**: export BaseCacheManager.
+- **FEAT**: rename to arcade.
 
 ## 0.0.1
 

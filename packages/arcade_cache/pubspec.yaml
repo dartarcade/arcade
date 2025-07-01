@@ -1,6 +1,6 @@
 name: arcade_cache
 description: Cache for Arcade
-version: 0.0.3
+version: 0.5.0
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_cache
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
@@ -8,4 +8,4 @@ resolution: workspace
 environment:
   sdk: ^3.5.0
 dev_dependencies:
-  lint: ^2.3.0
+  lint: ^2.8.0

@@ -11,7 +11,7 @@ Add `arcade_views` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  arcade_views: ^0.1.2
+  arcade_views: ^<latest-version>
 ```
 
 ## Features
@@ -338,7 +338,7 @@ route.get('/dashboard').handle((context) async {
 route.post('/users').handle((context) async {
   try {
     final user = await createUser(context.body);
-    
+
     return view('users/created', {
       'user': user,
       'message': {'type': 'success', 'text': 'User created successfully!'},
@@ -364,7 +364,7 @@ Status message template:
 {% if error %}
     <div class="alert alert-{{ error.type }}">
         {{ error.text }}
-    </div>  
+    </div>
 {% endif %}
 ```
 
@@ -424,7 +424,6 @@ Pagination template:
 ```
 
 ## Performance Optimization
-
 
 ## Best Practices
 

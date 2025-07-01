@@ -1,3 +1,7 @@
+## 0.5.0
+
+- **CHORE**: Update version to 0.5.0 and align all package versions.
+
 ## 0.4.1
 
 - **FEAT**: Expose internal APIs for testing framework integration

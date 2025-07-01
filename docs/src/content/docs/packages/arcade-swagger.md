@@ -11,7 +11,7 @@ Add `arcade_swagger` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  arcade_swagger: ^0.0.6
+  arcade_swagger: ^<latest-version>
 ```
 
 ## Features
@@ -40,7 +40,7 @@ void main() async {
         version: '1.0.0',
         description: 'My awesome API documentation',
       );
-      
+
       // Define your routes
       route.get('/users').handle((context) async {
         return [
@@ -48,7 +48,7 @@ void main() async {
           {'id': 2, 'name': 'Jane'},
         ];
       });
-      
+
       // Visit http://localhost:3000/docs to see the documentation
     },
   );
@@ -179,12 +179,12 @@ route.swagger(
 ).post('/products')
   .handle((context) async {
     final result = await context.validateBody(CreateProductSchema);
-    
+
     if (result.isValid) {
       final product = await createProduct(result.value);
       return Response.created(product);
     }
-    
+
     return Response.badRequest(result.errors);
   });
 ```
@@ -289,7 +289,7 @@ route.swagger(
 
 ```dart
 setupSwagger(
-  title: 'My API', 
+  title: 'My API',
   version: '1.0.0',
   securitySchemes: {
     'oauth2': SecurityScheme.oauth2(
@@ -319,7 +319,6 @@ route.swagger(
   // Requires write:users scope
 });
 ```
-
 
 ## Troubleshooting
 

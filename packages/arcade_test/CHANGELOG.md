@@ -1,3 +1,7 @@
+## 0.5.0
+
+- **CHORE**: Update version to 0.5.0 to align with core arcade package.
+
 ## 0.1.0
 
 ### Initial Release

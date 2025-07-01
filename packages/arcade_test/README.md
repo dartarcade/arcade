@@ -28,16 +28,16 @@ void main() {
 
   test('GET /api/users returns list', () async {
     final response = await server.get('/api/users');
-    
+
     expect(response, hasStatus(200));
     expect(response.json(), isA<List>());
   });
 
   test('POST /api/users creates user', () async {
-    final response = await server.post('/api/users', 
+    final response = await server.post('/api/users',
       body: {'name': 'John Doe', 'email': 'john@example.com'},
     );
-    
+
     expect(response, hasStatus(201));
     expect(response.json(), containsPair('name', 'John Doe'));
   });
@@ -50,7 +50,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dev_dependencies:
-  arcade_test: ^0.1.0
+  arcade_test: ^<latest-version>
 ```
 
 ## API Reference

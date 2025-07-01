@@ -11,7 +11,7 @@ Add `arcade_test` to your `pubspec.yaml`:
 
 ```yaml
 dev_dependencies:
-  arcade_test: ^0.1.0
+  arcade_test: ^<latest-version>
   test: ^1.24.0
 ```
 
@@ -25,7 +25,7 @@ The `ArcadeTestServer` class provides lifecycle management for test servers with
 abstract class ArcadeTestServer {
   // Create server with route configuration
   static Future<ArcadeTestServer> withRoutes(Function() routeSetup);
-  
+
   // HTTP client methods
   Future<TestResponse> get(String path);
   Future<TestResponse> post(String path, {Object? body});
@@ -34,10 +34,10 @@ abstract class ArcadeTestServer {
   Future<TestResponse> delete(String path);
   Future<TestResponse> head(String path);
   Future<TestResponse> options(String path);
-  
+
   // WebSocket connection
   Future<TestWebSocket> webSocket(String path);
-  
+
   // Server management
   Future<void> close();
   String get baseUrl;
@@ -53,11 +53,11 @@ class TestResponse {
   final int statusCode;
   final String body;
   final Map<String, List<String>> headers;
-  
+
   // Parse response body
   Map<String, dynamic> get jsonMap;
   List<dynamic> get jsonList;
-  
+
   // Content type checking
   bool get isJson;
   bool get isHtml;
@@ -130,7 +130,7 @@ void main() {
 
     test('GET /users returns user list', () async {
       final response = await testServer.get('/users');
-      
+
       expect(response, isOk());
       expect(response, isJson());
       expect(response, hasJsonBody(isA<List>()));
@@ -140,7 +140,7 @@ void main() {
     test('POST /users creates new user', () async {
       final newUser = {'name': 'Charlie', 'email': 'charlie@example.com'};
       final response = await testServer.post('/users', body: newUser);
-      
+
       expect(response, isOk());
       expect(response, containsJsonKey('id'));
       expect(response, hasJsonPath('name', 'Charlie'));
@@ -148,7 +148,7 @@ void main() {
 
     test('GET /users/:id returns specific user', () async {
       final response = await testServer.get('/users/42');
-      
+
       expect(response, isOk());
       expect(response, hasJsonBody({'id': 42, 'name': 'User 42'}));
     });
@@ -199,7 +199,7 @@ test('header validation', () async {
   });
 
   final response = await server.get('/api/data');
-  
+
   expect(response, hasHeader('x-custom-header'));
   expect(response, hasHeader('x-custom-header', 'custom-value'));
   expect(response, hasContentType('application/json'));
@@ -263,7 +263,7 @@ test('WebSocket communication', () async {
   });
 
   final ws = await server.webSocket('/ws');
-  
+
   // Send and receive messages
   ws.add('ping');
   final pongMessage = await ws.stream.first;
@@ -298,7 +298,7 @@ test('WebSocket events and JSON messages', () async {
   });
 
   final ws = await server.webSocket('/events');
-  
+
   // Send subscription request
   ws.add(jsonEncode({
     'event': 'subscribe',
@@ -444,7 +444,7 @@ test('middleware integration', () async {
   });
 
   final response = await server.get('/protected');
-  
+
   expect(response, isOk());
   expect(response, hasHeader('x-middleware', 'processed'));
   expect(response, hasJsonPath('message', 'Protected resource'));
@@ -487,7 +487,7 @@ test('dependency injection in tests', () async {
   final server = await ArcadeTestServer.withRoutes(() {
     // Mock service for testing
     final mockUserService = MockUserService();
-    
+
     route.get('/users/:id').handle((ctx) {
       final id = ctx.pathParameters['id']!;
       final user = mockUserService.getUser(int.parse(id));
@@ -518,7 +518,7 @@ test('file upload handling', () async {
   });
 
   final response = await server.post('/upload', body: 'file content data');
-  
+
   expect(response, isOk());
   expect(response, hasJsonPath('received', greaterThan(0)));
 
