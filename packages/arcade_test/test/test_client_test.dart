@@ -145,7 +145,7 @@ void main() {
       });
 
       test('sends null body', () async {
-        final response = await client.post('/echo', body: null);
+        final response = await client.post('/echo');
 
         expect(response.statusCode, equals(200));
         // Empty body should fail JSON parsing
@@ -156,7 +156,8 @@ void main() {
         final data = {'test': true};
         final response = await client.post('/echo', body: data);
 
-        expect(response.headers['content-type']?.first, contains('application/json'));
+        expect(response.headers['content-type']?.first,
+            contains('application/json'));
         expect(response.json(), equals(data));
       });
     });
@@ -179,7 +180,10 @@ void main() {
 
         expect(response.statusCode, equals(200));
         final body = response.json();
-        expect(body['content-type'], contains('application/json')); // This should work as it's a string in the map
+        expect(
+            body['content-type'],
+            contains(
+                'application/json')); // This should work as it's a string in the map
       });
 
       test('preserves user content-type header', () async {
@@ -210,7 +214,8 @@ void main() {
 
         expect(response.statusCode, equals(200));
         expect(response.isJson, isFalse);
-        expect(response.contentType?.mimeType, contains('text/html')); // Arcade returns text/html for strings
+        expect(response.contentType?.mimeType,
+            contains('text/html')); // Arcade returns text/html for strings
         expect(response.text(), equals('Plain text response'));
       });
 
@@ -259,7 +264,7 @@ void main() {
           () => badClient.get('/test'),
           throwsA(anyOf([
             isA<ArgumentError>(), // Invalid port
-            isA<Exception>(),     // Other connection errors
+            isA<Exception>(), // Other connection errors
           ])),
         );
 

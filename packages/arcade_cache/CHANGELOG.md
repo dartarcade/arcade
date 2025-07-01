@@ -1,3 +1,13 @@
+## 0.6.0
+
+- **BREAKING**: Changed `BaseCacheManager` interface methods to return `Future` instead of `FutureOr`
+- **FEAT**: Added pub-sub support to cache interface with typed event-based API:
+  - `subscribe()` returns `Stream<PubSubEvent<T>>` with optional message mapper
+  - `publish()` publishes messages to channels and returns subscriber count
+  - `unsubscribe()` removes subscriptions from channels
+  - Added typed event classes: `PubSubMessage<T>`, `PubSubSubscribed`, `PubSubUnsubscribed`
+- **FEAT**: Implemented pub-sub in `MemoryCacheManager` with channel tracking and message broadcasting
+
 ## 0.5.0
 
 - **CHORE**: Update version to 0.5.0 to align with core arcade package.

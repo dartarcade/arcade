@@ -1,0 +1,30 @@
+services:
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis-browser:
+    image: redis/redisinsight:latest
+    restart: unless-stopped
+    volumes:
+      - redisinsight_data:/data
+    ports:
+      - "8001:5540"
+    environment:
+      REDISINSIGHT_PASSWORD: redisinsight
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+  redisinsight_data:

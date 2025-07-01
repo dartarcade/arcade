@@ -150,7 +150,9 @@ class ArcadeTestClient {
   }) async {
     // Ensure proper URL joining
     final cleanPath = path.startsWith('/') ? path : '/$path';
-    final cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final cleanBaseUrl = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
     final uri = Uri.parse('$cleanBaseUrl$cleanPath');
     final request = await _client.openUrl(method, uri);
 

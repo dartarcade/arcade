@@ -9,6 +9,15 @@ catalog:
     luthor: ^0.9.0
 
 scripts:
+  docker:
+    command: docker compose up -d
+  docker:down:
+    command: docker compose down
+
+  fix:
+    command: dart fix --apply
+    runInPackages:
+      - packages/*
   format:
     command: dart format --set-exit-if-changed .
     runInPackages:
@@ -17,6 +26,13 @@ scripts:
     command: dart analyze --fatal-infos --fatal-warnings
     runInPackages:
       - packages/*
+
+  test:redis:
+    command: |
+      (cd ../.. && docker compose exec redis redis-cli FLUSHALL)
+      dart test -j 1
+    runInPackages:
+      - packages/arcade_cache_redis
 
   todo:brc:
     command: dart run build_runner clean

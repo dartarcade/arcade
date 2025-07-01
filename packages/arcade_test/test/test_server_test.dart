@@ -60,7 +60,7 @@ void main() {
           () => server.get('/test'),
           throwsA(anyOf([
             isA<StateError>(), // Client is closed
-            isA<Exception>(),  // Connection error
+            isA<Exception>(), // Connection error
           ])),
         );
       });
@@ -350,7 +350,8 @@ void main() {
         // The second server overwrites the first server's routes
         // So server1 will now respond to server2's routes
         final crossResponse1 = await server1.get('/server2');
-        expect(crossResponse1.statusCode, equals(200)); // Actually works due to shared state
+        expect(crossResponse1.statusCode,
+            equals(200)); // Actually works due to shared state
 
         await server1.close();
         await server2.close();

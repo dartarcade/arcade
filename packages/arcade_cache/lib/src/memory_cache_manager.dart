@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:arcade_cache/src/cache_manager.dart';
+import 'package:arcade_cache/arcade_cache.dart';
 
 class _CacheEntry {
   final dynamic value;
@@ -18,20 +18,29 @@ class _CacheEntry {
 class MemoryCacheManager implements BaseCacheManager<void> {
   final Map<String, _CacheEntry> _cache = {};
   Timer? _cleanupTimer;
+  final Map<String, StreamController<PubSubEvent>> _channelControllers = {};
+  final Map<String, Set<String>> _activeSubscriptions = {};
+  final Map<String, Function(dynamic)> _messageMappers = {};
 
   @override
-  void init(void connectionInfo) {
+  Future<void> init(void connectionInfo) async {
     _startCleanupTimer();
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     _cleanupTimer?.cancel();
     _cache.clear();
+
+    for (final controller in _channelControllers.values) {
+      await controller.close();
+    }
+    _channelControllers.clear();
+    _activeSubscriptions.clear();
   }
 
   @override
-  void clear() {
+  Future<void> clear() async {
     _cache.clear();
   }
 
@@ -75,20 +84,20 @@ class MemoryCacheManager implements BaseCacheManager<void> {
   }
 
   @override
-  void set(String key, dynamic value) {
+  Future<void> set(String key, dynamic value) async {
     final serializedValue = _serializeValue(value);
     _cache[key] = _CacheEntry(serializedValue, null);
   }
 
   @override
-  void setWithTtl(String key, dynamic value, Duration ttl) {
+  Future<void> setWithTtl(String key, dynamic value, Duration ttl) async {
     final serializedValue = _serializeValue(value);
     final expiresAt = DateTime.now().add(ttl);
     _cache[key] = _CacheEntry(serializedValue, expiresAt);
   }
 
   @override
-  void remove<T>(String key) {
+  Future<void> remove<T>(String key) async {
     _cache.remove(key);
   }
 
@@ -125,5 +134,86 @@ class MemoryCacheManager implements BaseCacheManager<void> {
     for (final key in keysToRemove) {
       _cache.remove(key);
     }
+  }
+
+  @override
+  Stream<PubSubEvent<T>> subscribe<T>(
+    List<String> channels, {
+    T Function(dynamic data)? messageMapper,
+  }) {
+    final controller = StreamController<PubSubEvent<T>>.broadcast();
+    final channelKey = channels.join(',');
+
+    // Store the controller and mapper
+    _channelControllers[channelKey] =
+        controller as StreamController<PubSubEvent>;
+    if (messageMapper != null) {
+      _messageMappers[channelKey] = messageMapper;
+    }
+
+    // Track subscriptions
+    for (final channel in channels) {
+      _activeSubscriptions.putIfAbsent(channel, () => {}).add(channelKey);
+
+      // Emit subscribe event
+      controller.add(
+          PubSubSubscribed(channel, _activeSubscriptions[channel]!.length)
+              as PubSubEvent<T>);
+    }
+
+    return controller.stream;
+  }
+
+  @override
+  Future<void> unsubscribe(List<String> channels) async {
+    final channelKey = channels.join(',');
+
+    // Clean up subscriptions
+    for (final channel in channels) {
+      final subscriptions = _activeSubscriptions[channel];
+      if (subscriptions != null) {
+        subscriptions.remove(channelKey);
+        if (subscriptions.isEmpty) {
+          _activeSubscriptions.remove(channel);
+        }
+      }
+    }
+
+    // Close and remove controller
+    final controller = _channelControllers.remove(channelKey);
+    if (controller != null) {
+      // Emit unsubscribe events before closing
+      for (final channel in channels) {
+        controller.add(PubSubUnsubscribed(channel, 0));
+      }
+      await controller.close();
+    }
+
+    // Clean up mapper
+    _messageMappers.remove(channelKey);
+  }
+
+  @override
+  Future<int> publish(String channel, dynamic message) async {
+    var subscriberCount = 0;
+
+    // Find all controllers that are subscribed to this channel
+    final subscriptions = _activeSubscriptions[channel];
+    if (subscriptions != null) {
+      for (final channelKey in subscriptions) {
+        final controller = _channelControllers[channelKey];
+        if (controller != null && !controller.isClosed) {
+          // Apply mapper if available
+          final mapper = _messageMappers[channelKey];
+          final mappedData = mapper != null ? mapper(message) : message;
+
+          // The controller is typed, so we need to handle this generically
+          controller.add(PubSubMessage(channel, mappedData));
+          subscriberCount++;
+        }
+      }
+    }
+
+    return subscriberCount;
   }
 }

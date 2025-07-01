@@ -87,7 +87,8 @@ void main() {
 
         final snapshot = ArcadeTestState.getStateSnapshot();
 
-        expect(snapshot['routeCount'], greaterThanOrEqualTo(0)); // Routes may be processed differently
+        expect(snapshot['routeCount'],
+            greaterThanOrEqualTo(0)); // Routes may be processed differently
         expect(snapshot['globalBeforeHooksCount'], equals(1));
         expect(snapshot['globalAfterHooksCount'], equals(0));
         expect(snapshot['webSocketConnectionsCount'] ?? 0, equals(0));
@@ -174,7 +175,7 @@ void main() {
 
         // Just verify server was created successfully
         expect(server.port, greaterThan(0));
-        
+
         // Old route should be gone, only new route exists
         expect(routes.any((r) => r.path == '/old'), isFalse);
         expect(routes.any((r) => r.path == '/new'), isTrue);

@@ -1,6 +1,6 @@
 name: arcade_config
 description: Configuration for your Arcade app
-version: 0.5.0
+version: 0.6.0
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_config
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
@@ -9,7 +9,7 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  arcade_logger: ^0.5.0
+  arcade_logger: ^0.6.0
 
 dev_dependencies:
   lint: ^2.8.0

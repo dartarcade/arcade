@@ -66,7 +66,8 @@ void main() {
 
       test('empty response returns 200 not 204', () async {
         final response = await server.get('/empty');
-        expect(response, hasStatus(200)); // Arcade returns 200 for null, not 204
+        expect(
+            response, hasStatus(200)); // Arcade returns 200 for null, not 204
       });
 
       test('isBadRequest matcher', () async {
@@ -200,7 +201,10 @@ void main() {
         final textResponse = await server.get('/text');
 
         expect(jsonResponse, hasContentType('application/json'));
-        expect(textResponse, hasContentType('text/html')); // Arcade returns text/html for strings
+        expect(
+            textResponse,
+            hasContentType(
+                'text/html')); // Arcade returns text/html for strings
 
         // Negative tests
         expect(jsonResponse, isNot(hasContentType('text/html')));
@@ -213,7 +217,8 @@ void main() {
         final emptyResponse = await server.get('/empty');
 
         expect(response.body, equals('Hello, World!'));
-        expect(emptyResponse.body, equals('null')); // Arcade returns "null" for null responses
+        expect(emptyResponse.body,
+            equals('null')); // Arcade returns "null" for null responses
       });
 
       test('hasJsonBody matcher with exact match', () async {
@@ -289,7 +294,8 @@ void main() {
         final textResponse = await server.get('/text');
         final jsonResponse = await server.get('/json');
 
-        expect(textResponse.contentType?.mimeType, equals('text/html')); // Arcade returns text/html
+        expect(textResponse.contentType?.mimeType,
+            equals('text/html')); // Arcade returns text/html
         expect(jsonResponse.contentType?.mimeType, isNot(equals('text/html')));
       });
     });

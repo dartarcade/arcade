@@ -1,6 +1,6 @@
 name: arcade_cache_redis
 description: Redis cache for Arcade
-version: 0.5.0
+version: 0.6.0
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_cache_redis
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
@@ -9,7 +9,8 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  arcade_cache: ^0.5.0
+  arcade_cache: ^0.6.0
   redis: ^4.0.0
 dev_dependencies:
   lint: ^2.8.0
+  test: ^1.26.0
