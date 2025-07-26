@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:arcade/arcade.dart';
 import 'package:arcade_test/arcade_test.dart';
 import 'package:test/test.dart';
@@ -75,6 +77,49 @@ void main() {
 
         expect(server.port, greaterThan(0));
         await server.close();
+      });
+
+      test('server handles custom static files directory', () async {
+        // Create a temporary directory for static files
+        final tempDir = await Directory.systemTemp.createTemp('arcade_test_');
+        final testFile = File('${tempDir.path}/test.txt');
+        await testFile.writeAsString('static content');
+
+        final server = await ArcadeTestServer.create(
+          () async {
+            route.get('/api/test').handle((ctx) => 'api endpoint');
+          },
+          staticFilesDirectory: tempDir,
+        );
+
+        // Verify API route works
+        final apiResponse = await server.get('/api/test');
+        expect(apiResponse.statusCode, equals(200));
+        expect(apiResponse.text(), equals('api endpoint'));
+
+        // Note: We can't directly test static file serving through the test client
+        // because that would require testing arcade's internal static file serving logic
+        // That should be tested in arcade's own tests
+
+        await server.close();
+        await tempDir.delete(recursive: true);
+      });
+
+      test('withRoutes accepts static files directory', () async {
+        final tempDir = await Directory.systemTemp.createTemp('arcade_test_');
+
+        final server = await ArcadeTestServer.withRoutes(
+          () {
+            route.get('/test').handle((ctx) => 'test');
+          },
+          staticFilesDirectory: tempDir,
+        );
+
+        final response = await server.get('/test');
+        expect(response.statusCode, equals(200));
+
+        await server.close();
+        await tempDir.delete(recursive: true);
       });
     });
 
@@ -187,7 +232,8 @@ void main() {
 
         expect(response.statusCode, equals(200));
         // The exact error message may vary, just check it's an error
-        expect(response.json()['error'], contains('Parse failed'));
+        expect((response.json() as Map<String, dynamic>)['error'],
+            contains('Parse failed'));
       });
     });
 
@@ -222,7 +268,7 @@ void main() {
         });
 
         expect(response.statusCode, equals(200));
-        final body = response.json();
+        final body = response.json() as Map<String, dynamic>;
         expect(body['x-custom-header'], equals('test-value'));
         expect(body['x-another-header'], equals('another-value'));
       });
@@ -307,22 +353,23 @@ void main() {
       test('extracts path parameters', () async {
         final response = await server.get('/users/123');
         expect(response.statusCode, equals(200));
-        expect(response.json()['id'], equals('123'));
+        expect((response.json() as Map<String, dynamic>)['id'], equals('123'));
       });
 
       test('handles query parameters', () async {
         final response = await server.get('/users/123?filter=active&sort=name');
         expect(response.statusCode, equals(200));
-        final body = response.json();
+        final body = response.json() as Map<String, dynamic>;
         expect(body['id'], equals('123'));
-        expect(body['query']['filter'], equals('active'));
-        expect(body['query']['sort'], equals('name'));
+        expect((body['query'] as Map<String, dynamic>)['filter'],
+            equals('active'));
+        expect((body['query'] as Map<String, dynamic>)['sort'], equals('name'));
       });
 
       test('multiple path parameters', () async {
         final response = await server.get('/posts/tech/456');
         expect(response.statusCode, equals(200));
-        final body = response.json();
+        final body = response.json() as Map<String, dynamic>;
         expect(body['category'], equals('tech'));
         expect(body['id'], equals('456'));
       });

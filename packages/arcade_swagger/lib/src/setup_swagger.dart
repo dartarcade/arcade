@@ -87,7 +87,7 @@ void setupSwagger({
     );
   });
 
-  route.get(uiPath).handle((context) async {
+  route.get(uiPath).handle((context) {
     return view(
       'index',
       {'title': title, 'url': docPath},

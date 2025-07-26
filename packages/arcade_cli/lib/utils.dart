@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:yaml/yaml.dart';
 
-Future<String> getPubspecContents() async {
+Future<String> getPubspecContents() {
   final file = File('pubspec.yaml');
   if (!file.existsSync()) {
     throw StateError('pubspec.yaml does not exist');

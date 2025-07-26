@@ -79,7 +79,7 @@ void main() {
       test('parses valid JSON object', () async {
         final response = await server.get('/json');
 
-        final json = response.json();
+        final json = response.json() as Map<String, dynamic>;
         expect(json, isA<Map>());
         expect(json['test'], equals(true));
         expect(json['value'], equals(42));

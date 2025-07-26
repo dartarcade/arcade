@@ -5,6 +5,7 @@ environment:
 
 workspace:
   - packages/arcade
+  - packages/arcade/example
   - packages/arcade_cache
   - packages/arcade_cache_redis
   - packages/arcade_cli
@@ -18,3 +19,7 @@ workspace:
 dependencies:
   luthor:
     version: ^0.9.0
+  prompts:
+    version: ^2.0.0
+  yaml_edit:
+    version: ^2.2.2

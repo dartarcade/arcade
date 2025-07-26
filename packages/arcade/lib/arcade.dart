@@ -18,7 +18,8 @@ export 'src/helpers/route_helpers.dart'
         globalBeforeHooks,
         invalidateRouteCache,
         normalizedPathCache,
-        optimizedRouter;
+        optimizedRouter,
+        validatePreviousRouteHasHandler;
 export 'src/http/body_parse_result.dart';
 export 'src/http/request_context.dart';
 export 'src/http/route.dart';
@@ -43,7 +44,7 @@ export 'src/ws/ws.dart'
         localConnectionIds,
         serverInstanceId,
         updateConnectionMetadata,
-        wsMap,
+        validateConnectionHealth,
         wsStorageManager;
 export 'src/ws/ws_connection_info.dart' show WebSocketConnectionInfo;
 export 'src/ws/ws_storage_manager.dart' show WebSocketStorageManager;

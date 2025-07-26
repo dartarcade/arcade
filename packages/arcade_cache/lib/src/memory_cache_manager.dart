@@ -18,9 +18,14 @@ class _CacheEntry {
 class MemoryCacheManager implements BaseCacheManager<void> {
   final Map<String, _CacheEntry> _cache = {};
   Timer? _cleanupTimer;
-  final Map<String, StreamController<PubSubEvent>> _channelControllers = {};
+  // Store multiple controllers per channel pattern with subscription IDs
+  final Map<String, Map<String, dynamic>> _channelControllers = {};
   final Map<String, Set<String>> _activeSubscriptions = {};
-  final Map<String, Function(dynamic)> _messageMappers = {};
+  // Store mappers that preserve types by subscription ID
+  final Map<String, dynamic Function(dynamic)> _messageMappers = {};
+  // Store message factories to create properly typed messages by subscription ID
+  final Map<String, PubSubEvent Function(String, dynamic)> _messageFactories =
+      {};
 
   @override
   Future<void> init(void connectionInfo) async {
@@ -32,11 +37,15 @@ class MemoryCacheManager implements BaseCacheManager<void> {
     _cleanupTimer?.cancel();
     _cache.clear();
 
-    for (final controller in _channelControllers.values) {
-      await controller.close();
+    for (final controllerMap in _channelControllers.values) {
+      for (final controller in controllerMap.values) {
+        await (controller as StreamController).close();
+      }
     }
     _channelControllers.clear();
     _activeSubscriptions.clear();
+    _messageMappers.clear();
+    _messageFactories.clear();
   }
 
   @override
@@ -142,24 +151,39 @@ class MemoryCacheManager implements BaseCacheManager<void> {
     T Function(dynamic data)? messageMapper,
   }) {
     final controller = StreamController<PubSubEvent<T>>.broadcast();
+    final subscriptionId = DateTime.now().microsecondsSinceEpoch.toString();
     final channelKey = channels.join(',');
 
-    // Store the controller and mapper
-    _channelControllers[channelKey] =
-        controller as StreamController<PubSubEvent>;
+    // Store the controller with its subscription ID
+    _channelControllers.putIfAbsent(channelKey, () => {})[subscriptionId] =
+        controller;
+
     if (messageMapper != null) {
-      _messageMappers[channelKey] = messageMapper;
+      _messageMappers[subscriptionId] = messageMapper;
     }
 
-    // Track subscriptions
+    // Store a factory function to create properly typed messages
+    _messageFactories[subscriptionId] =
+        (String ch, dynamic data) => PubSubMessage<T>(ch, data as T);
+
+    // Track subscriptions synchronously
     for (final channel in channels) {
       _activeSubscriptions.putIfAbsent(channel, () => {}).add(channelKey);
-
-      // Emit subscribe event
-      controller.add(
-          PubSubSubscribed(channel, _activeSubscriptions[channel]!.length)
-              as PubSubEvent<T>);
     }
+
+    // Emit subscribe events asynchronously
+    Future.microtask(() {
+      for (final channel in channels) {
+        // Count total subscriptions to this channel
+        var totalSubscriptions = 0;
+        for (final key in _activeSubscriptions[channel] ?? {}) {
+          totalSubscriptions += _channelControllers[key]?.length ?? 0;
+        }
+
+        controller.add(
+            PubSubSubscribed(channel, totalSubscriptions) as PubSubEvent<T>);
+      }
+    });
 
     return controller.stream;
   }
@@ -179,18 +203,23 @@ class MemoryCacheManager implements BaseCacheManager<void> {
       }
     }
 
-    // Close and remove controller
-    final controller = _channelControllers.remove(channelKey);
-    if (controller != null) {
+    // Close and remove all controllers for this channel pattern
+    final controllerMap = _channelControllers.remove(channelKey) ?? {};
+    for (final entry in controllerMap.entries) {
+      final subscriptionId = entry.key;
+      final controller = entry.value;
+
       // Emit unsubscribe events before closing
       for (final channel in channels) {
-        controller.add(PubSubUnsubscribed(channel, 0));
+        (controller as dynamic).add(PubSubUnsubscribed(channel, 0));
       }
-      await controller.close();
-    }
 
-    // Clean up mapper
-    _messageMappers.remove(channelKey);
+      // Clean up mapper and factory
+      _messageMappers.remove(subscriptionId);
+      _messageFactories.remove(subscriptionId);
+
+      await (controller as StreamController).close();
+    }
   }
 
   @override
@@ -201,15 +230,28 @@ class MemoryCacheManager implements BaseCacheManager<void> {
     final subscriptions = _activeSubscriptions[channel];
     if (subscriptions != null) {
       for (final channelKey in subscriptions) {
-        final controller = _channelControllers[channelKey];
-        if (controller != null && !controller.isClosed) {
-          // Apply mapper if available
-          final mapper = _messageMappers[channelKey];
-          final mappedData = mapper != null ? mapper(message) : message;
+        final controllerMap = _channelControllers[channelKey] ?? {};
+        for (final entry in controllerMap.entries) {
+          final subscriptionId = entry.key;
+          final controller = entry.value;
 
-          // The controller is typed, so we need to handle this generically
-          controller.add(PubSubMessage(channel, mappedData));
-          subscriberCount++;
+          if (controller != null &&
+              !(controller as StreamController).isClosed) {
+            // Apply mapper if available
+            final mapper = _messageMappers[subscriptionId];
+            final mappedData = mapper != null ? mapper(message) : message;
+
+            // Use the message factory to create a properly typed message
+            final factory = _messageFactories[subscriptionId];
+            if (factory != null) {
+              final typedMessage = factory.call(channel, mappedData);
+              controller.add(typedMessage);
+            } else {
+              // Fallback - shouldn't happen
+              controller.add(PubSubMessage(channel, mappedData));
+            }
+            subscriberCount++;
+          }
         }
       }
     }
