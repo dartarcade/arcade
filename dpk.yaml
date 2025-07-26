@@ -71,6 +71,11 @@ scripts:
     runInPackages:
       - packages/arcade_test
 
+  test:swagger:
+    command: dart test
+    runInPackages:
+      - packages/arcade_swagger
+
   todo:brc:
     command: dart run build_runner clean
     runInPackages:
