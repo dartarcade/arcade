@@ -1,3 +1,7 @@
+## 1.0.0
+
+- Updated dependencies
+
 ## 0.6.0
 
 - **FEAT**: Implemented Redis pub-sub support:

@@ -167,7 +167,19 @@ Future<void> writeNotFoundResponse({
 
   if (notFoundRoute != null) {
     try {
-      response.write(notFoundRoute.notFoundHandler!(context));
+      var result = notFoundRoute.notFoundHandler!(context);
+      if (result is Future) {
+        result = await result;
+      }
+
+      if (result is String) {
+        response.headers.contentType = ContentType.html;
+      } else {
+        result = jsonEncode(result);
+        response.headers.contentType = ContentType.json;
+      }
+
+      response.write(result);
       response.close();
       return;
     } on ArcadeHttpException catch (e, s) {

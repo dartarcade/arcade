@@ -51,7 +51,9 @@ class RadixTrie {
   final TrieNode _root = TrieNode();
 
   void insert(BaseRoute route) {
-    final segments = _normalizePath(route.path).split('/');
+    // Normalize the path by URL encoding it to handle Unicode characters
+    final normalizedPath = Uri.parse(route.path).toString();
+    final segments = _normalizePath(normalizedPath).split('/');
     TrieNode current = _root;
 
     for (int i = 0; i < segments.length; i++) {
@@ -237,13 +239,6 @@ class OptimizedRouter {
 
       // Add all routes to trie (handles both static and dynamic)
       _triesByMethod.putIfAbsent(method, () => RadixTrie()).insert(route);
-
-      // Also add to 'any' method for routes that accept any method
-      if (method != HttpMethod.any) {
-        _triesByMethod
-            .putIfAbsent(HttpMethod.any, () => RadixTrie())
-            .insert(route);
-      }
     }
 
     _isBuilt = true;
@@ -311,6 +306,7 @@ final List<AfterWebSocketHookHandler> globalAfterWebSocketHooks = [];
 @internal
 BaseRoute? currentProcessingRoute;
 
+@internal
 void validatePreviousRouteHasHandler() {
   if (currentProcessingRoute != null) {
     routes.add(currentProcessingRoute!);

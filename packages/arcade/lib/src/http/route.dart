@@ -319,9 +319,9 @@ final class RouteBuilder<T extends RequestContext> {
 
   RouteBuilder<T> withExtra(Map<String, dynamic> extra, {bool merge = true}) {
     if (!merge) {
-      extra.clear();
+      this.extra.clear();
     }
-    extra.addAll(extra);
+    this.extra.addAll(extra);
     return this;
   }
 

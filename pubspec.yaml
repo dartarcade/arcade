@@ -5,6 +5,7 @@ environment:
 
 workspace:
   - packages/arcade
+  - packages/arcade/example
   - packages/arcade_cache
   - packages/arcade_cache_redis
   - packages/arcade_cli
@@ -16,5 +17,4 @@ workspace:
   - samples/todo_api
 
 dependencies:
-  luthor:
-    version: ^0.9.0
+  luthor: ^0.9.0

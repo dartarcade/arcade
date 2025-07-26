@@ -1,3 +1,7 @@
+## 1.0.0
+
+- Updated dependencies
+
 ## 0.6.0
 
 - **BREAKING**: Changed `BaseCacheManager` interface methods to return `Future` instead of `FutureOr`

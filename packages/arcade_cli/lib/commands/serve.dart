@@ -79,13 +79,13 @@ class ServeCommand extends Command {
       },
     );
 
-    ProcessSignal.sigint.watch().listen((_) async {
+    ProcessSignal.sigint.watch().listen((_) {
       process?.kill();
       Process.runSync('dart', ['compilation-server', 'shutdown']);
       exit(0);
     });
 
-    ProcessSignal.sigterm.watch().listen((_) async {
+    ProcessSignal.sigterm.watch().listen((_) {
       process?.kill();
       exit(0);
     });

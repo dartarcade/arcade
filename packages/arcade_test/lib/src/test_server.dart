@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:arcade/arcade.dart';
+import 'package:arcade_config/arcade_config.dart';
 import 'package:arcade_test/src/state_management.dart';
 import 'package:arcade_test/src/test_client.dart';
 import 'package:arcade_test/src/test_response.dart';
@@ -62,9 +63,15 @@ class ArcadeTestServer {
     Future<void> Function() init, {
     LogLevel logLevel = LogLevel.error,
     InternetAddress? host,
+    Directory? staticFilesDirectory,
   }) async {
     // Reset all global state before test
     ArcadeTestState.resetAll();
+
+    // Override static files directory if provided
+    if (staticFilesDirectory != null) {
+      ArcadeConfiguration.override(staticFilesDirectory: staticFilesDirectory);
+    }
 
     try {
       // Find an available port
@@ -110,11 +117,13 @@ class ArcadeTestServer {
     void Function() routes, {
     LogLevel logLevel = LogLevel.error,
     InternetAddress? host,
+    Directory? staticFilesDirectory,
   }) {
     return create(
       () async => routes(),
       logLevel: logLevel,
       host: host,
+      staticFilesDirectory: staticFilesDirectory,
     );
   }
 
