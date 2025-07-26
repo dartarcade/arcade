@@ -3,6 +3,7 @@
 - **TEST**: Add comprehensive test suite covering server lifecycle, routing, hooks, WebSocket, and metadata
 - **FIX**: Fix critical routing bug where all routes were incorrectly added to 'any' method trie
 - **FIX**: Fix static file serving by moving canServeStaticFiles check after init()
+- **FIX**: Fix directory traversal vulnerability in static file serving
 
 ## 0.5.0
 

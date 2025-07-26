@@ -98,12 +98,26 @@ Future<void> _handleRequest(HttpRequest request) async {
           ...pathSegments,
         ]),
       );
-      if (await file.exists()) {
-        Logger.root.debug('Serving static file: $file');
-        return serveStaticFile(
-          file: file,
-          response: response,
-        );
+
+      // Security check: ensure the resolved path is within the static directory
+      try {
+        final resolvedPath = file.resolveSymbolicLinksSync();
+        final staticDirPath =
+            ArcadeConfiguration.staticFilesDirectory.resolveSymbolicLinksSync();
+
+        if (!resolvedPath.startsWith(staticDirPath)) {
+          Logger.root.warning('Attempted directory traversal: $resolvedPath');
+          // Fall through to 404 handler
+        } else if (await file.exists()) {
+          Logger.root.debug('Serving static file: $file');
+          return serveStaticFile(
+            file: file,
+            response: response,
+          );
+        }
+      } catch (e) {
+        Logger.root.debug('Error resolving file path: $e');
+        // Fall through to 404 handler
       }
     }
 
