@@ -42,6 +42,15 @@ void main() {
           return headers;
         });
 
+        // POST headers echo endpoint (for testing request headers with body)
+        route.post('/headers').handle((ctx) {
+          final headers = <String, String>{};
+          ctx.requestHeaders.forEach((name, values) {
+            headers[name] = values.join(', ');
+          });
+          return headers;
+        });
+
         // Text response endpoint
         route.get('/text').handle((ctx) => 'Plain text response');
 
