@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_internal_member
+
 import 'package:arcade/arcade.dart';
 import 'package:arcade_swagger/arcade_swagger.dart';
 import 'package:arcade_swagger/src/logger.dart';
@@ -19,6 +21,10 @@ extension ListGroupX<T> on List<T> {
 }
 
 Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
+  // Ensure any pending route is finalized before reading metadata
+  // This handles the case where setupSwagger is called immediately after route definitions
+  validatePreviousRouteHasHandler();
+
   final routeMetadata = getRouteMetadata();
   final groupedRoutes = routeMetadata.groupBy((r) => r.path);
   final pathItems = <String, PathItem>{};

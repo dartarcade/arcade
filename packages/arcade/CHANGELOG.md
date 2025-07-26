@@ -1,3 +1,9 @@
+## 1.0.0
+
+- **TEST**: Add comprehensive test suite covering server lifecycle, routing, hooks, WebSocket, and metadata
+- **FIX**: Fix critical routing bug where all routes were incorrectly added to 'any' method trie
+- **FIX**: Fix static file serving by moving canServeStaticFiles check after init()
+
 ## 0.5.0
 
 - **CHORE**: Update version to 0.5.0 and align all package versions.

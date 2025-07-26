@@ -8,8 +8,9 @@ import 'dart:io';
 class TestResponse {
   final HttpClientResponse _response;
   final String _body;
+  final List<int> _bodyBytes;
 
-  TestResponse._(this._response, this._body);
+  TestResponse._(this._response, this._body, this._bodyBytes);
 
   /// Creates a TestResponse from an HttpClientResponse.
   ///
@@ -19,8 +20,14 @@ class TestResponse {
       <int>[],
       (previous, element) => previous..addAll(element),
     );
-    final body = utf8.decode(bodyBytes);
-    return TestResponse._(response, body);
+    // Try to decode as UTF-8, but if it fails (e.g., binary data), use empty string
+    String body;
+    try {
+      body = utf8.decode(bodyBytes);
+    } catch (_) {
+      body = '';
+    }
+    return TestResponse._(response, body, bodyBytes);
   }
 
   /// The HTTP status code of the response.
@@ -31,6 +38,12 @@ class TestResponse {
 
   /// The raw response body as a string.
   String get body => _body;
+
+  /// The raw response body as bytes.
+  List<int> get bodyBytes => _bodyBytes;
+
+  /// The content length of the response.
+  int get contentLength => _response.contentLength;
 
   /// Parses the response body as JSON.
   ///
@@ -119,6 +132,6 @@ class TestResponse {
   String toString() {
     return 'TestResponse(statusCode: $statusCode, '
         'contentType: ${contentType?.mimeType}, '
-        'bodyLength: ${_body.length})';
+        'bodyLength: ${_bodyBytes.length})';
   }
 }

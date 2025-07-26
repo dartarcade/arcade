@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:arcade/src/core/exceptions.dart';
 import 'package:arcade/src/helpers/response_helpers.dart';
 import 'package:arcade/src/http/request_context.dart';
 import 'package:arcade/src/http/route.dart';
@@ -12,22 +13,24 @@ import 'package:uuid/uuid.dart';
 
 // Global WebSocket storage manager
 @internal
-late final WebSocketStorageManager wsStorageManager;
+late WebSocketStorageManager wsStorageManager;
 
-// Initialize the storage manager with optional cache provider
-void initializeWebSocketStorage([BaseCacheManager? cacheManager]) {
-  wsStorageManager = WebSocketStorageManager(cacheManager);
-  wsStorageManager.init();
+// Initialize the storage manager with optional cache provider and connection limit
+Future<void> initializeWebSocketStorage([
+  BaseCacheManager? cacheManager,
+  int? maxConnectionsPerServer,
+]) async {
+  wsStorageManager = WebSocketStorageManager(
+    cacheManager,
+    maxConnectionsPerServer,
+  );
+  await wsStorageManager.init();
 }
 
 // Dispose the storage manager
 Future<void> disposeWebSocketStorage() async {
   await wsStorageManager.dispose();
 }
-
-// Backward compatibility: maintain the old global map approach for existing APIs
-@internal
-final Map<String, WebSocket> wsMap = <String, WebSocket>{};
 
 typedef Emit = FutureOr<void> Function(dynamic message);
 typedef Close = FutureOr<void> Function();
@@ -57,24 +60,23 @@ Future<void> setupWsConnection<T extends RequestContext>({
     throw Exception('No WebSocket handler found');
   }
 
+  // Validate that this is a valid WebSocket upgrade request
+  if (!WebSocketTransformer.isUpgradeRequest(context.rawRequest)) {
+    throw const BadRequestException(
+        message: 'Invalid WebSocket upgrade request');
+  }
+
   final ctx = await runBeforeHooks(context, route);
 
   final wsId = const Uuid().v4();
   final ws = await WebSocketTransformer.upgrade(context.rawRequest);
 
-  // Maintain backward compatibility with the old map
-  wsMap[wsId] = ws;
-
-  // Use new storage system if initialized
-  try {
-    await wsStorageManager.registerConnection(
-      connectionId: wsId,
-      webSocket: ws,
-      metadata: _extractMetadata(ctx),
-    );
-  } catch (e) {
-    // If storage manager not initialized, fallback to old behavior
-  }
+  // Register connection with storage manager
+  await wsStorageManager.registerConnection(
+    connectionId: wsId,
+    webSocket: ws,
+    metadata: _extractMetadata(ctx),
+  );
 
   final WebSocketManager manager = (
     id: wsId,
@@ -86,16 +88,15 @@ Future<void> setupWsConnection<T extends RequestContext>({
 
   ws.listen(
     (dynamic message) {
-      wsHandler(ctx, message, manager);
+      try {
+        wsHandler(ctx, message, manager);
+      } catch (e) {
+        // Log the error but don't close the connection
+        // This allows WebSocket handlers to throw exceptions without killing the connection
+      }
     },
     onDone: () async {
-      // Clean up from both old and new systems
-      wsMap.remove(wsId);
-      try {
-        await wsStorageManager.unregisterConnection(wsId);
-      } catch (e) {
-        // If storage manager not initialized, ignore
-      }
+      await wsStorageManager.unregisterConnection(wsId);
       runAfterWebSocketHooks(ctx, route, null, wsId);
     },
   );
@@ -110,130 +111,74 @@ Map<String, dynamic>? _extractMetadata(RequestContext context) {
   };
 }
 
-void emitTo(String id, dynamic message) {
-  wsMap[id]?.add(message);
+Future<void> emitTo(String id, dynamic message) async {
+  await wsStorageManager.publish('ws:direct:$id', message);
 }
 
-void emitToAll(dynamic message) {
-  for (final ws in wsMap.values) {
-    ws.add(message);
-  }
+Future<void> emitToAll(dynamic message) async {
+  await wsStorageManager.publish('ws:broadcast', message);
 }
 
 // New enhanced WebSocket API functions
 
 /// Join a WebSocket connection to a room
 Future<void> joinRoom(String connectionId, String room) async {
-  try {
-    await wsStorageManager.joinRoom(connectionId, room);
-  } catch (e) {
-    // If storage manager not initialized, ignore
-  }
+  await wsStorageManager.joinRoom(connectionId, room);
 }
 
 /// Remove a WebSocket connection from a room
 Future<void> leaveRoom(String connectionId, String room) async {
-  try {
-    await wsStorageManager.leaveRoom(connectionId, room);
-  } catch (e) {
-    // If storage manager not initialized, ignore
-  }
+  await wsStorageManager.leaveRoom(connectionId, room);
 }
 
 /// Emit message to all connections in a room
 Future<void> emitToRoom(String room, dynamic message) async {
-  try {
-    final members = await wsStorageManager.getRoomMembers(room);
-    for (final connectionId in members) {
-      final ws = wsStorageManager.getLocalWebSocket(connectionId);
-      ws?.add(message);
-
-      // Also check the old map for backward compatibility
-      if (ws == null) {
-        wsMap[connectionId]?.add(message);
-      }
-    }
-  } catch (e) {
-    // If storage manager not initialized, ignore
-  }
+  await wsStorageManager.publish('ws:room:$room', message);
 }
 
 /// Get all active WebSocket connections
 Future<List<WebSocketConnectionInfo>> getAllConnections() async {
-  try {
-    return await wsStorageManager.getAllConnections();
-  } catch (e) {
-    // If storage manager not initialized, return empty list
-    return [];
-  }
+  return await wsStorageManager.getAllConnections();
 }
 
 /// Get WebSocket connections for the current server instance
 Future<List<WebSocketConnectionInfo>> getLocalConnections() async {
-  try {
-    return await wsStorageManager.getLocalConnections();
-  } catch (e) {
-    // If storage manager not initialized, return empty list
-    return [];
-  }
+  return await wsStorageManager.getLocalConnections();
 }
 
 /// Get connection information by ID
 Future<WebSocketConnectionInfo?> getConnectionInfo(String connectionId) async {
-  try {
-    return await wsStorageManager.getConnectionInfo(connectionId);
-  } catch (e) {
-    // If storage manager not initialized, return null
-    return null;
-  }
+  return await wsStorageManager.getConnectionInfo(connectionId);
 }
 
 /// Update connection metadata
 Future<void> updateConnectionMetadata(
     String connectionId, Map<String, dynamic> metadata) async {
-  try {
-    await wsStorageManager.updateConnectionMetadata(connectionId, metadata);
-  } catch (e) {
-    // If storage manager not initialized, ignore
-  }
+  await wsStorageManager.updateConnectionMetadata(connectionId, metadata);
 }
 
 /// Get room members
 Future<List<String>> getRoomMembers(String room) async {
-  try {
-    return await wsStorageManager.getRoomMembers(room);
-  } catch (e) {
-    // If storage manager not initialized, return empty list
-    return [];
-  }
+  return await wsStorageManager.getRoomMembers(room);
 }
 
 /// Check if there are any local connections
 bool get hasLocalConnections {
-  try {
-    return wsStorageManager.hasLocalConnection;
-  } catch (e) {
-    // If storage manager not initialized, fallback to old map
-    return wsMap.isNotEmpty;
-  }
+  return wsStorageManager.hasLocalConnection;
 }
 
 /// Get local connection IDs
 Iterable<String> get localConnectionIds {
-  try {
-    return wsStorageManager.localConnectionIds;
-  } catch (e) {
-    // If storage manager not initialized, fallback to old map
-    return wsMap.keys;
-  }
+  return wsStorageManager.localConnectionIds;
 }
 
 /// Get server instance ID
 String? get serverInstanceId {
-  try {
-    return wsStorageManager.serverInstanceId;
-  } catch (e) {
-    // If storage manager not initialized, return null
-    return null;
-  }
+  return wsStorageManager.serverInstanceId;
+}
+
+/// Validate health of all local WebSocket connections
+/// This ensures all connections have active personal channel subscriptions
+Future<void> validateConnectionHealth() async {
+  return await wsStorageManager.validateConnectionHealth();
 }

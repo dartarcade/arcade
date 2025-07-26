@@ -1,3 +1,7 @@
+## 1.0.0
+
+- Updated dependencies
+
 ## 0.5.0
 
 - **CHORE**: Update version to 0.5.0 to align with core arcade package.
@@ -22,6 +26,3 @@
 
 - **FEAT**: Swagger support ([#41](https://github.com/dartarcade/arcade/issues/41)).
 
-## 1.0.0
-
-- Initial version.

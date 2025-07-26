@@ -15,11 +15,11 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: 'stable'
-      - name: Install Melos
-        run: dart pub global activate melos
-      - name: Bootstrap Melos
-        run: melos bootstrap
+      - name: Install DPK
+        run: dart pub global activate dpk
+      - name: Run dpk get
+        run: dpk get
       - name: Analyze
-        run: melos analyze --fatal-infos --category=packages
+        run: dpk run analyze
       - name: Format
-        run: melos format --set-exit-if-changed --category=packages
+        run: dpk run format

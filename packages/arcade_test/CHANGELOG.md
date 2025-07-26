@@ -1,3 +1,8 @@
+## 1.0.0
+
+- **FEAT**: Add staticFilesDirectory parameter to ArcadeTestServer for testing static file serving
+- **FIX**: Fix WebSocket test hanging by properly setting up message listeners before sending
+
 ## 0.5.0
 
 - **CHORE**: Update version to 0.5.0 to align with core arcade package.

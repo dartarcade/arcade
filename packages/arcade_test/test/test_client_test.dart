@@ -141,7 +141,8 @@ void main() {
 
         expect(response.statusCode, equals(200));
         // Server will fail to parse as JSON
-        expect(response.json()['error'], contains('Parse failed'));
+        final json = response.json() as Map<String, dynamic>;
+        expect(json['error'], contains('Parse failed'));
       });
 
       test('sends null body', () async {
@@ -149,7 +150,8 @@ void main() {
 
         expect(response.statusCode, equals(200));
         // Empty body should fail JSON parsing
-        expect(response.json()['error'], contains('Parse failed'));
+        final json = response.json() as Map<String, dynamic>;
+        expect(json['error'], contains('Parse failed'));
       });
 
       test('auto-encodes body to JSON', () async {
@@ -170,7 +172,7 @@ void main() {
         });
 
         expect(response.statusCode, equals(200));
-        final body = response.json();
+        final body = response.json() as Map<String, dynamic>;
         expect(body['x-custom-header'], equals('custom-value'));
         expect(body['x-test'], equals('test-value'));
       });
@@ -179,7 +181,7 @@ void main() {
         final response = await client.post('/headers', body: {'test': true});
 
         expect(response.statusCode, equals(200));
-        final body = response.json();
+        final body = response.json() as Map<String, dynamic>;
         expect(
             body['content-type'],
             contains(
@@ -194,7 +196,7 @@ void main() {
         );
 
         expect(response.statusCode, equals(200));
-        final body = response.json();
+        final body = response.json() as Map<String, dynamic>;
         expect(body['content-type'], equals('text/plain'));
       });
     });
@@ -237,7 +239,7 @@ void main() {
     });
 
     group('URL Building', () {
-      test('builds correct URLs', () async {
+      test('builds correct URLs', () {
         final customClient = ArcadeTestClient('http://example.com:8080');
 
         // The client should properly construct URLs
@@ -257,7 +259,7 @@ void main() {
     });
 
     group('Error Handling', () {
-      test('handles connection errors gracefully', () async {
+      test('handles connection errors gracefully', () {
         final badClient = ArcadeTestClient('http://localhost:99999');
 
         expect(

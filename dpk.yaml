@@ -27,12 +27,49 @@ scripts:
     runInPackages:
       - packages/*
 
+  ffa:
+    command: |
+      echo "--------------------------------"
+      echo "Running fix"
+      echo "--------------------------------"
+      dpk run fix
+      echo "--------------------------------"
+      echo "Running format"
+      echo "--------------------------------"
+      dpk run format
+      echo "--------------------------------"
+      echo "Running analyze"
+      echo "--------------------------------"
+      dpk run analyze
+
+  test:arcade:
+    command: |
+      (cd ../.. && docker compose exec redis redis-cli flushall)
+      dart test -j 1
+    runInPackages:
+      - packages/arcade
+
+  test:cache:
+    command: dart test -j 1
+    runInPackages:
+      - packages/arcade_cache
+
   test:redis:
     command: |
-      (cd ../.. && docker compose exec redis redis-cli FLUSHALL)
+      (cd ../.. && docker compose exec redis redis-cli flushall)
       dart test -j 1
     runInPackages:
       - packages/arcade_cache_redis
+
+  test:views:
+    command: dart test
+    runInPackages:
+      - packages/arcade_views
+
+  test:test:
+    command: dart test -j 1
+    runInPackages:
+      - packages/arcade_test
 
   todo:brc:
     command: dart run build_runner clean

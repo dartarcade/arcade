@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:arcade/arcade.dart';
 import 'package:arcade/src/helpers/request_helpers.dart';
 import 'package:arcade/src/helpers/response_helpers.dart';
-import 'package:arcade/src/helpers/route_helpers.dart';
 import 'package:arcade/src/helpers/server_helpers.dart';
 import 'package:arcade/src/ws/ws.dart';
 import 'package:arcade_config/arcade_config.dart';
@@ -37,10 +36,11 @@ Future<void> runServer({
 
   await Logger.init();
 
-  canServeStaticFiles = await ArcadeConfiguration.staticFilesDirectory.exists();
-
   await init();
   validatePreviousRouteHasHandler();
+
+  // Check static files directory after init in case configuration was changed
+  canServeStaticFiles = await ArcadeConfiguration.staticFilesDirectory.exists();
 
   if (closeServerAfterRoutesSetUp) {
     return;
@@ -79,24 +79,6 @@ Future<void> _handleRequest(HttpRequest request) async {
     );
   }
 
-  if (canServeStaticFiles) {
-    Logger.root.debug('Checking static files: ${uri.pathSegments}');
-    final pathSegments = uri.pathSegments;
-    final file = File(
-      joinAll([
-        ArcadeConfiguration.staticFilesDirectory.path,
-        ...pathSegments,
-      ]),
-    );
-    if (await file.exists()) {
-      Logger.root.debug('Serving static file: $file');
-      return serveStaticFile(
-        file: file,
-        response: response,
-      );
-    }
-  }
-
   final (route, notFoundRoute) = findMatchingRouteAndNotFoundRoute(
     routes: routes,
     method: method,
@@ -105,6 +87,26 @@ Future<void> _handleRequest(HttpRequest request) async {
 
   if (route == null) {
     Logger.root.debug('No route found for: $methodString ${request.uri.path}');
+
+    // Check static files only if no route matches
+    if (canServeStaticFiles) {
+      Logger.root.debug('Checking static files: ${uri.pathSegments}');
+      final pathSegments = uri.pathSegments;
+      final file = File(
+        joinAll([
+          ArcadeConfiguration.staticFilesDirectory.path,
+          ...pathSegments,
+        ]),
+      );
+      if (await file.exists()) {
+        Logger.root.debug('Serving static file: $file');
+        return serveStaticFile(
+          file: file,
+          response: response,
+        );
+      }
+    }
+
     if (notFoundRoute == null) {
       Logger.root.debug(
         'No not found route found for: $methodString ${request.uri.path}',
