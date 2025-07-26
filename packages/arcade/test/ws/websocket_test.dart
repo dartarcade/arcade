@@ -164,7 +164,7 @@ void main() {
 
         expect(data['path'], equals('/ws/context'));
         expect(data['method'], equals('GET'));
-        expect(data['headers']['user-agent'], isNotNull);
+        expect((data['headers'] as Map)['user-agent'], isNotNull);
 
         await ws.close();
       });

@@ -26,12 +26,13 @@ void main() {
       final response = await server.get('/doc');
       expect(response.statusCode, equals(200));
 
-      final openApiSpec = response.json();
-      expect(openApiSpec['info']['title'], equals('Test API'));
+      final openApiSpec = response.json() as Map<String, dynamic>;
+      expect((openApiSpec['info'] as Map<String, dynamic>)['title'],
+          equals('Test API'));
       expect(openApiSpec['paths'], isNotNull);
 
       // Routes without swagger metadata are not included in OpenAPI spec
-      expect(openApiSpec['paths'].keys, isEmpty);
+      expect((openApiSpec['paths'] as Map<String, dynamic>).keys, isEmpty);
 
       await server.close();
     });
@@ -87,21 +88,23 @@ void main() {
       final response = await server.get('/doc');
       expect(response.statusCode, equals(200));
 
-      final openApiSpec = response.json();
+      final openApiSpec = response.json() as Map<String, dynamic>;
       final paths = openApiSpec['paths'] as Map<String, dynamic>;
 
       // Check that routes are recognized
       expect(paths.keys, containsAll(['/api/users']));
 
       // Check GET endpoint
-      final getUsersPath = paths['/api/users']['get'];
+      final getUsersPath = (paths['/api/users'] as Map<String, dynamic>)['get']
+          as Map<String, dynamic>;
       expect(getUsersPath['summary'], equals('Get all users'));
       expect(
           getUsersPath['description'], equals('Returns a list of all users'));
       expect(getUsersPath['tags'], equals(['users']));
 
       // Check POST endpoint
-      final createUserPath = paths['/api/users']['post'];
+      final createUserPath = (paths['/api/users']
+          as Map<String, dynamic>)['post'] as Map<String, dynamic>;
       expect(createUserPath['summary'], equals('Create user'));
       expect(createUserPath['description'], equals('Creates a new user'));
       expect(createUserPath['tags'], equals(['users']));
@@ -183,7 +186,7 @@ void main() {
       final response = await server.get('/doc');
       expect(response.statusCode, equals(200));
 
-      final openApiSpec = response.json();
+      final openApiSpec = response.json() as Map<String, dynamic>;
       final paths = openApiSpec['paths'] as Map<String, dynamic>;
 
       // Only routes with swagger metadata should be recognized
@@ -199,8 +202,14 @@ void main() {
       expect(paths.keys, isNot(contains('/internal/metrics')));
 
       // Routes with swagger metadata should have their details
-      expect(paths['/health']['get']['summary'], equals('Health check'));
-      expect(paths['/version']['get']['summary'], equals('Get version'));
+      expect(
+          ((paths['/health'] as Map<String, dynamic>)['get']
+              as Map<String, dynamic>)['summary'],
+          equals('Health check'));
+      expect(
+          ((paths['/version'] as Map<String, dynamic>)['get']
+              as Map<String, dynamic>)['summary'],
+          equals('Get version'));
 
       // Path parameters should be properly converted
       expect(paths['/api/{category}/{id}'], isNotNull);
@@ -254,7 +263,7 @@ void main() {
       final response = await server.get('/doc');
       expect(response.statusCode, equals(200));
 
-      final openApiSpec = response.json();
+      final openApiSpec = response.json() as Map<String, dynamic>;
       final paths = openApiSpec['paths'] as Map<String, dynamic>;
 
       // Group routes should be recognized with full path
@@ -266,8 +275,12 @@ void main() {
           ]));
 
       expect(
-          paths['/api/v1/products']['get']['summary'], equals('List products'));
-      expect(paths['/api/v1/products/{id}']['get']['summary'],
+          ((paths['/api/v1/products'] as Map<String, dynamic>)['get']
+              as Map<String, dynamic>)['summary'],
+          equals('List products'));
+      expect(
+          ((paths['/api/v1/products/{id}'] as Map<String, dynamic>)['get']
+              as Map<String, dynamic>)['summary'],
           equals('Get product by ID'));
 
       await server.close();
@@ -307,12 +320,15 @@ void main() {
       final response = await server.get('/doc');
       expect(response.statusCode, equals(200));
 
-      final openApiSpec = response.json();
+      final openApiSpec = response.json() as Map<String, dynamic>;
       final paths = openApiSpec['paths'] as Map<String, dynamic>;
 
       // Only the first route (before setupSwagger) should be recognized
       expect(paths.keys, contains('/first'));
-      expect(paths['/first']['get']['summary'], equals('First route'));
+      expect(
+          ((paths['/first'] as Map<String, dynamic>)['get']
+              as Map<String, dynamic>)['summary'],
+          equals('First route'));
 
       // The second route (after setupSwagger) is not captured
       expect(paths.keys, isNot(contains('/second')));
@@ -362,11 +378,12 @@ void main() {
       final response = await server.get('/doc');
       expect(response.statusCode, equals(200));
 
-      final openApiSpec = response.json();
+      final openApiSpec = response.json() as Map<String, dynamic>;
       final paths = openApiSpec['paths'] as Map<String, dynamic>;
 
       // Check that extra metadata is properly persisted
-      final testExtraPath = paths['/test-extra']['get'];
+      final testExtraPath = (paths['/test-extra']
+          as Map<String, dynamic>)['get'] as Map<String, dynamic>;
       expect(testExtraPath['summary'], equals('Test extra persistence'));
       expect(testExtraPath['description'],
           equals('This tests that swagger metadata is properly stored'));
@@ -374,7 +391,8 @@ void main() {
       expect(testExtraPath['tags'], equals(['test']));
 
       // Check isolation between routes
-      final otherPath = paths['/other']['get'];
+      final otherPath = (paths['/other'] as Map<String, dynamic>)['get']
+          as Map<String, dynamic>;
       expect(otherPath['summary'], equals('Another route'));
       expect(otherPath['tags'], equals(['other']));
       expect(otherPath['deprecated'],
@@ -406,7 +424,10 @@ void main() {
       // Test custom doc path
       final docResponse = await server.get('/api-docs');
       expect(docResponse.statusCode, equals(200));
-      expect(docResponse.json()['info']['title'], equals('UI Test API'));
+      expect(
+          ((docResponse.json() as Map<String, dynamic>)['info']
+              as Map<String, dynamic>)['title'],
+          equals('UI Test API'));
 
       // Test custom UI path
       final uiResponse = await server.get('/swagger-ui');

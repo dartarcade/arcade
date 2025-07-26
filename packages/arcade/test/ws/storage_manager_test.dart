@@ -287,7 +287,7 @@ void main() {
         // Verify IDs match
         expect(messages.length, equals(1));
         expect(messages[0]['ids'], containsAll(trackedIds.take(2)));
-        expect(messages[0]['ids'].length, equals(2));
+        expect((messages[0]['ids'] as List).length, equals(2));
 
         await ws1.close();
         await ws2.close();

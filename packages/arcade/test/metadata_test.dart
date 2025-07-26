@@ -292,9 +292,7 @@ void main() {
             return testCtx;
           }).before((ctx) {
             final step = ctx.route.metadata?.extra?['step'] as int;
-            if (ctx is TestContext) {
-              ctx.extra['step2'] = step + 2;
-            }
+            ctx.extra['step2'] = step + 2;
             return ctx;
           }).handle((RequestContext ctx) {
             final step = ctx.route.metadata?.extra?['step'] as int;
@@ -767,27 +765,34 @@ void main() {
 
         // Check our specific routes exist
         expect(
-          body.any((route) =>
-              route['path'] == '/users' &&
-              route['method'] == 'get' &&
-              (route['extra'] as Map<String, dynamic>)['resource'] == 'users'),
+          body.any((route) {
+            if (route is! Map<String, dynamic>) return false;
+            return route['path'] == '/users' &&
+                route['method'] == 'get' &&
+                (route['extra'] as Map<String, dynamic>)['resource'] == 'users';
+          }),
           isTrue,
         );
 
         expect(
-          body.any((route) =>
-              route['path'] == '/users' &&
-              route['method'] == 'post' &&
-              (route['extra'] as Map<String, dynamic>)['resource'] == 'users' &&
-              (route['extra'] as Map<String, dynamic>)['action'] == 'create'),
+          body.any((route) {
+            if (route is! Map<String, dynamic>) return false;
+            return route['path'] == '/users' &&
+                route['method'] == 'post' &&
+                (route['extra'] as Map<String, dynamic>)['resource'] ==
+                    'users' &&
+                (route['extra'] as Map<String, dynamic>)['action'] == 'create';
+          }),
           isTrue,
         );
 
         expect(
-          body.any((route) =>
-              route['path'] == '/posts' &&
-              route['method'] == 'get' &&
-              (route['extra'] as Map<String, dynamic>)['resource'] == 'posts'),
+          body.any((route) {
+            if (route is! Map<String, dynamic>) return false;
+            return route['path'] == '/posts' &&
+                route['method'] == 'get' &&
+                (route['extra'] as Map<String, dynamic>)['resource'] == 'posts';
+          }),
           isTrue,
         );
       });
