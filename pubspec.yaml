@@ -17,5 +17,4 @@ workspace:
   - samples/todo_api
 
 dependencies:
-  luthor:
-    version: ^0.9.0
+  luthor: ^0.9.0

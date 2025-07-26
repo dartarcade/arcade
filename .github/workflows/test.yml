@@ -1,0 +1,140 @@
+name: Test All Packages
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-arcade:
+    name: Test arcade
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      
+      - name: Install DPK
+        run: dart pub global activate dpk
+      
+      - name: Start Redis with Docker Compose
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        with:
+          compose-file: docker-compose.yml
+          services: redis
+      
+      - name: Run dpk get
+        run: dpk get
+        
+      - name: Run tests
+        run: dpk run test:arcade
+
+  test-arcade-cache:
+    name: Test arcade_cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      
+      - name: Install DPK
+        run: dart pub global activate dpk
+      
+      - name: Run dpk get
+        run: dpk get
+        
+      - name: Run tests
+        run: dpk run test:cache
+
+  test-arcade-cache-redis:
+    name: Test arcade_cache_redis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      
+      - name: Install DPK
+        run: dart pub global activate dpk
+      
+      - name: Start Redis with Docker Compose
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        with:
+          compose-file: docker-compose.yml
+          services: redis
+      
+      - name: Run dpk get
+        run: dpk get
+        
+      - name: Run tests
+        run: dpk run test:redis
+
+  test-arcade-test:
+    name: Test arcade_test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      
+      - name: Install DPK
+        run: dart pub global activate dpk
+      
+      - name: Run dpk get
+        run: dpk get
+        
+      - name: Run tests
+        run: dpk run test:test
+
+  test-arcade-views:
+    name: Test arcade_views
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      
+      - name: Install DPK
+        run: dart pub global activate dpk
+      
+      - name: Run dpk get
+        run: dpk get
+        
+      - name: Run tests
+        run: dpk run test:views
+
+  test-arcade-swagger:
+    name: Test arcade_swagger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+      
+      - name: Install DPK
+        run: dart pub global activate dpk
+      
+      - name: Run dpk get
+        run: dpk get
+        
+      - name: Run tests
+        run: dpk run test:swagger
