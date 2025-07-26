@@ -19,6 +19,8 @@ jobs:
         run: dart pub global activate dpk
       - name: Run dpk get
         run: dpk get
+      - name: Run code generation on example app
+        run: dpk run example:build
       - name: Analyze
         run: dpk run analyze
   

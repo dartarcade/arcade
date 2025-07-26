@@ -9,6 +9,11 @@ catalog:
     luthor: ^0.9.0
 
 scripts:
+  example:build:
+    command: |
+      cd packages/arcade/example
+      dart run build_runner build -d
+
   docker:
     command: docker compose up -d
   docker:down:

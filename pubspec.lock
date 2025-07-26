@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "0.3.2+1"
   args:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: args
       sha256: d0481093c50b1da8910eb0bb301626d4d8eb7284aa739614d2b394ee09e3ea04
@@ -617,14 +617,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.4"
-  prompts:
-    dependency: "direct main"
-    description:
-      name: prompts
-      sha256: "3773b845e85a849f01e793c4fc18a45d52d7783b4cb6c0569fad19f9d0a774a1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   pub_semver:
     dependency: transitive
     description:
@@ -642,7 +634,7 @@ packages:
     source: hosted
     version: "0.5.0"
   pubspec_parse:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: pubspec_parse
       sha256: "0560ba233314abbed0a48a2956f7f022cce7c3e1e73df540277da7544cad4082"
@@ -970,20 +962,12 @@ packages:
     source: hosted
     version: "5.14.0"
   yaml:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: yaml
       sha256: b9da305ac7c39faa3f030eccd175340f968459dae4af175130b3fc47e40d76ce
       url: "https://pub.dev"
     source: hosted
     version: "3.1.3"
-  yaml_edit:
-    dependency: "direct main"
-    description:
-      name: yaml_edit
-      sha256: fb38626579fb345ad00e674e2af3a5c9b0cc4b9bfb8fd7f7ff322c7c9e62aef5
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.2"
 sdks:
   dart: ">=3.8.0 <4.0.0"
