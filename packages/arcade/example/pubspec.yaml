@@ -1,6 +1,6 @@
 name: arcade_example
 description: A sample app showing how to use arcade.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade/example
 publish_to: none
 
@@ -10,7 +10,7 @@ environment:
 dependencies:
   arcade:
     path: ..
-  arcade_logger: ^1.0.0
+  arcade_logger: ^1.0.1
   json_annotation: ^4.8.1
   path: ^1.8.0
 

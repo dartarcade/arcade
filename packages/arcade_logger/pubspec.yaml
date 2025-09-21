@@ -1,6 +1,6 @@
 name: arcade_logger
 description: A logger for Arcade
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_logger
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   ansi_styles: ^0.3.2+1
-  arcade_config: ^1.0.0
+  arcade_config: ^1.0.1
 
 dev_dependencies:
   lint: ^2.8.0
