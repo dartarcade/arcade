@@ -1,3 +1,7 @@
+## 1.0.2
+
+- **FEAT**: Replace SwaggerUI with Scalar
+
 ## 1.0.0
 
 - Updated dependencies

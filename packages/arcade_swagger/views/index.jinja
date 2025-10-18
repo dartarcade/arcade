@@ -1,28 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="description" content="SwaggerUI"/>
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css"/>
-    <link rel="shortcut icon" href="https://static1.smartbear.co/swagger/media/assets/swagger_fav.png"
-          type="image/x-icon">
-    <title>{{ title }} | Swagger UI</title>
+    <title>Scalar API Reference</title>
+    <title>{{ title }} | Scalar</title>
+    <meta charset="utf-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1" />
 </head>
 
 <body>
-<div id="swagger-ui"></div>
-<script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js" crossorigin></script>
+<div id="app"></div>
+
+<!-- Load the Script -->
+<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+
+<!-- Initialize the Scalar API Reference -->
 <script>
-  window.onload = () => {
-    window.ui = SwaggerUIBundle({
-      url: '{{ url }}',
-      persistAuthorization: true,
-      dom_id: '#swagger-ui',
-    });
-  };
+    Scalar.createApiReference('#app', {
+        url: '{{ url }}',
+        proxyUrl: 'https://proxy.scalar.com',
+        darkMode: true,
+    })
 </script>
 </body>
-
 </html>

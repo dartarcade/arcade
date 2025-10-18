@@ -1,3 +1,7 @@
+## 1.0.2
+
+- Updated dependencies
+
 ## 1.0.0
 
 - **TEST**: Add comprehensive test suite covering server lifecycle, routing, hooks, WebSocket, and metadata

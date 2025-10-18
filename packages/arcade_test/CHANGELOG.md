@@ -1,3 +1,7 @@
+## 1.0.2
+
+- Updated dependencies
+
 ## 1.0.0
 
 - **FEAT**: Add staticFilesDirectory parameter to ArcadeTestServer for testing static file serving
