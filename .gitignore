@@ -8,3 +8,4 @@ packages/*/pubspec.lock
 .asdf
 .tool-versions
 .claude
+pub_packages

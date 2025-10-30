@@ -1,3 +1,5 @@
+mode: project
+
 catalog:
   resolution: workspace
   issue_tracker: https://github.com/dartarcade/arcade/issues
