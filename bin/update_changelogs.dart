@@ -270,30 +270,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   }
 
   // Check if current version already exists
-  final versionHeader = '## ${package.version}';
-  final versionRegex = RegExp('^## ${RegExp.escape(package.version)}\$', multiLine: true);
-  
+  final versionRegex =
+      RegExp('^## ${RegExp.escape(package.version)}\$', multiLine: true);
+
   if (versionRegex.hasMatch(content)) {
     // Version already exists, append entries to it
     final match = versionRegex.firstMatch(content)!;
     final versionIndex = match.end;
-    
+
     // Find the end of this version's section (next ## or end of file)
     final nextVersionRegex = RegExp(r'^##\s', multiLine: true);
-    final nextMatch = nextVersionRegex.firstMatch(content.substring(versionIndex));
-    final sectionEnd = nextMatch != null ? versionIndex + nextMatch.start : content.length;
-    
+    final nextMatch =
+        nextVersionRegex.firstMatch(content.substring(versionIndex));
+    final sectionEnd =
+        nextMatch != null ? versionIndex + nextMatch.start : content.length;
+
     // Extract existing entries
     final existingSection = content.substring(versionIndex, sectionEnd).trim();
-    
+
     // Combine with new entries
-    final updatedSection = existingSection.isEmpty 
+    final updatedSection = existingSection.isEmpty
         ? '\n\n${entries.join('\n')}'
         : '\n\n$existingSection\n${entries.join('\n')}';
-    
+
     // Replace the section
-    content = content.substring(0, versionIndex) + 
-        updatedSection + 
+    content = content.substring(0, versionIndex) +
+        updatedSection +
         (nextMatch != null ? '\n\n' : '\n') +
         content.substring(sectionEnd);
   } else {
@@ -320,4 +322,3 @@ ${entries.join('\n')}
 
   await changelogFile.writeAsString(content);
 }
-
