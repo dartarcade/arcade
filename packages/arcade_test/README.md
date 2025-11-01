@@ -87,6 +87,10 @@ Wrapper for HTTP responses with helper methods.
 - `hasTextBody(String expected)`: Match text response body
 - `hasHeader(String name, String value)`: Match response header
 
+## Documentation
+
+See the [documentation](https://arcade.ex3.dev/packages/arcade-test/) for more information.
+
 ## Contributing
 
 See the main [Arcade repository](https://github.com/dartarcade/arcade) for contribution guidelines.

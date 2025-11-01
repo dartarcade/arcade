@@ -1,2 +1,3 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
+# Arcade Config
+
+See the [documentation](https://arcade.ex3.dev/packages/arcade-config/) for more information.

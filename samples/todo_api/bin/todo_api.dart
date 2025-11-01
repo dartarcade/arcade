@@ -4,7 +4,7 @@ import 'package:arcade/arcade.dart';
 import 'package:todo_api/core/env.dart';
 import 'package:todo_api/core/init.dart';
 
-Future<void> main(List<String> arguments) async {
+Future<void> main(List<String> arguments) {
   final portFromEnvironment = Platform.environment['PORT'];
   var port = Env.port;
   if (portFromEnvironment != null) {

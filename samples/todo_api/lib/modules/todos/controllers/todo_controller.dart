@@ -106,7 +106,7 @@ class TodoController {
 
   Future<TodoWithoutUser> _deleteTodo(
     covariant AuthenticatedRequestContext context,
-  ) async {
+  ) {
     final id = context.pathParameters['id']!;
     return _todoService.deleteTodo(id, context.id);
   }

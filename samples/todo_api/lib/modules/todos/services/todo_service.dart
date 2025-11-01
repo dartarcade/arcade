@@ -28,7 +28,7 @@ class TodoService {
     return insertedTodo.withoutUser;
   }
 
-  Future<List<TodoWithoutUser>> getTodos(String userId) async {
+  Future<List<TodoWithoutUser>> getTodos(String userId) {
     final findTodosQuery = _db.todos.selectOnly()
       ..addColumns([
         ..._db.todos.$columns

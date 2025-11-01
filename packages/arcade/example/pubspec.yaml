@@ -10,7 +10,7 @@ environment:
 dependencies:
   arcade:
     path: ..
-  arcade_logger: ^1.0.2
+  arcade_logger: ^1.1.0
   json_annotation: ^4.8.1
   path: ^1.8.0
 

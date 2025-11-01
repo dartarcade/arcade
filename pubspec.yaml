@@ -11,6 +11,8 @@ workspace:
   - packages/arcade_cli
   - packages/arcade_config
   - packages/arcade_logger
+  - packages/arcade_storage
+  - packages/arcade_storage_minio
   - packages/arcade_swagger
   - packages/arcade_test
   - packages/arcade_views
