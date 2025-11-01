@@ -1,5 +1,5 @@
 name: arcade_test
-version: 1.1.0
+version: 1.1.1
 description: Testing utilities for Arcade framework applications
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_test
 issue_tracker: https://github.com/dartarcade/arcade/issues
@@ -9,12 +9,12 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  arcade: ^1.1.0
-  arcade_config: ^1.1.0
+  arcade: ^1.1.1
+  arcade_config: ^1.1.1
   http: ^1.4.0
   meta: ^1.17.0
   test: ^1.26.2
   web_socket_channel: ^3.0.3
 
 dev_dependencies:
-  arcade_logger: ^1.1.0
+  arcade_logger: ^1.1.1
