@@ -61,7 +61,7 @@ Schema? _validationsToSwagger(
       items: first.validators == null || first.validators!.isEmpty
           ? const Schema.string(example: 'any')
           : _validationsToSwagger(
-              first.validators!.first.validations,
+              first.validators!.first.resolve().validations,
               null,
               [],
             )!,
@@ -107,7 +107,7 @@ Schema? _validationsToSwagger(
       required: r,
       properties: first.validatorSchema.map((key, value) {
         final propertySchema = _validationsToSwagger(
-          value.validations,
+          value.resolve().validations,
           key,
           r,
         );

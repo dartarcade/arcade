@@ -21,7 +21,7 @@ dependencies:
   hashlib: ^2.0.0
   injectable: ^2.5.0
   json_annotation: ^4.9.0
-  luthor: ^0.13.1
+  luthor: '>=0.13.1 <1.0.0'
   postgres: ^3.5.6
   superclass: ^0.6.0
 
@@ -33,5 +33,5 @@ dev_dependencies:
   injectable_generator: ^2.7.0
   json_serializable: ^6.9.5
   lint: ^2.8.0
-  luthor_generator: ^0.13.1
+  luthor_generator: '>=0.13.1 <1.0.0'
   superclass_generator: ^0.6.0

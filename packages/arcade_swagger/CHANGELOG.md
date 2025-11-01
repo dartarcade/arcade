@@ -1,3 +1,7 @@
+## 1.1.1+1
+
+- **FIX**: Fix validator to swagger conversion for luthor 0.14.0.
+
 ## 1.1.1
 
 - Updated dependencies

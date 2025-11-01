@@ -1,6 +1,6 @@
 name: arcade_swagger
 description: Swagger support for Arcade
-version: 1.1.1
+version: 1.1.1+1
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_swagger
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
@@ -12,7 +12,7 @@ dependencies:
   arcade: ^1.1.1
   arcade_logger: ^1.1.1
   arcade_views: ^1.1.1
-  luthor: '>=0.13.1 <1.0.0'
+  luthor: '>=0.14.0 <1.0.0'
   openapi_spec: ^0.14.0
 
 dev_dependencies:
