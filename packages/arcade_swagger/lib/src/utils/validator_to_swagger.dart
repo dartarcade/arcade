@@ -7,13 +7,14 @@ Schema validatorToSwagger(Validator validator) {
   if (validator.validations.isEmpty) {
     throw StateError('Validator has no validations');
   }
-  return _validationsToSwagger(validator.validations, null, [])!;
+  return _validationsToSwagger(validator.validations, null, [], [validator])!;
 }
 
 Schema? _validationsToSwagger(
   List<Validation> validations,
   String? fieldName,
   List<String> requiredKeys,
+  List<Validator> processingStack,
 ) {
   if (validations.isEmpty) return null;
   final [first, ...rest] = validations;
@@ -57,14 +58,41 @@ Schema? _validationsToSwagger(
     if (fieldName != null && isRequired) {
       requiredKeys.add(fieldName);
     }
+    if (first.validators == null || first.validators!.isEmpty) {
+      return const Schema.array(items: Schema.string(example: 'any'));
+    }
+
+    final itemValidator = first.validators!.first.resolve();
+
+    for (final validator in processingStack) {
+      if (identical(validator, itemValidator)) {
+        if (itemValidator.name == null) {
+          throw StateError(
+            'Self-referential validator must have a name. Use .withName() to set it.',
+          );
+        }
+        return Schema.array(
+          items: Schema.object(ref: itemValidator.name),
+        );
+      }
+    }
+
+    // If the item validator has a name and is a schema, use a ref
+    if (itemValidator.name != null &&
+        itemValidator.validations.isNotEmpty &&
+        itemValidator.validations.first is SchemaValidation) {
+      return Schema.array(
+        items: Schema.object(ref: itemValidator.name),
+      );
+    }
+
     return Schema.array(
-      items: first.validators == null || first.validators!.isEmpty
-          ? const Schema.string(example: 'any')
-          : _validationsToSwagger(
-              first.validators!.first.resolve().validations,
-              null,
-              [],
-            )!,
+      items: _validationsToSwagger(
+        itemValidator.validations,
+        null,
+        [],
+        [...processingStack, itemValidator],
+      )!,
     );
   }
 
@@ -106,10 +134,31 @@ Schema? _validationsToSwagger(
     return Schema.object(
       required: r,
       properties: first.validatorSchema.map((key, value) {
+        final resolvedValidator = value.resolve();
+
+        for (final validator in processingStack) {
+          if (identical(validator, resolvedValidator)) {
+            if (resolvedValidator.name == null) {
+              throw StateError(
+                'Self-referential validator must have a name. Use .withName() to set it.',
+              );
+            }
+            return MapEntry(key, Schema.object(ref: resolvedValidator.name));
+          }
+        }
+
+        // If the resolved validator has a name and is a schema, use a ref
+        if (resolvedValidator.name != null &&
+            resolvedValidator.validations.isNotEmpty &&
+            resolvedValidator.validations.first is SchemaValidation) {
+          return MapEntry(key, Schema.object(ref: resolvedValidator.name));
+        }
+
         final propertySchema = _validationsToSwagger(
-          value.resolve().validations,
+          resolvedValidator.validations,
           key,
           r,
+          [...processingStack, resolvedValidator],
         );
         return MapEntry(key, propertySchema!);
       }),

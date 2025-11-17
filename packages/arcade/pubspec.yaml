@@ -1,6 +1,6 @@
 name: arcade
 description: A no magic web framework for Dart.
-version: 1.1.1
+version: 1.2.0
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
@@ -9,9 +9,9 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  arcade_cache: ^1.1.1
-  arcade_config: ^1.1.1
-  arcade_logger: ^1.1.1
+  arcade_cache: ^1.2.0
+  arcade_config: ^1.2.0
+  arcade_logger: ^1.2.0
   collection: ^1.19.1
   meta: ^1.17.0
   mime: ^2.0.0
@@ -21,6 +21,6 @@ dependencies:
   uuid: ^4.5.1
 
 dev_dependencies:
-  arcade_test: ^1.1.1
+  arcade_test: ^1.2.0
   lint: ^2.8.0
   test: ^1.26.2

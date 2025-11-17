@@ -1,3 +1,7 @@
+## 1.2.0
+
+- **FEAT**: Enhance Swagger schema generation to support self-referential validators
+
 ## 1.1.1+1
 
 - **FIX**: Fix validator to swagger conversion for luthor 0.14.0.
