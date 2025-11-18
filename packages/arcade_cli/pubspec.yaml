@@ -1,6 +1,6 @@
 name: arcade_cli
 description: CLI for Arcade
-version: 1.2.0
+version: 1.2.1
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_cli
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
@@ -9,7 +9,7 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  arcade: ^1.2.0
+  arcade: ^1.2.1
   args: ^2.7.0
   path: ^1.9.1
   stream_transform: ^2.1.1

@@ -1,6 +1,6 @@
 name: arcade_storage
 description: Storage for Arcade
-version: 1.2.0
+version: 1.2.1
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_storage
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace

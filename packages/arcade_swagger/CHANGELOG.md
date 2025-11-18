@@ -1,3 +1,7 @@
+## 1.2.1
+
+- **FIX**: Track required fields for named schema refs in Swagger generation
+
 ## 1.2.0
 
 - **FEAT**: Enhance Swagger schema generation to support self-referential validators
