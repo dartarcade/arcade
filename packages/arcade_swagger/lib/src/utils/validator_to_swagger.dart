@@ -143,6 +143,12 @@ Schema? _validationsToSwagger(
                 'Self-referential validator must have a name. Use .withName() to set it.',
               );
             }
+            // Check if this ref field is required
+            final isFieldRequired = resolvedValidator.validations
+                .any((v) => v is RequiredValidation);
+            if (isFieldRequired) {
+              r.add(key);
+            }
             return MapEntry(key, Schema.object(ref: resolvedValidator.name));
           }
         }
@@ -151,6 +157,12 @@ Schema? _validationsToSwagger(
         if (resolvedValidator.name != null &&
             resolvedValidator.validations.isNotEmpty &&
             resolvedValidator.validations.first is SchemaValidation) {
+          // Check if this ref field is required
+          final isFieldRequired = resolvedValidator.validations
+              .any((v) => v is RequiredValidation);
+          if (isFieldRequired) {
+            r.add(key);
+          }
           return MapEntry(key, Schema.object(ref: resolvedValidator.name));
         }
 

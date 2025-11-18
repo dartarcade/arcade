@@ -210,9 +210,9 @@ void main() {
         final objectSchema = schema as SchemaObject;
         expect(objectSchema.properties!['level1']!.type,
             equals(SchemaType.object));
-        final level1 = objectSchema.properties!['level1'] as SchemaObject;
+        final level1 = objectSchema.properties!['level1']! as SchemaObject;
         expect(level1.properties!['level2']!.type, equals(SchemaType.object));
-        final level2 = level1.properties!['level2'] as SchemaObject;
+        final level2 = level1.properties!['level2']! as SchemaObject;
         expect(level2.properties!['level3']!.type, equals(SchemaType.string));
       });
     });
@@ -261,7 +261,7 @@ void main() {
         final objectSchema = schema as SchemaObject;
         expect(objectSchema.required, contains('user'));
 
-        final userSchema = objectSchema.properties!['user'] as SchemaObject;
+        final userSchema = objectSchema.properties!['user']! as SchemaObject;
         expect(userSchema.required, contains('name'));
         expect(userSchema.required, isNot(contains('email')));
       });
@@ -277,6 +277,274 @@ void main() {
         final objectSchema = schema as SchemaObject;
         expect(objectSchema.required, contains('tags'));
         expect(objectSchema.required, isNot(contains('optionalList')));
+      });
+
+      test('marks required int field correctly', () {
+        final validator = l.schema({
+          'id': l.int().required(),
+          'optionalId': l.int(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, isNotNull);
+        expect(objectSchema.required, contains('id'));
+        expect(objectSchema.required, isNot(contains('optionalId')));
+      });
+
+      test('marks required double field correctly', () {
+        final validator = l.schema({
+          'price': l.double().required(),
+          'discount': l.double(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, contains('price'));
+        expect(objectSchema.required, isNot(contains('discount')));
+      });
+
+      test('marks required number field correctly', () {
+        final validator = l.schema({
+          'value': l.number().required(),
+          'optionalValue': l.number(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, contains('value'));
+        expect(objectSchema.required, isNot(contains('optionalValue')));
+      });
+
+      test('marks required boolean field correctly', () {
+        final validator = l.schema({
+          'isActive': l.boolean().required(),
+          'isVerified': l.boolean(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, contains('isActive'));
+        expect(objectSchema.required, isNot(contains('isVerified')));
+      });
+
+      test('marks required map field correctly', () {
+        final validator = l.schema({
+          'metadata': l.map().required(),
+          'optionalMetadata': l.map(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, contains('metadata'));
+        expect(objectSchema.required, isNot(contains('optionalMetadata')));
+      });
+
+      test('marks required any field correctly', () {
+        final validator = l.schema({
+          'data': l.any().required(),
+          'optionalData': l.any(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, contains('data'));
+        expect(objectSchema.required, isNot(contains('optionalData')));
+      });
+
+      test('handles deeply nested required fields', () {
+        final validator = l.schema({
+          'level1': l.schema({
+            'level2': l.schema({
+              'level3': l.string().required(),
+              'optional': l.string(),
+            }).required(),
+            'sibling': l.int(),
+          }).required(),
+          'topLevel': l.string(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, contains('level1'));
+        expect(objectSchema.required, isNot(contains('topLevel')));
+
+        final level1Schema =
+            objectSchema.properties!['level1']! as SchemaObject;
+        expect(level1Schema.required, contains('level2'));
+        expect(level1Schema.required, isNot(contains('sibling')));
+
+        final level2Schema =
+            level1Schema.properties!['level2']! as SchemaObject;
+        expect(level2Schema.required, contains('level3'));
+        expect(level2Schema.required, isNot(contains('optional')));
+      });
+
+      test('handles required fields in array items', () {
+        final validator = l.schema({
+          'items': l.list(validators: [
+            l.schema({
+              'id': l.int().required(),
+              'name': l.string().required(),
+              'description': l.string(),
+            })
+          ]).required(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, contains('items'));
+
+        final itemsSchema = objectSchema.properties!['items']! as SchemaArray;
+        final itemSchema = itemsSchema.items as SchemaObject;
+        expect(itemSchema.required, containsAll(['id', 'name']));
+        expect(itemSchema.required, isNot(contains('description')));
+      });
+
+      test('handles all fields as required', () {
+        final validator = l.schema({
+          'stringField': l.string().required(),
+          'intField': l.int().required(),
+          'doubleField': l.double().required(),
+          'boolField': l.boolean().required(),
+          'listField': l.list(validators: [l.string()]).required(),
+          'mapField': l.map().required(),
+          'objectField': l.schema({
+            'nested': l.string().required(),
+          }).required(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, hasLength(7));
+        expect(
+          objectSchema.required,
+          containsAll([
+            'stringField',
+            'intField',
+            'doubleField',
+            'boolField',
+            'listField',
+            'mapField',
+            'objectField',
+          ]),
+        );
+      });
+
+      test('marks required field with named schema ref correctly', () {
+        final address = l.schema({
+          'street': l.string().required(),
+          'city': l.string().required(),
+          'zipCode': l.string(),
+        }).withName('Address');
+
+        final validator = l.schema({
+          'name': l.string().required(),
+          'address': address.required(),
+          'alternateAddress': address,
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, contains('name'));
+        expect(objectSchema.required, contains('address'));
+        expect(objectSchema.required, isNot(contains('alternateAddress')));
+
+        final addressProperty = objectSchema.properties!['address']!;
+        expect(addressProperty, isA<SchemaObject>());
+        final addressSchema = addressProperty as SchemaObject;
+        expect(addressSchema.ref, equals('Address'));
+      });
+
+      test('marks required field with nested named schema refs', () {
+        final coordinates = l.schema({
+          'lat': l.double().required(),
+          'lng': l.double().required(),
+        }).withName('Coordinates');
+
+        final location = l.schema({
+          'name': l.string().required(),
+          'coords': coordinates.required(),
+        }).withName('Location');
+
+        final validator = l.schema({
+          'id': l.int().required(),
+          'primaryLocation': location.required(),
+          'secondaryLocation': location,
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, containsAll(['id', 'primaryLocation']));
+        expect(objectSchema.required, isNot(contains('secondaryLocation')));
+
+        final primaryLoc = objectSchema.properties!['primaryLocation']!;
+        expect(primaryLoc, isA<SchemaObject>());
+        expect((primaryLoc as SchemaObject).ref, equals('Location'));
+      });
+
+      test('marks required named schemas in list items', () {
+        final tag = l.schema({
+          'id': l.int().required(),
+          'name': l.string().required(),
+        }).withName('Tag');
+
+        final validator = l.schema({
+          'title': l.string().required(),
+          'tags': l.list(validators: [tag]).required(),
+          'optionalTags': l.list(validators: [tag]),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(objectSchema.required, containsAll(['title', 'tags']));
+        expect(objectSchema.required, isNot(contains('optionalTags')));
+
+        final tagsProperty = objectSchema.properties!['tags']!;
+        expect(tagsProperty, isA<SchemaArray>());
+        final tagsArray = tagsProperty as SchemaArray;
+        expect(tagsArray.items, isA<SchemaObject>());
+        expect((tagsArray.items as SchemaObject).ref, equals('Tag'));
+      });
+
+      test('handles mix of required refs and regular fields', () {
+        final address = l.schema({
+          'street': l.string().required(),
+          'city': l.string().required(),
+        }).withName('Address');
+
+        final validator = l.schema({
+          'id': l.int().required(),
+          'name': l.string().required(),
+          'email': l.string(),
+          'address': address.required(),
+          'billingAddress': address,
+          'age': l.int(),
+        });
+        final schema = validatorToSwagger(validator);
+
+        expect(schema, isA<SchemaObject>());
+        final objectSchema = schema as SchemaObject;
+        expect(
+          objectSchema.required,
+          containsAll(['id', 'name', 'address']),
+        );
+        expect(
+          objectSchema.required,
+          isNot(containsAll(['email', 'billingAddress', 'age'])),
+        );
       });
     });
 
@@ -342,11 +610,11 @@ void main() {
             containsAll(['id', 'username', 'email', 'profile']));
 
         final profileSchema =
-            objectSchema.properties!['profile'] as SchemaObject;
+            objectSchema.properties!['profile']! as SchemaObject;
         expect(profileSchema.required, containsAll(['firstName', 'lastName']));
         expect(profileSchema.required, isNot(contains('age')));
 
-        final postsSchema = objectSchema.properties!['posts'] as SchemaArray;
+        final postsSchema = objectSchema.properties!['posts']! as SchemaArray;
         final postItemSchema = postsSchema.items as SchemaObject;
         expect(postItemSchema.required,
             containsAll(['id', 'title', 'content', 'published']));
