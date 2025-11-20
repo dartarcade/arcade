@@ -25,9 +25,9 @@ void main() {
     test('should find package_config.json in current directory', () {
       final dartToolDir = Directory(path.join(tempDir.path, '.dart_tool'))
         ..createSync();
-      final packageConfigFile =
-          File(path.join(dartToolDir.path, 'package_config.json'))
-            ..createSync();
+      final packageConfigFile = File(
+        path.join(dartToolDir.path, 'package_config.json'),
+      )..createSync();
 
       final result = findPackageConfig(tempDir.path);
 
@@ -37,9 +37,9 @@ void main() {
     test('should find package_config.json in parent directory', () {
       final dartToolDir = Directory(path.join(tempDir.path, '.dart_tool'))
         ..createSync();
-      final packageConfigFile =
-          File(path.join(dartToolDir.path, 'package_config.json'))
-            ..createSync();
+      final packageConfigFile = File(
+        path.join(dartToolDir.path, 'package_config.json'),
+      )..createSync();
 
       final result = findPackageConfig(subDir.path);
 
@@ -59,9 +59,9 @@ void main() {
 
       final dartToolDir = Directory(path.join(tempDir.path, '.dart_tool'))
         ..createSync();
-      final packageConfigFile =
-          File(path.join(dartToolDir.path, 'package_config.json'))
-            ..createSync();
+      final packageConfigFile = File(
+        path.join(dartToolDir.path, 'package_config.json'),
+      )..createSync();
 
       final result = findPackageConfig(deepDir.path);
 
