@@ -40,11 +40,30 @@ arcade/
 
 Before you begin, ensure you have the following installed:
 
-1. **Dart SDK** (3.5.0 or higher)
-   - Installation: <https://dart.dev/get-dart>
+1. **Dart SDK** (3.8.3)
+   - **Recommended Installation (Linux)**: Use `asdf` to install a specific version
+     ```bash
+     # Install Homebrew
+     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+     # Follow post-install steps in the output of the install command
+     
+     # Install asdf
+     brew install asdf
+     
+     # Add the Dart plugin
+     asdf plugin add dart
+     
+     # Install specific Dart version
+     asdf set -u dart 3.8.3
+     asdf install
+     
+     # Add asdf shim path to PATH
+     export PATH="$PATH:$HOME/.asdf/shims"
+     ```
+   - Alternative: <https://dart.dev/get-dart>
    - Verify: `dart --version`
 
-2. **DPK (Dart Package Keeper)** - Workspace management tool
+2. **DPK (Dartpack)** - Workspace management tool
    - Installation: `dart pub global activate dpk`
    - Verify: `dpk --version`
 
@@ -73,7 +92,7 @@ dpk get
 
 This command will:
 - Resolve dependencies for all packages in the workspace
-- Create `pubspec.lock` files in each package
+- Create a single `pubspec.lock` file at the root (Dart pub workspace)
 - Download required packages
 
 ### 3. Start Docker Services (Optional, but required for some tests)
@@ -310,12 +329,7 @@ dpk run version:major
 
 ### Publishing
 
-```bash
-# Publish all packages
-dpk run publish:all
-```
-
-**Note:** Ensure all tests pass and versions are correctly set before publishing.
+**Note:** Package publishing is handled by maintainers. You should not run the `dpk run publish:all` command as it requires authentication and is part of the release process.
 
 ## Common Tasks
 
@@ -399,7 +413,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 1. Ensure Docker services are running (if needed)
 2. Check that dependencies are up-to-date: `dpk get`
-3. Run tests with verbose output: `dart test -v`
+3. Run tests with detailed stack traces: `dart test --chain-stack-traces`
 4. Check CI logs for additional context
 
 ## Resources
