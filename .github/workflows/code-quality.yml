@@ -9,12 +9,15 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['stable', '3.8.3']
     steps:
       - uses: actions/checkout@v2
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 'stable'
+          sdk: ${{ matrix.sdk }}
       - name: Install DPK
         run: dart pub global activate dpk
       - name: Run dpk get
@@ -26,12 +29,15 @@ jobs:
   
   format:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['stable', '3.8.3']
     steps:
       - uses: actions/checkout@v2
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 'stable'
+          sdk: ${{ matrix.sdk }}
       - name: Install DPK
         run: dart pub global activate dpk
       - name: Run dpk get

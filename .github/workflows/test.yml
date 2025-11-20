@@ -10,13 +10,16 @@ jobs:
   test-arcade:
     name: Test arcade
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['stable', '3.8.3']
     steps:
       - uses: actions/checkout@v4
       
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 'stable'
+          sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
         run: dart pub global activate dpk
@@ -36,13 +39,16 @@ jobs:
   test-arcade-cache:
     name: Test arcade_cache
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['stable', '3.8.3']
     steps:
       - uses: actions/checkout@v4
       
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 'stable'
+          sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
         run: dart pub global activate dpk
@@ -56,13 +62,16 @@ jobs:
   test-arcade-cache-redis:
     name: Test arcade_cache_redis
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['stable', '3.8.3']
     steps:
       - uses: actions/checkout@v4
       
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 'stable'
+          sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
         run: dart pub global activate dpk
@@ -82,13 +91,16 @@ jobs:
   test-arcade-test:
     name: Test arcade_test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['stable', '3.8.3']
     steps:
       - uses: actions/checkout@v4
       
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 'stable'
+          sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
         run: dart pub global activate dpk
@@ -102,13 +114,16 @@ jobs:
   test-arcade-views:
     name: Test arcade_views
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['stable', '3.8.3']
     steps:
       - uses: actions/checkout@v4
       
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 'stable'
+          sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
         run: dart pub global activate dpk
@@ -122,13 +137,16 @@ jobs:
   test-arcade-swagger:
     name: Test arcade_swagger
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['stable', '3.8.3']
     steps:
       - uses: actions/checkout@v4
       
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 'stable'
+          sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
         run: dart pub global activate dpk
