@@ -19,7 +19,7 @@ class ServeCommand extends Command {
   List<String> _buildDartRunArgs(String serverPath, String? packageConfig) {
     final runArgs = ['run', '-r'];
     if (packageConfig != null) {
-      runArgs.addAll(['--packages=$packageConfig']);
+      runArgs.add('--packages=$packageConfig');
     }
     runArgs.add(serverPath);
     return runArgs;
