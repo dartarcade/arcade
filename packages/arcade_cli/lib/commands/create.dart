@@ -65,7 +65,11 @@ class CreateCommand extends Command {
     _setup(name);
 
     print('Running pub get...');
-    Process.runSync('dart', ['pub', 'get'], workingDirectory: name);
+    Process.runSync(
+      'dart',
+      ['pub', 'get'],
+      workingDirectory: name,
+    );
   }
 
   void _setup(String name) {
@@ -127,7 +131,10 @@ class CreateCommand extends Command {
 
   void _validateUrl(String url) {
     if (!url.startsWith('https://')) {
-      throw UsageException('Git URL must start with https://', _gitUrl);
+      throw UsageException(
+        'Git URL must start with https://',
+        _gitUrl,
+      );
     }
   }
 }

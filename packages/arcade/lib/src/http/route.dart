@@ -11,7 +11,9 @@ import 'package:meta/meta.dart';
 final List<BaseRoute> routes = [];
 
 typedef RouteHandler<T extends RequestContext> =
-    FutureOr<dynamic> Function(T context);
+    FutureOr<dynamic> Function(
+      T context,
+    );
 
 enum HttpMethod {
   any('ANY'),
@@ -134,7 +136,13 @@ class _BeforeRoute<T extends RequestContext> extends _Route<T> {
   _AfterRoute<T> handle(RouteHandler<T> handler) {
     this.handler = handler;
     currentProcessingRoute =
-        _AfterRoute<T>._(method, path, beforeHooks, [], metadata: metadata)
+        _AfterRoute<T>._(
+            method,
+            path,
+            beforeHooks,
+            [],
+            metadata: metadata,
+          )
           ..handler = handler as RouteHandler<RequestContext>?
           ..wsHandler = wsHandler
           ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;

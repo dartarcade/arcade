@@ -218,7 +218,10 @@ void invalidateRouteCache() {
 
 /// Exposes optimized route finding with path parameters for external use
 (BaseRoute? route, BaseRoute? notFoundRoute, Map<String, String> pathParams)
-findRouteWithPathParams({required HttpMethod method, required Uri uri}) {
+findRouteWithPathParams({
+  required HttpMethod method,
+  required Uri uri,
+}) {
   return optimizedRouter.findRouteWithParams(method: method, uri: uri);
 }
 
@@ -257,7 +260,10 @@ class OptimizedRouter {
   }
 
   (BaseRoute? route, BaseRoute? notFoundRoute, Map<String, String> pathParams)
-  findRouteWithParams({required HttpMethod method, required Uri uri}) {
+  findRouteWithParams({
+    required HttpMethod method,
+    required Uri uri,
+  }) {
     _buildIndex();
 
     // Try method-specific trie first

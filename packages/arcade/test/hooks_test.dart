@@ -61,7 +61,13 @@ void main() {
         final response = await server.get('/user/123');
         expect(response, isOk());
         expect(response.header('X-User-Id'), equals('123'));
-        expect(response, hasJsonBody({'userId': '123', 'hasHeader': true}));
+        expect(
+          response,
+          hasJsonBody({
+            'userId': '123',
+            'hasHeader': true,
+          }),
+        );
       });
 
       test('can short-circuit request', () async {
@@ -198,7 +204,11 @@ void main() {
                 if (result is Map) {
                   return (
                     ctx,
-                    {...result, 'modified': true, 'timestamp': '2024-01-01'},
+                    {
+                      ...result,
+                      'modified': true,
+                      'timestamp': '2024-01-01',
+                    },
                   );
                 }
                 return (ctx, result);

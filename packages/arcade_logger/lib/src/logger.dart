@@ -3,13 +3,22 @@ import 'dart:isolate';
 import 'package:ansi_styles/extension.dart';
 import 'package:arcade_config/arcade_config.dart';
 
-enum LogLevel { debug, info, warning, error, none }
+enum LogLevel {
+  debug,
+  info,
+  warning,
+  error,
+  none,
+}
 
 class LogRecord {
   final LogLevel level;
   final String message;
 
-  const LogRecord({required this.level, required this.message});
+  const LogRecord({
+    required this.level,
+    required this.message,
+  });
 }
 
 class Logger {
@@ -38,19 +47,39 @@ class Logger {
   }
 
   void debug(Object? message) {
-    log(LogRecord(level: LogLevel.debug, message: message.toString()));
+    log(
+      LogRecord(
+        level: LogLevel.debug,
+        message: message.toString(),
+      ),
+    );
   }
 
   void info(Object? message) {
-    log(LogRecord(level: LogLevel.info, message: message.toString()));
+    log(
+      LogRecord(
+        level: LogLevel.info,
+        message: message.toString(),
+      ),
+    );
   }
 
   void warning(Object? message) {
-    log(LogRecord(level: LogLevel.warning, message: message.toString()));
+    log(
+      LogRecord(
+        level: LogLevel.warning,
+        message: message.toString(),
+      ),
+    );
   }
 
   void error(Object? message) {
-    log(LogRecord(level: LogLevel.error, message: message.toString()));
+    log(
+      LogRecord(
+        level: LogLevel.error,
+        message: message.toString(),
+      ),
+    );
   }
 
   static Future<void> _log(SendPort sp) async {

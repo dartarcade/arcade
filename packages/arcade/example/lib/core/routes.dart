@@ -54,10 +54,12 @@ void defineRoutes() {
         exampleController.ws,
         onConnect: exampleController.onWsConnect,
       )
-      .after((context, handleResult, id) {
-        print('After websocket handler for $id');
-        return (context, handleResult, id);
-      });
+      .after(
+        (context, handleResult, id) {
+          print('After websocket handler for $id');
+          return (context, handleResult, id);
+        },
+      );
 
   route.get('/any/*').handle((context) => 'Any route');
 
@@ -93,8 +95,10 @@ void defineRoutes() {
 
   route.get('/error').handle((context) => throw Exception('Test error'));
 
-  overrideErrorHandler((context, error, stackTrace) {
-    context.statusCode = HttpStatus.badRequest;
-    return 'error';
-  });
+  overrideErrorHandler(
+    (context, error, stackTrace) {
+      context.statusCode = HttpStatus.badRequest;
+      return 'error';
+    },
+  );
 }

@@ -195,7 +195,11 @@ void main() {
         expect(response, isOk());
         expect(
           response,
-          hasJsonBody({'status': 'active', 'limit': '10', 'sort': 'name'}),
+          hasJsonBody({
+            'status': 'active',
+            'limit': '10',
+            'sort': 'name',
+          }),
         );
       });
 
@@ -212,7 +216,10 @@ void main() {
         expect(response, isOk());
         expect(
           response,
-          hasJsonBody({'q': 'hello world', 'email': 'test@example.com'}),
+          hasJsonBody({
+            'q': 'hello world',
+            'email': 'test@example.com',
+          }),
         );
       });
 

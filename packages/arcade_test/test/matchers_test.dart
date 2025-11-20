@@ -313,10 +313,13 @@ void main() {
     group('Matcher Error Messages', () {
       test('provides helpful error messages', () {
         // This test captures error messages to ensure they're helpful
-        expect(() async {
-          final response = await server.get('/json');
-          expect(response, hasStatus(404));
-        }, throwsA(isA<TestFailure>()));
+        expect(
+          () async {
+            final response = await server.get('/json');
+            expect(response, hasStatus(404));
+          },
+          throwsA(isA<TestFailure>()),
+        );
       });
     });
   });

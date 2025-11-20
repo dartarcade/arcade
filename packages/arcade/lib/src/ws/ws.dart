@@ -44,7 +44,10 @@ typedef WebSocketHandler<T extends RequestContext> =
     );
 
 typedef OnConnection<T extends RequestContext> =
-    FutureOr<void> Function(T context, WebSocketManager manager);
+    FutureOr<void> Function(
+      T context,
+      WebSocketManager manager,
+    );
 
 Future<void> setupWsConnection<T extends RequestContext>({
   required T context,
@@ -74,7 +77,11 @@ Future<void> setupWsConnection<T extends RequestContext>({
     metadata: _extractMetadata(ctx),
   );
 
-  final WebSocketManager manager = (id: wsId, emit: ws.add, close: ws.close);
+  final WebSocketManager manager = (
+    id: wsId,
+    emit: ws.add,
+    close: ws.close,
+  );
 
   route.onWebSocketConnect?.call(ctx, manager);
 

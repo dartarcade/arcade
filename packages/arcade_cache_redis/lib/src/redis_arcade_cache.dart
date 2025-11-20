@@ -21,9 +21,15 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
     _connection = RedisConnection();
 
     if (secure) {
-      _command = await _connection.connectSecure(host, port);
+      _command = await _connection.connectSecure(
+        host,
+        port,
+      );
     } else {
-      _command = await _connection.connect(host, port);
+      _command = await _connection.connect(
+        host,
+        port,
+      );
     }
   }
 
@@ -69,18 +75,20 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
 
   @override
   FutureOr<Map<String, dynamic>?> getJson(String key) {
-    return get(key).then((value) {
-      if (value == null) return null;
-      try {
-        final decoded = jsonDecode(value.toString());
-        if (decoded is Map<String, dynamic>) {
-          return decoded;
+    return get(key).then(
+      (value) {
+        if (value == null) return null;
+        try {
+          final decoded = jsonDecode(value.toString());
+          if (decoded is Map<String, dynamic>) {
+            return decoded;
+          }
+          return null;
+        } catch (_) {
+          return null;
         }
-        return null;
-      } catch (_) {
-        return null;
-      }
-    });
+      },
+    );
   }
 
   @override

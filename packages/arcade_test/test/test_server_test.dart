@@ -70,9 +70,12 @@ void main() {
       });
 
       test('server handles custom log levels', () async {
-        final server = await ArcadeTestServer.create(() async {
-          route.get('/test').handle((ctx) => 'test');
-        }, logLevel: LogLevel.debug);
+        final server = await ArcadeTestServer.create(
+          () async {
+            route.get('/test').handle((ctx) => 'test');
+          },
+          logLevel: LogLevel.debug,
+        );
 
         expect(server.port, greaterThan(0));
         await server.close();
@@ -84,9 +87,12 @@ void main() {
         final testFile = File('${tempDir.path}/test.txt');
         await testFile.writeAsString('static content');
 
-        final server = await ArcadeTestServer.create(() async {
-          route.get('/api/test').handle((ctx) => 'api endpoint');
-        }, staticFilesDirectory: tempDir);
+        final server = await ArcadeTestServer.create(
+          () async {
+            route.get('/api/test').handle((ctx) => 'api endpoint');
+          },
+          staticFilesDirectory: tempDir,
+        );
 
         // Verify API route works
         final apiResponse = await server.get('/api/test');
@@ -104,9 +110,12 @@ void main() {
       test('withRoutes accepts static files directory', () async {
         final tempDir = await Directory.systemTemp.createTemp('arcade_test_');
 
-        final server = await ArcadeTestServer.withRoutes(() {
-          route.get('/test').handle((ctx) => 'test');
-        }, staticFilesDirectory: tempDir);
+        final server = await ArcadeTestServer.withRoutes(
+          () {
+            route.get('/test').handle((ctx) => 'test');
+          },
+          staticFilesDirectory: tempDir,
+        );
 
         final response = await server.get('/test');
         expect(response.statusCode, equals(200));
@@ -274,7 +283,9 @@ void main() {
       test('authorization header', () async {
         final response = await server.get(
           '/auth',
-          headers: {'Authorization': 'Bearer token123'},
+          headers: {
+            'Authorization': 'Bearer token123',
+          },
         );
 
         expect(response.statusCode, equals(200));
@@ -435,7 +446,10 @@ void main() {
         });
 
         // State should be dirty while server is running
-        expect(() => server.validateCleanState(), throwsA(isA<StateError>()));
+        expect(
+          () => server.validateCleanState(),
+          throwsA(isA<StateError>()),
+        );
 
         await server.close();
       });
@@ -490,13 +504,18 @@ void main() {
     group('WebSocket', () {
       test('connectWebSocket returns TestWebSocket', () async {
         final server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws').handleWebSocket((context, message, manager) {
-            manager.emit('echo');
-          });
+          route.get('/ws').handleWebSocket(
+            (context, message, manager) {
+              manager.emit('echo');
+            },
+          );
         });
 
         // Just test that the method exists and returns the right type
-        expect(server.connectWebSocket('/ws'), isA<Future<TestWebSocket>>());
+        expect(
+          server.connectWebSocket('/ws'),
+          isA<Future<TestWebSocket>>(),
+        );
 
         await server.close();
       });

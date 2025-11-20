@@ -46,7 +46,10 @@ Future<void> runServer({
     return;
   }
 
-  final server = await HttpServer.bind(InternetAddress.anyIPv6, port);
+  final server = await HttpServer.bind(
+    InternetAddress.anyIPv6,
+    port,
+  );
 
   // Store server instance for testing purposes
   serverInstance = server;
@@ -107,7 +110,10 @@ Future<void> _handleRequest(HttpRequest request) async {
           // Fall through to 404 handler
         } else if (await file.exists()) {
           Logger.root.debug('Serving static file: $file');
-          return serveStaticFile(file: file, response: response);
+          return serveStaticFile(
+            file: file,
+            response: response,
+          );
         }
       } catch (e) {
         Logger.root.debug('Error resolving file path: $e');
@@ -142,13 +148,20 @@ Future<void> _handleRequest(HttpRequest request) async {
   try {
     if (route.wsHandler != null) {
       Logger.root.debug('Setting up WS connection');
-      await setupWsConnection(context: context, route: route);
+      await setupWsConnection(
+        context: context,
+        route: route,
+      );
       return;
     }
 
     if (route.handler != null) {
       Logger.root.debug('Writing response');
-      await writeResponse(context: context, route: route, response: response);
+      await writeResponse(
+        context: context,
+        route: route,
+        response: response,
+      );
       return;
     }
 

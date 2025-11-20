@@ -1,5 +1,8 @@
 include: package:lint/strict.yaml
 
+formatter:
+  trailing_commas: preserve
+
 linter:
   rules:
     avoid_print: false

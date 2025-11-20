@@ -17,7 +17,10 @@ void main() {
             .handle((context) => {'id': context.pathParameters['id']});
 
         // Setup swagger after routes are defined
-        setupSwagger(title: 'Test API', version: '1.0.0');
+        setupSwagger(
+          title: 'Test API',
+          version: '1.0.0',
+        );
       });
 
       final response = await server.get('/doc');
@@ -47,7 +50,10 @@ void main() {
                 '200': l.schema({
                   'users': l.list(
                     validators: [
-                      l.schema({'id': l.int(), 'name': l.string()}),
+                      l.schema({
+                        'id': l.int(),
+                        'name': l.string(),
+                      }),
                     ],
                   ),
                 }).required(),
@@ -82,7 +88,10 @@ void main() {
               },
             );
 
-        setupSwagger(title: 'User API', version: '1.0.0');
+        setupSwagger(
+          title: 'User API',
+          version: '1.0.0',
+        );
       });
 
       final response = await server.get('/doc');
@@ -144,7 +153,9 @@ void main() {
             .swagger(
               summary: 'Get version',
               responses: {
-                '200': l.schema({'version': l.string()}).required(),
+                '200': l.schema({
+                  'version': l.string(),
+                }).required(),
               },
             )
             .get('/version')
@@ -158,11 +169,19 @@ void main() {
             .swagger(
               summary: 'Get resource',
               parameters: [
-                const Parameter.path(name: 'category', schema: Schema.string()),
-                const Parameter.path(name: 'id', schema: Schema.string()),
+                const Parameter.path(
+                  name: 'category',
+                  schema: Schema.string(),
+                ),
+                const Parameter.path(
+                  name: 'id',
+                  schema: Schema.string(),
+                ),
               ],
               responses: {
-                '200': l.schema({'resource': l.map()}).required(),
+                '200': l.schema({
+                  'resource': l.map(),
+                }).required(),
               },
             )
             .get('/api/:category/:id')
@@ -175,7 +194,10 @@ void main() {
               },
             );
 
-        setupSwagger(title: 'Mixed Routes API', version: '1.0.0');
+        setupSwagger(
+          title: 'Mixed Routes API',
+          version: '1.0.0',
+        );
       });
 
       final response = await server.get('/doc');
@@ -187,7 +209,11 @@ void main() {
       // Only routes with swagger metadata should be recognized
       expect(
         paths.keys,
-        containsAll(['/health', '/version', '/api/{category}/{id}']),
+        containsAll([
+          '/health',
+          '/version',
+          '/api/{category}/{id}',
+        ]),
       );
 
       // Route without swagger metadata should not be included
@@ -250,7 +276,10 @@ void main() {
           },
         );
 
-        setupSwagger(title: 'Grouped Routes API', version: '1.0.0');
+        setupSwagger(
+          title: 'Grouped Routes API',
+          version: '1.0.0',
+        );
       });
 
       final response = await server.get('/doc');
@@ -262,7 +291,10 @@ void main() {
       // Group routes should be recognized with full path
       expect(
         paths.keys,
-        containsAll(['/api/v1/products', '/api/v1/products/{id}']),
+        containsAll([
+          '/api/v1/products',
+          '/api/v1/products/{id}',
+        ]),
       );
 
       expect(
@@ -293,7 +325,10 @@ void main() {
             .handle((context) => {'message': 'first'});
 
         // Setup swagger
-        setupSwagger(title: 'Late Registration API', version: '1.0.0');
+        setupSwagger(
+          title: 'Late Registration API',
+          version: '1.0.0',
+        );
 
         // Routes added after swagger setup should still be recognized
         route
@@ -338,7 +373,9 @@ void main() {
               deprecated: true,
               tags: ['test'],
               responses: {
-                '200': l.schema({'success': l.boolean()}).required(),
+                '200': l.schema({
+                  'success': l.boolean(),
+                }).required(),
               },
             )
             .get('/test-extra')
@@ -350,13 +387,18 @@ void main() {
               summary: 'Another route',
               tags: ['other'],
               responses: {
-                '200': l.schema({'data': l.string()}).required(),
+                '200': l.schema({
+                  'data': l.string(),
+                }).required(),
               },
             )
             .get('/other')
             .handle((context) => {'data': 'test'});
 
-        setupSwagger(title: 'Extra Metadata Test', version: '1.0.0');
+        setupSwagger(
+          title: 'Extra Metadata Test',
+          version: '1.0.0',
+        );
       });
 
       final response = await server.get('/doc');

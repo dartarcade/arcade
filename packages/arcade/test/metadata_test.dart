@@ -10,7 +10,10 @@ class TestContext extends RequestContext {
   final Map<String, dynamic> extra = {};
 
   TestContext.from(RequestContext ctx)
-    : super(route: ctx.route, request: ctx.rawRequest);
+    : super(
+        route: ctx.route,
+        request: ctx.rawRequest,
+      );
 }
 
 void main() {
@@ -68,7 +71,11 @@ void main() {
         expect(response, isOk());
         expect(
           response,
-          hasJsonBody({'hasMetadata': true, 'rateLimit': 100, 'version': 'v1'}),
+          hasJsonBody({
+            'hasMetadata': true,
+            'rateLimit': 100,
+            'version': 'v1',
+          }),
         );
       });
 
@@ -139,7 +146,13 @@ void main() {
 
         final response = await server.get('/no-metadata');
         expect(response, isOk());
-        expect(response, hasJsonBody({'hasMetadata': true, 'extra': null}));
+        expect(
+          response,
+          hasJsonBody({
+            'hasMetadata': true,
+            'extra': null,
+          }),
+        );
       });
 
       test('supports empty metadata map', () async {
@@ -154,7 +167,13 @@ void main() {
 
         final response = await server.get('/empty-meta');
         expect(response, isOk());
-        expect(response, hasJsonBody({'hasExtra': true, 'extraIsEmpty': true}));
+        expect(
+          response,
+          hasJsonBody({
+            'hasExtra': true,
+            'extraIsEmpty': true,
+          }),
+        );
       });
 
       test('supports complex metadata structures', () async {
@@ -235,7 +254,13 @@ void main() {
 
         final response = await server.get('/secure');
         expect(response, isOk());
-        expect(response, hasJsonBody({'authChecked': true, 'minRole': 'user'}));
+        expect(
+          response,
+          hasJsonBody({
+            'authChecked': true,
+            'minRole': 'user',
+          }),
+        );
       });
 
       test('metadata is accessible in after hooks', () async {
@@ -252,7 +277,11 @@ void main() {
                   // Simulate logging
                   return (
                     ctx,
-                    {'result': result, 'logged': true, 'logLevel': logLevel},
+                    {
+                      'result': result,
+                      'logged': true,
+                      'logLevel': logLevel,
+                    },
                   );
                 }
 
@@ -304,7 +333,11 @@ void main() {
         expect(response, isOk());
         expect(
           response,
-          hasJsonBody({'originalStep': 0, 'step1': 1, 'step2': 2}),
+          hasJsonBody({
+            'originalStep': 0,
+            'step1': 1,
+            'step2': 2,
+          }),
         );
       });
     });
@@ -463,7 +496,11 @@ void main() {
           route
               .get(
                 '/posts/:year/:month/:slug',
-                extra: {'resource': 'blog-post', 'cache': true, 'ttl': 3600},
+                extra: {
+                  'resource': 'blog-post',
+                  'cache': true,
+                  'ttl': 3600,
+                },
               )
               .handle(
                 (ctx) => {
@@ -479,7 +516,11 @@ void main() {
         expect(
           response,
           hasJsonBody({
-            'params': {'year': '2024', 'month': '01', 'slug': 'hello-world'},
+            'params': {
+              'year': '2024',
+              'month': '01',
+              'slug': 'hello-world',
+            },
             'cacheEnabled': true,
             'ttl': 3600,
           }),

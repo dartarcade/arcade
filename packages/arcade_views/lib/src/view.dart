@@ -44,7 +44,9 @@ String view(
   final environment = Environment(
     // ignore: avoid_redundant_argument_values
     autoReload: !isProd,
-    loader: FileSystemLoader(paths: paths),
+    loader: FileSystemLoader(
+      paths: paths,
+    ),
   );
   final templateName = '$name${ArcadeConfiguration.viewsExtension}';
   final template = environment.getTemplate(templateName);

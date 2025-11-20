@@ -27,7 +27,10 @@ class ArcadeTestClient {
   /// final response = await client.get('/api/users',
   ///   headers: {'Authorization': 'Bearer token'});
   /// ```
-  Future<TestResponse> get(String path, {Map<String, String>? headers}) {
+  Future<TestResponse> get(
+    String path, {
+    Map<String, String>? headers,
+  }) {
     return _makeRequest('GET', path, headers: headers);
   }
 
@@ -97,7 +100,10 @@ class ArcadeTestClient {
   /// ```dart
   /// final response = await client.delete('/api/users/123');
   /// ```
-  Future<TestResponse> delete(String path, {Map<String, String>? headers}) {
+  Future<TestResponse> delete(
+    String path, {
+    Map<String, String>? headers,
+  }) {
     return _makeRequest('DELETE', path, headers: headers);
   }
 
@@ -111,7 +117,10 @@ class ArcadeTestClient {
   /// final response = await client.head('/api/users/123');
   /// expect(response.statusCode, equals(200));
   /// ```
-  Future<TestResponse> head(String path, {Map<String, String>? headers}) {
+  Future<TestResponse> head(
+    String path, {
+    Map<String, String>? headers,
+  }) {
     return _makeRequest('HEAD', path, headers: headers);
   }
 
@@ -125,7 +134,10 @@ class ArcadeTestClient {
   /// final response = await client.options('/api/users');
   /// final allowedMethods = response.header('Allow');
   /// ```
-  Future<TestResponse> options(String path, {Map<String, String>? headers}) {
+  Future<TestResponse> options(
+    String path, {
+    Map<String, String>? headers,
+  }) {
     return _makeRequest('OPTIONS', path, headers: headers);
   }
 

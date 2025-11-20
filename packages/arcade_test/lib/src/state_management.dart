@@ -77,7 +77,9 @@ class ArcadeTestState {
   static void resetServerState() {
     canServeStaticFiles = false;
     // Reset configuration to default values
-    ArcadeConfiguration.override(staticFilesDirectory: Directory('static'));
+    ArcadeConfiguration.override(
+      staticFilesDirectory: Directory('static'),
+    );
   }
 
   /// Gets a snapshot of the current global state for debugging.

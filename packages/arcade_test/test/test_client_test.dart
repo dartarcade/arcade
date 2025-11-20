@@ -179,7 +179,10 @@ void main() {
       test('sends custom headers', () async {
         final response = await client.get(
           '/headers',
-          headers: {'X-Custom-Header': 'custom-value', 'X-Test': 'test-value'},
+          headers: {
+            'X-Custom-Header': 'custom-value',
+            'X-Test': 'test-value',
+          },
         );
 
         expect(response.statusCode, equals(200));

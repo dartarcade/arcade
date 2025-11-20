@@ -183,11 +183,10 @@ void main() {
         final objectsBefore = await storage.listObjects(testBucket);
         expect(objectsBefore.length, greaterThanOrEqualTo(3));
 
-        await storage.deleteObjects(testBucket, [
-          'obj1.txt',
-          'obj2.txt',
-          'obj3.txt',
-        ]);
+        await storage.deleteObjects(
+          testBucket,
+          ['obj1.txt', 'obj2.txt', 'obj3.txt'],
+        );
 
         final objectsAfter = await storage.listObjects(testBucket);
         expect(objectsAfter.any((o) => o.name == 'obj1.txt'), isFalse);
@@ -387,7 +386,11 @@ void main() {
           length: testData.length,
         );
 
-        await storage.copyObject(testBucket, 'source.txt', 'destination.txt');
+        await storage.copyObject(
+          testBucket,
+          'source.txt',
+          'destination.txt',
+        );
 
         final sourceStream = await storage.getObject(testBucket, 'source.txt');
         final destStream = await storage.getObject(
@@ -445,7 +448,9 @@ void main() {
             'uploaded-file.txt',
           );
           final chunks = await stream.toList();
-          final content = String.fromCharCodes(chunks.expand((chunk) => chunk));
+          final content = String.fromCharCodes(
+            chunks.expand((chunk) => chunk),
+          );
 
           expect(content, equals('File content for upload'));
 
@@ -509,7 +514,10 @@ void main() {
       });
 
       test('handles empty bucket name', () {
-        expect(() => storage.createBucket(''), throwsA(isA<Exception>()));
+        expect(
+          () => storage.createBucket(''),
+          throwsA(isA<Exception>()),
+        );
       });
 
       test('handles special characters in object names', () async {

@@ -29,7 +29,10 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
   final groupedRoutes = routeMetadata.groupBy((r) => r.path);
   final pathItems = <String, PathItem>{};
 
-  for (final MapEntry(key: path, value: metadataForPath)
+  for (final MapEntry(
+        key: path,
+        value: metadataForPath,
+      )
       in groupedRoutes.entries) {
     if (path.isEmpty) continue;
     final swaggerFormattedPath = path.replaceAllMapped(RegExp(r':(\w+)'), (
@@ -50,31 +53,37 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
         security: swagger.security,
         parameters: swagger.parameters,
         deprecated: swagger.deprecated,
-        responses: swagger.responses.map((key, value) {
-          final schema = validatorToSwagger(value);
-          if (!autoGlobalComponents || value.name == null) {
+        responses: swagger.responses.map(
+          (key, value) {
+            final schema = validatorToSwagger(value);
+            if (!autoGlobalComponents || value.name == null) {
+              return MapEntry(
+                key,
+                Response(
+                  content: {
+                    'application/json': MediaType(schema: schema),
+                  },
+                ),
+              );
+            }
+
+            globalResponseSchemas[value.name!] = Response(
+              content: {
+                'application/json': MediaType(schema: schema),
+              },
+            );
             return MapEntry(
               key,
               Response(
-                content: {'application/json': MediaType(schema: schema)},
+                content: {
+                  'application/json': MediaType(
+                    schema: Schema.object(ref: value.name),
+                  ),
+                },
               ),
             );
-          }
-
-          globalResponseSchemas[value.name!] = Response(
-            content: {'application/json': MediaType(schema: schema)},
-          );
-          return MapEntry(
-            key,
-            Response(
-              content: {
-                'application/json': MediaType(
-                  schema: Schema.object(ref: value.name),
-                ),
-              },
-            ),
-          );
-        }),
+          },
+        ),
       );
 
       if (swagger.request != null) {
@@ -98,12 +107,16 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
           requestBody = RequestBody(
             content: {
               'application/json': MediaType(
-                schema: Schema.object(ref: swagger.request!.name),
+                schema: Schema.object(
+                  ref: swagger.request!.name,
+                ),
               ),
             },
           );
         }
-        operation = operation.copyWith(requestBody: requestBody);
+        operation = operation.copyWith(
+          requestBody: requestBody,
+        );
       }
 
       pathItems[swaggerFormattedPath] ??= const PathItem();

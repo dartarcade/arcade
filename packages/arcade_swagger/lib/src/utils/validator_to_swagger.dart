@@ -28,7 +28,9 @@ Schema? _validationsToSwagger(
     if (fieldName != null && isRequired) {
       requiredKeys.add(fieldName);
     }
-    return const Schema.string(example: 'any');
+    return const Schema.string(
+      example: 'any',
+    );
   }
 
   if (first is BoolValidation) {
@@ -69,7 +71,9 @@ Schema? _validationsToSwagger(
             'Self-referential validator must have a name. Use .withName() to set it.',
           );
         }
-        return Schema.array(items: Schema.object(ref: itemValidator.name));
+        return Schema.array(
+          items: Schema.object(ref: itemValidator.name),
+        );
       }
     }
 
@@ -77,14 +81,18 @@ Schema? _validationsToSwagger(
     if (itemValidator.name != null &&
         itemValidator.validations.isNotEmpty &&
         itemValidator.validations.first is SchemaValidation) {
-      return Schema.array(items: Schema.object(ref: itemValidator.name));
+      return Schema.array(
+        items: Schema.object(ref: itemValidator.name),
+      );
     }
 
     return Schema.array(
-      items: _validationsToSwagger(itemValidator.validations, null, [], [
-        ...processingStack,
-        itemValidator,
-      ])!,
+      items: _validationsToSwagger(
+        itemValidator.validations,
+        null,
+        [],
+        [...processingStack, itemValidator],
+      )!,
     );
   }
 
@@ -92,7 +100,9 @@ Schema? _validationsToSwagger(
     if (fieldName != null && isRequired) {
       requiredKeys.add(fieldName);
     }
-    return const Schema.map(example: {});
+    return const Schema.map(
+      example: {},
+    );
   }
 
   if (first is NullValidation) {

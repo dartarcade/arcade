@@ -141,7 +141,10 @@ void main() {
       test('converts list of objects to array with object items', () {
         final validator = l.list(
           validators: [
-            l.schema({'id': l.int(), 'name': l.string()}),
+            l.schema({
+              'id': l.int(),
+              'name': l.string(),
+            }),
           ],
         );
         final schema = validatorToSwagger(validator);
@@ -156,7 +159,10 @@ void main() {
 
     group('schema validators', () {
       test('converts simple schema to object with properties', () {
-        final validator = l.schema({'name': l.string(), 'age': l.int()});
+        final validator = l.schema({
+          'name': l.string(),
+          'age': l.int(),
+        });
         final schema = validatorToSwagger(validator);
 
         expect(schema, isA<Schema>());
@@ -177,10 +183,16 @@ void main() {
 
       test('converts nested schema correctly', () {
         final validator = l.schema({
-          'user': l.schema({'name': l.string(), 'email': l.string()}),
+          'user': l.schema({
+            'name': l.string(),
+            'email': l.string(),
+          }),
           'posts': l.list(
             validators: [
-              l.schema({'title': l.string(), 'content': l.string()}),
+              l.schema({
+                'title': l.string(),
+                'content': l.string(),
+              }),
             ],
           ),
         });
@@ -205,7 +217,9 @@ void main() {
       test('handles deeply nested schemas', () {
         final validator = l.schema({
           'level1': l.schema({
-            'level2': l.schema({'level3': l.string()}),
+            'level2': l.schema({
+              'level3': l.string(),
+            }),
           }),
         });
         final schema = validatorToSwagger(validator);
@@ -429,7 +443,9 @@ void main() {
           'boolField': l.boolean().required(),
           'listField': l.list(validators: [l.string()]).required(),
           'mapField': l.map().required(),
-          'objectField': l.schema({'nested': l.string().required()}).required(),
+          'objectField': l.schema({
+            'nested': l.string().required(),
+          }).required(),
         });
         final schema = validatorToSwagger(validator);
 
@@ -512,7 +528,10 @@ void main() {
 
       test('marks required named schemas in list items', () {
         final tag = l
-            .schema({'id': l.int().required(), 'name': l.string().required()})
+            .schema({
+              'id': l.int().required(),
+              'name': l.string().required(),
+            })
             .withName('Tag');
 
         final validator = l.schema({
@@ -554,7 +573,10 @@ void main() {
 
         expect(schema, isA<SchemaObject>());
         final objectSchema = schema as SchemaObject;
-        expect(objectSchema.required, containsAll(['id', 'name', 'address']));
+        expect(
+          objectSchema.required,
+          containsAll(['id', 'name', 'address']),
+        );
         expect(
           objectSchema.required,
           isNot(containsAll(['email', 'billingAddress', 'age'])),
@@ -657,7 +679,10 @@ void main() {
       test('throws StateError when validator has no validations', () {
         final validator = Validator(initialValidations: []);
 
-        expect(() => validatorToSwagger(validator), throwsStateError);
+        expect(
+          () => validatorToSwagger(validator),
+          throwsStateError,
+        );
       });
 
       test(
@@ -665,7 +690,10 @@ void main() {
         () {
           final validator = l.required();
 
-          expect(() => validatorToSwagger(validator), throwsStateError);
+          expect(
+            () => validatorToSwagger(validator),
+            throwsStateError,
+          );
         },
       );
     });

@@ -14,7 +14,10 @@ class ExampleController {
   }
 
   Map<String, dynamic> get(covariant AuthedRequestContext context) {
-    return {'query': context.queryParameters, 'path': context.pathParameters};
+    return {
+      'query': context.queryParameters,
+      'path': context.pathParameters,
+    };
   }
 
   Future<Map<String, dynamic>> post(

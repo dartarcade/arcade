@@ -24,7 +24,10 @@ class RequestContext {
   late final Map<String, String> _queryParameters;
   late final List<File> _files;
 
-  RequestContext({required BaseRoute route, required HttpRequest request}) {
+  RequestContext({
+    required BaseRoute route,
+    required HttpRequest request,
+  }) {
     final HttpRequest(uri: uri, method: methodString) = request;
 
     final method = getHttpMethod(methodString)!;

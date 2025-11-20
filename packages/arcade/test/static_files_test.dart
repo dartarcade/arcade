@@ -55,9 +55,12 @@ void main() {
 
     group('Basic Static File Serving', () {
       test('serves static files from configured directory', () async {
-        server = await ArcadeTestServer.withRoutes(() {
-          route.get('/api/test').handle((ctx) => {'message': 'API endpoint'});
-        }, staticFilesDirectory: tempDir);
+        server = await ArcadeTestServer.withRoutes(
+          () {
+            route.get('/api/test').handle((ctx) => {'message': 'API endpoint'});
+          },
+          staticFilesDirectory: tempDir,
+        );
 
         // Test static file
         final response = await server.get('/test.txt');
@@ -156,9 +159,12 @@ void main() {
 
     group('Route Priority', () {
       test('routes take priority over static files', () async {
-        server = await ArcadeTestServer.withRoutes(() {
-          route.get('/test.txt').handle((ctx) => 'Dynamic route response');
-        }, staticFilesDirectory: tempDir);
+        server = await ArcadeTestServer.withRoutes(
+          () {
+            route.get('/test.txt').handle((ctx) => 'Dynamic route response');
+          },
+          staticFilesDirectory: tempDir,
+        );
 
         final response = await server.get('/test.txt');
         expect(response, isOk());
@@ -166,9 +172,12 @@ void main() {
       });
 
       test('wildcard routes can override static files', () async {
-        server = await ArcadeTestServer.withRoutes(() {
-          route.get('/*').handle((ctx) => 'Catch all route');
-        }, staticFilesDirectory: tempDir);
+        server = await ArcadeTestServer.withRoutes(
+          () {
+            route.get('/*').handle((ctx) => 'Catch all route');
+          },
+          staticFilesDirectory: tempDir,
+        );
 
         final response = await server.get('/test.txt');
         expect(response, isOk());
@@ -257,9 +266,12 @@ void main() {
       test('handles non-existent static directory gracefully', () async {
         final nonExistentDir = Directory('${tempDir.path}/does_not_exist');
 
-        server = await ArcadeTestServer.withRoutes(() {
-          route.get('/api/test').handle((ctx) => 'API works');
-        }, staticFilesDirectory: nonExistentDir);
+        server = await ArcadeTestServer.withRoutes(
+          () {
+            route.get('/api/test').handle((ctx) => 'API works');
+          },
+          staticFilesDirectory: nonExistentDir,
+        );
 
         // API routes should still work
         var response = await server.get('/api/test');
@@ -370,14 +382,17 @@ void main() {
 
     group('Integration with Routes', () {
       test('static files work with route groups', () async {
-        server = await ArcadeTestServer.withRoutes(() {
-          route.group(
-            '/api',
-            defineRoutes: (route) {
-              route().get('/test').handle((ctx) => {'api': 'response'});
-            },
-          );
-        }, staticFilesDirectory: tempDir);
+        server = await ArcadeTestServer.withRoutes(
+          () {
+            route.group(
+              '/api',
+              defineRoutes: (route) {
+                route().get('/test').handle((ctx) => {'api': 'response'});
+              },
+            );
+          },
+          staticFilesDirectory: tempDir,
+        );
 
         // API route
         var response = await server.get('/api/test');

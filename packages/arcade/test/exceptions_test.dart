@@ -207,7 +207,9 @@ void main() {
                     'email': 'Required field',
                   },
                 },
-                'settings': {'notifications': 'Invalid value'},
+                'settings': {
+                  'notifications': 'Invalid value',
+                },
               },
             );
           });
@@ -358,7 +360,10 @@ void main() {
             throw const ArcadeHttpException(
               'Custom validation error',
               422,
-              errors: {'field1': 'Error 1', 'field2': 'Error 2'},
+              errors: {
+                'field1': 'Error 1',
+                'field2': 'Error 2',
+              },
             );
           });
         });
@@ -368,7 +373,10 @@ void main() {
         final body = response.json() as Map<String, dynamic>;
         final error = body['error'] as Map<String, dynamic>;
         expect(error['message'], equals('Custom validation error'));
-        expect(error['errors'], {'field1': 'Error 1', 'field2': 'Error 2'});
+        expect(error['errors'], {
+          'field1': 'Error 1',
+          'field2': 'Error 2',
+        });
       });
     });
 

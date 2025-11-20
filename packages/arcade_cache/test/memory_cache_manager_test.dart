@@ -199,9 +199,10 @@ void main() {
         final subscribeCompleter = Completer<void>();
         final messagesCompleter = Completer<void>();
 
-        final subscription = cache.subscribe<int>([
-          'number_channel',
-        ], messageMapper: (data) => int.parse(data.toString()));
+        final subscription = cache.subscribe<int>(
+          ['number_channel'],
+          messageMapper: (data) => int.parse(data.toString()),
+        );
 
         final listener = subscription.listen((event) {
           if (event is PubSubSubscribed && !subscribeCompleter.isCompleted) {
@@ -297,9 +298,10 @@ void main() {
         final subscribeCompleter = Completer<void>();
         final messageCompleter = Completer<void>();
 
-        final subscription = cache.subscribe<Map<String, dynamic>>([
-          'json_channel',
-        ], messageMapper: (data) => data as Map<String, dynamic>);
+        final subscription = cache.subscribe<Map<String, dynamic>>(
+          ['json_channel'],
+          messageMapper: (data) => data as Map<String, dynamic>,
+        );
 
         final listener = subscription.listen((event) {
           if (event is PubSubSubscribed && !subscribeCompleter.isCompleted) {
@@ -657,7 +659,11 @@ void main() {
               'tags': ['user'],
             },
           ],
-          'metadata': {'version': '1.0', 'count': 2, 'active': true},
+          'metadata': {
+            'version': '1.0',
+            'count': 2,
+            'active': true,
+          },
         };
 
         await cache.set('complex', complexObject);

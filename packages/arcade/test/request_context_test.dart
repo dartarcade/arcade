@@ -35,16 +35,34 @@ void main() {
 
         var response = await server.get('/test');
         expect(response, isOk());
-        expect(response, hasJsonBody({'method': 'GET', 'isGet': true}));
+        expect(
+          response,
+          hasJsonBody({
+            'method': 'GET',
+            'isGet': true,
+          }),
+        );
 
         response = await server.post('/test');
         expect(response, isOk());
-        expect(response, hasJsonBody({'method': 'POST', 'isPost': true}));
+        expect(
+          response,
+          hasJsonBody({
+            'method': 'POST',
+            'isPost': true,
+          }),
+        );
       });
 
       test('provides access to request path', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/api/v1/users').handle((ctx) => {'path': ctx.path});
+          route
+              .get('/api/v1/users')
+              .handle(
+                (ctx) => {
+                  'path': ctx.path,
+                },
+              );
         });
 
         final response = await server.get('/api/v1/users');
@@ -100,7 +118,11 @@ void main() {
           hasJsonBody({
             'query': 'arcade',
             'limit': '10',
-            'allParams': {'q': 'arcade', 'limit': '10', 'sort': 'name'},
+            'allParams': {
+              'q': 'arcade',
+              'limit': '10',
+              'sort': 'name',
+            },
           }),
         );
       });
@@ -125,7 +147,10 @@ void main() {
           hasJsonBody({
             'userId': '123',
             'postId': '456',
-            'allParams': {'userId': '123', 'postId': '456'},
+            'allParams': {
+              'userId': '123',
+              'postId': '456',
+            },
           }),
         );
       });
@@ -133,7 +158,13 @@ void main() {
       test('provides access to route metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
           route
-              .get('/secure', extra: {'requiresAuth': true, 'minRole': 'admin'})
+              .get(
+                '/secure',
+                extra: {
+                  'requiresAuth': true,
+                  'minRole': 'admin',
+                },
+              )
               .handle(
                 (ctx) => {
                   'routePath': ctx.route.path,
@@ -150,7 +181,10 @@ void main() {
           hasJsonBody({
             'routePath': '/secure',
             'routeMethod': 'GET',
-            'metadata': {'requiresAuth': true, 'minRole': 'admin'},
+            'metadata': {
+              'requiresAuth': true,
+              'minRole': 'admin',
+            },
           }),
         );
       });
@@ -181,7 +215,10 @@ void main() {
               },
               BodyParseFailure(:final error) => () {
                 ctx.statusCode = 400;
-                return {'success': false, 'error': error.toString()};
+                return {
+                  'success': false,
+                  'error': error.toString(),
+                };
               }(),
             };
           });
@@ -288,7 +325,10 @@ test@example.com\r
         expect(
           response,
           hasJsonBody({
-            'fields': {'username': 'testuser', 'email': 'test@example.com'},
+            'fields': {
+              'username': 'testuser',
+              'email': 'test@example.com',
+            },
             'fileCount': 0,
           }),
         );
@@ -426,7 +466,10 @@ test@example.com\r
               0,
               (sum, chunk) => sum + chunk.length,
             );
-            return {'chunks': bytes.length, 'totalBytes': totalBytes};
+            return {
+              'chunks': bytes.length,
+              'totalBytes': totalBytes,
+            };
           });
         });
 

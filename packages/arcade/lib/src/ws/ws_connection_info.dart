@@ -89,7 +89,13 @@ class WebSocketConnectionInfo {
 
   @override
   int get hashCode {
-    return Object.hash(id, serverInstanceId, rooms, connectTime, metadata);
+    return Object.hash(
+      id,
+      serverInstanceId,
+      rooms,
+      connectTime,
+      metadata,
+    );
   }
 
   @override

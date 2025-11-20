@@ -29,27 +29,26 @@ void main() {
         String? joinedRoom;
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/room').handleWebSocket((
-            context,
-            message,
-            manager,
-          ) async {
-            final data = jsonDecode(message as String) as Map<String, dynamic>;
+          route.get('/ws/room').handleWebSocket(
+            (context, message, manager) async {
+              final data =
+                  jsonDecode(message as String) as Map<String, dynamic>;
 
-            if (data['action'] == 'join') {
-              final room = data['room'] as String;
-              await joinRoom(manager.id, room);
-              joinedClientId = manager.id;
-              joinedRoom = room;
-              manager.emit(
-                jsonEncode({
-                  'type': 'joined',
-                  'room': room,
-                  'clientId': manager.id,
-                }),
-              );
-            }
-          });
+              if (data['action'] == 'join') {
+                final room = data['room'] as String;
+                await joinRoom(manager.id, room);
+                joinedClientId = manager.id;
+                joinedRoom = room;
+                manager.emit(
+                  jsonEncode({
+                    'type': 'joined',
+                    'room': room,
+                    'clientId': manager.id,
+                  }),
+                );
+              }
+            },
+          );
         });
 
         final ws = await server.connectWebSocket('/ws/room');
@@ -61,7 +60,13 @@ void main() {
         });
 
         // Join a room
-        ws.send(null, jsonEncode({'action': 'join', 'room': 'lobby'}));
+        ws.send(
+          null,
+          jsonEncode({
+            'action': 'join',
+            'room': 'lobby',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
@@ -80,24 +85,33 @@ void main() {
 
       test('client can leave a room', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/room').handleWebSocket((
-            context,
-            message,
-            manager,
-          ) async {
-            final data = jsonDecode(message as String) as Map<String, dynamic>;
+          route.get('/ws/room').handleWebSocket(
+            (context, message, manager) async {
+              final data =
+                  jsonDecode(message as String) as Map<String, dynamic>;
 
-            switch (data['action']) {
-              case 'join':
-                final room = data['room'] as String;
-                await joinRoom(manager.id, room);
-                manager.emit(jsonEncode({'type': 'joined', 'room': room}));
-              case 'leave':
-                final room = data['room'] as String;
-                await leaveRoom(manager.id, room);
-                manager.emit(jsonEncode({'type': 'left', 'room': room}));
-            }
-          });
+              switch (data['action']) {
+                case 'join':
+                  final room = data['room'] as String;
+                  await joinRoom(manager.id, room);
+                  manager.emit(
+                    jsonEncode({
+                      'type': 'joined',
+                      'room': room,
+                    }),
+                  );
+                case 'leave':
+                  final room = data['room'] as String;
+                  await leaveRoom(manager.id, room);
+                  manager.emit(
+                    jsonEncode({
+                      'type': 'left',
+                      'room': room,
+                    }),
+                  );
+              }
+            },
+          );
         });
 
         final ws = await server.connectWebSocket('/ws/room');
@@ -109,12 +123,24 @@ void main() {
         });
 
         // Join a room
-        ws.send(null, jsonEncode({'action': 'join', 'room': 'lobby'}));
+        ws.send(
+          null,
+          jsonEncode({
+            'action': 'join',
+            'room': 'lobby',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
         // Leave the room
-        ws.send(null, jsonEncode({'action': 'leave', 'room': 'lobby'}));
+        ws.send(
+          null,
+          jsonEncode({
+            'action': 'leave',
+            'room': 'lobby',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
@@ -134,20 +160,24 @@ void main() {
         String? clientId;
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/room').handleWebSocket((
-            context,
-            message,
-            manager,
-          ) async {
-            clientId = manager.id;
-            final data = jsonDecode(message as String) as Map<String, dynamic>;
+          route.get('/ws/room').handleWebSocket(
+            (context, message, manager) async {
+              clientId = manager.id;
+              final data =
+                  jsonDecode(message as String) as Map<String, dynamic>;
 
-            if (data['action'] == 'join') {
-              final room = data['room'] as String;
-              await joinRoom(manager.id, room);
-              manager.emit(jsonEncode({'type': 'joined', 'room': room}));
-            }
-          });
+              if (data['action'] == 'join') {
+                final room = data['room'] as String;
+                await joinRoom(manager.id, room);
+                manager.emit(
+                  jsonEncode({
+                    'type': 'joined',
+                    'room': room,
+                  }),
+                );
+              }
+            },
+          );
         });
 
         final ws = await server.connectWebSocket('/ws/room');
@@ -190,38 +220,37 @@ void main() {
     group('Room Broadcasting', () {
       test('emitToRoom broadcasts to all clients in a room', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/room').handleWebSocket((
-            context,
-            message,
-            manager,
-          ) async {
-            final data = jsonDecode(message as String) as Map<String, dynamic>;
+          route.get('/ws/room').handleWebSocket(
+            (context, message, manager) async {
+              final data =
+                  jsonDecode(message as String) as Map<String, dynamic>;
 
-            switch (data['action']) {
-              case 'join':
-                final room = data['room'] as String;
-                await joinRoom(manager.id, room);
-                manager.emit(
-                  jsonEncode({
-                    'type': 'joined',
-                    'room': room,
-                    'clientId': manager.id,
-                  }),
-                );
-              case 'broadcast':
-                final room = data['room'] as String;
-                final msg = data['message'] as String;
-                await emitToRoom(
-                  room,
-                  jsonEncode({
-                    'type': 'room-message',
-                    'room': room,
-                    'message': msg,
-                    'from': manager.id,
-                  }),
-                );
-            }
-          });
+              switch (data['action']) {
+                case 'join':
+                  final room = data['room'] as String;
+                  await joinRoom(manager.id, room);
+                  manager.emit(
+                    jsonEncode({
+                      'type': 'joined',
+                      'room': room,
+                      'clientId': manager.id,
+                    }),
+                  );
+                case 'broadcast':
+                  final room = data['room'] as String;
+                  final msg = data['message'] as String;
+                  await emitToRoom(
+                    room,
+                    jsonEncode({
+                      'type': 'room-message',
+                      'room': room,
+                      'message': msg,
+                      'from': manager.id,
+                    }),
+                  );
+              }
+            },
+          );
         });
 
         // Connect three clients
@@ -289,31 +318,29 @@ void main() {
         'client in multiple rooms receives messages from all rooms',
         () async {
           server = await ArcadeTestServer.withRoutes(() {
-            route.get('/ws/room').handleWebSocket((
-              context,
-              message,
-              manager,
-            ) async {
-              final data =
-                  jsonDecode(message as String) as Map<String, dynamic>;
+            route.get('/ws/room').handleWebSocket(
+              (context, message, manager) async {
+                final data =
+                    jsonDecode(message as String) as Map<String, dynamic>;
 
-              switch (data['action']) {
-                case 'join':
-                  final room = data['room'] as String;
-                  await joinRoom(manager.id, room);
-                case 'broadcast':
-                  final room = data['room'] as String;
-                  final msg = data['message'] as String;
-                  await emitToRoom(
-                    room,
-                    jsonEncode({
-                      'type': 'room-message',
-                      'room': room,
-                      'message': msg,
-                    }),
-                  );
-              }
-            });
+                switch (data['action']) {
+                  case 'join':
+                    final room = data['room'] as String;
+                    await joinRoom(manager.id, room);
+                  case 'broadcast':
+                    final room = data['room'] as String;
+                    final msg = data['message'] as String;
+                    await emitToRoom(
+                      room,
+                      jsonEncode({
+                        'type': 'room-message',
+                        'room': room,
+                        'message': msg,
+                      }),
+                    );
+                }
+              },
+            );
           });
 
           // Connect two clients
@@ -388,26 +415,28 @@ void main() {
         String? errorMessage;
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/room').handleWebSocket((
-            context,
-            message,
-            manager,
-          ) async {
-            final data = jsonDecode(message as String) as Map<String, dynamic>;
+          route.get('/ws/room').handleWebSocket(
+            (context, message, manager) async {
+              final data =
+                  jsonDecode(message as String) as Map<String, dynamic>;
 
-            if (data['action'] == 'join') {
-              final room = data['room'] as String;
-              try {
-                await joinRoom(manager.id, room);
-                manager.emit(jsonEncode({'type': 'joined', 'room': room}));
-              } catch (e) {
-                errorMessage = e.toString();
-                manager.emit(
-                  jsonEncode({'type': 'error', 'message': 'Invalid room name'}),
-                );
+              if (data['action'] == 'join') {
+                final room = data['room'] as String;
+                try {
+                  await joinRoom(manager.id, room);
+                  manager.emit(jsonEncode({'type': 'joined', 'room': room}));
+                } catch (e) {
+                  errorMessage = e.toString();
+                  manager.emit(
+                    jsonEncode({
+                      'type': 'error',
+                      'message': 'Invalid room name',
+                    }),
+                  );
+                }
               }
-            }
-          });
+            },
+          );
         });
 
         final ws = await server.connectWebSocket('/ws/room');
@@ -421,7 +450,10 @@ void main() {
         // Try to join room with invalid name (contains spaces)
         ws.send(
           null,
-          jsonEncode({'action': 'join', 'room': 'invalid room name'}),
+          jsonEncode({
+            'action': 'join',
+            'room': 'invalid room name',
+          }),
         );
 
         await Future.delayed(const Duration(milliseconds: 100));
@@ -435,19 +467,23 @@ void main() {
 
       test('leaving a room not joined is handled gracefully', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/room').handleWebSocket((
-            context,
-            message,
-            manager,
-          ) async {
-            final data = jsonDecode(message as String) as Map<String, dynamic>;
+          route.get('/ws/room').handleWebSocket(
+            (context, message, manager) async {
+              final data =
+                  jsonDecode(message as String) as Map<String, dynamic>;
 
-            if (data['action'] == 'leave') {
-              final room = data['room'] as String;
-              await leaveRoom(manager.id, room);
-              manager.emit(jsonEncode({'type': 'left', 'room': room}));
-            }
-          });
+              if (data['action'] == 'leave') {
+                final room = data['room'] as String;
+                await leaveRoom(manager.id, room);
+                manager.emit(
+                  jsonEncode({
+                    'type': 'left',
+                    'room': room,
+                  }),
+                );
+              }
+            },
+          );
         });
 
         final ws = await server.connectWebSocket('/ws/room');
@@ -459,7 +495,13 @@ void main() {
         });
 
         // Try to leave a room never joined
-        ws.send(null, jsonEncode({'action': 'leave', 'room': 'never-joined'}));
+        ws.send(
+          null,
+          jsonEncode({
+            'action': 'leave',
+            'room': 'never-joined',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
@@ -475,19 +517,18 @@ void main() {
         String? clientId;
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/room').handleWebSocket((
-            context,
-            message,
-            manager,
-          ) async {
-            clientId = manager.id;
-            final data = jsonDecode(message as String) as Map<String, dynamic>;
+          route.get('/ws/room').handleWebSocket(
+            (context, message, manager) async {
+              clientId = manager.id;
+              final data =
+                  jsonDecode(message as String) as Map<String, dynamic>;
 
-            if (data['action'] == 'join') {
-              final room = data['room'] as String;
-              await joinRoom(manager.id, room);
-            }
-          });
+              if (data['action'] == 'join') {
+                final room = data['room'] as String;
+                await joinRoom(manager.id, room);
+              }
+            },
+          );
         });
 
         final ws = await server.connectWebSocket('/ws/room');
