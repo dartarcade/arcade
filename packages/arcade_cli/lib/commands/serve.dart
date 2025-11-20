@@ -14,11 +14,23 @@ class ServeCommand extends Command {
   @override
   String get description => 'Locally serve your app';
 
+  /// Builds the dart run arguments, including --packages flag if package
+  /// config is found.
+  List<String> _buildDartRunArgs(String serverPath, String? packageConfig) {
+    final runArgs = ['run', '-r'];
+    if (packageConfig != null) {
+      runArgs.add('--packages=$packageConfig');
+    }
+    runArgs.add(serverPath);
+    return runArgs;
+  }
+
   @override
   Future<void> run() async {
     Process? process;
     final serverFile = await getServerFile();
     final cwd = Directory.current.path;
+    final packageConfig = findPackageConfig();
 
     bool shouldReload(WatchEvent event) {
       return path.isWithin(path.join(cwd, 'bin'), event.path) ||
@@ -29,7 +41,7 @@ class ServeCommand extends Command {
 
     process = await Process.start(
       'dart',
-      ['run', '-r', serverFile.path],
+      _buildDartRunArgs(serverFile.path, packageConfig),
       workingDirectory: cwd,
     );
 
@@ -55,9 +67,10 @@ class ServeCommand extends Command {
             process?.kill();
             process = null;
             final now = DateTime.now();
+
             process = await Process.start(
               'dart',
-              ['run', '-r', serverFile.path],
+              _buildDartRunArgs(serverFile.path, packageConfig),
               workingDirectory: cwd,
             );
             stdoutSubscription = process!.stdout.listen((event) {
