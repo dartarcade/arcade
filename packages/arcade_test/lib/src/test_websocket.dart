@@ -107,7 +107,7 @@ class TestWebSocket {
   bool _isClosed = false;
 
   TestWebSocket._(this._channel)
-      : _messageController = StreamController<WebSocketMessage>.broadcast() {
+    : _messageController = StreamController<WebSocketMessage>.broadcast() {
     _subscription = _channel.stream.listen(
       (data) {
         if (!_isClosed) {

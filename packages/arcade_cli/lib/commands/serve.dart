@@ -41,43 +41,42 @@ class ServeCommand extends Command {
     });
 
     bool isReloading = false;
-    DirectoryWatcher(cwd)
-        .events
+    DirectoryWatcher(cwd).events
         .where(shouldReload)
         .debounceBuffer(const Duration(milliseconds: 500))
         .listen(
-      (_) async {
-        if (!isReloading) {
-          print('Restarting server...');
-          isReloading = true;
-        }
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        process?.kill();
-        process = null;
-        final now = DateTime.now();
-        process = await Process.start(
-          'dart',
-          ['run', '-r', serverFile.path],
-          workingDirectory: cwd,
+          (_) async {
+            if (!isReloading) {
+              print('Restarting server...');
+              isReloading = true;
+            }
+            stdoutSubscription.cancel();
+            stderrSubscription.cancel();
+            process?.kill();
+            process = null;
+            final now = DateTime.now();
+            process = await Process.start(
+              'dart',
+              ['run', '-r', serverFile.path],
+              workingDirectory: cwd,
+            );
+            stdoutSubscription = process!.stdout.listen((event) {
+              final data = String.fromCharCodes(event);
+
+              if (data.contains('Server running on port')) {
+                final time = DateTime.now().difference(now).inMilliseconds;
+                print('Restarted server in $time ms');
+                isReloading = false;
+                return;
+              }
+
+              stdout.add(event);
+            });
+            stderrSubscription = process!.stderr.listen((event) {
+              stderr.add(event);
+            });
+          },
         );
-        stdoutSubscription = process!.stdout.listen((event) {
-          final data = String.fromCharCodes(event);
-
-          if (data.contains('Server running on port')) {
-            final time = DateTime.now().difference(now).inMilliseconds;
-            print('Restarted server in $time ms');
-            isReloading = false;
-            return;
-          }
-
-          stdout.add(event);
-        });
-        stderrSubscription = process!.stderr.listen((event) {
-          stderr.add(event);
-        });
-      },
-    );
 
     ProcessSignal.sigint.watch().listen((_) {
       process?.kill();

@@ -6,13 +6,13 @@ issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
 
 environment:
-  sdk: ^3.5.0
+  sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   arcade: ^1.2.1
   arcade_logger: ^1.2.1
   arcade_views: ^1.2.1
-  luthor: '>=0.14.0 <1.0.0'
+  luthor: ^0.14.0
   openapi_spec: ^0.14.0
 
 dev_dependencies:

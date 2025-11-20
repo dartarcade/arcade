@@ -27,8 +27,10 @@ void main() {
       expect(response.statusCode, equals(200));
 
       final openApiSpec = response.json() as Map<String, dynamic>;
-      expect((openApiSpec['info'] as Map<String, dynamic>)['title'],
-          equals('Test API'));
+      expect(
+        (openApiSpec['info'] as Map<String, dynamic>)['title'],
+        equals('Test API'),
+      );
       expect(openApiSpec['paths'], isNotNull);
 
       // Routes without swagger metadata are not included in OpenAPI spec
@@ -46,12 +48,14 @@ void main() {
               tags: ['users'],
               responses: {
                 '200': l.schema({
-                  'users': l.list(validators: [
-                    l.schema({
-                      'id': l.int(),
-                      'name': l.string(),
-                    }),
-                  ]),
+                  'users': l.list(
+                    validators: [
+                      l.schema({
+                        'id': l.int(),
+                        'name': l.string(),
+                      }),
+                    ],
+                  ),
                 }).required(),
               },
             )
@@ -76,8 +80,13 @@ void main() {
               },
             )
             .post('/api/users')
-            .handle((context) =>
-                {'id': 1, 'name': 'John', 'email': 'john@example.com'});
+            .handle(
+              (context) => {
+                'id': 1,
+                'name': 'John',
+                'email': 'john@example.com',
+              },
+            );
 
         setupSwagger(
           title: 'User API',
@@ -95,16 +104,20 @@ void main() {
       expect(paths.keys, containsAll(['/api/users']));
 
       // Check GET endpoint
-      final getUsersPath = (paths['/api/users'] as Map<String, dynamic>)['get']
-          as Map<String, dynamic>;
+      final getUsersPath =
+          (paths['/api/users'] as Map<String, dynamic>)['get']
+              as Map<String, dynamic>;
       expect(getUsersPath['summary'], equals('Get all users'));
       expect(
-          getUsersPath['description'], equals('Returns a list of all users'));
+        getUsersPath['description'],
+        equals('Returns a list of all users'),
+      );
       expect(getUsersPath['tags'], equals(['users']));
 
       // Check POST endpoint
-      final createUserPath = (paths['/api/users']
-          as Map<String, dynamic>)['post'] as Map<String, dynamic>;
+      final createUserPath =
+          (paths['/api/users'] as Map<String, dynamic>)['post']
+              as Map<String, dynamic>;
       expect(createUserPath['summary'], equals('Create user'));
       expect(createUserPath['description'], equals('Creates a new user'));
       expect(createUserPath['tags'], equals(['users']));
@@ -128,10 +141,12 @@ void main() {
               },
             )
             .get('/health')
-            .handle((context) => {
-                  'status': 'ok',
-                  'timestamp': DateTime.now().toIso8601String()
-                });
+            .handle(
+              (context) => {
+                'status': 'ok',
+                'timestamp': DateTime.now().toIso8601String(),
+              },
+            );
 
         // Route with partial swagger metadata
         route
@@ -170,12 +185,14 @@ void main() {
               },
             )
             .get('/api/:category/:id')
-            .handle((context) => {
-                  'resource': {
-                    'category': context.pathParameters['category'],
-                    'id': context.pathParameters['id'],
-                  }
-                });
+            .handle(
+              (context) => {
+                'resource': {
+                  'category': context.pathParameters['category'],
+                  'id': context.pathParameters['id'],
+                },
+              },
+            );
 
         setupSwagger(
           title: 'Mixed Routes API',
@@ -191,25 +208,28 @@ void main() {
 
       // Only routes with swagger metadata should be recognized
       expect(
-          paths.keys,
-          containsAll([
-            '/health',
-            '/version',
-            '/api/{category}/{id}',
-          ]));
+        paths.keys,
+        containsAll([
+          '/health',
+          '/version',
+          '/api/{category}/{id}',
+        ]),
+      );
 
       // Route without swagger metadata should not be included
       expect(paths.keys, isNot(contains('/internal/metrics')));
 
       // Routes with swagger metadata should have their details
       expect(
-          ((paths['/health'] as Map<String, dynamic>)['get']
-              as Map<String, dynamic>)['summary'],
-          equals('Health check'));
+        ((paths['/health'] as Map<String, dynamic>)['get']
+            as Map<String, dynamic>)['summary'],
+        equals('Health check'),
+      );
       expect(
-          ((paths['/version'] as Map<String, dynamic>)['get']
-              as Map<String, dynamic>)['summary'],
-          equals('Get version'));
+        ((paths['/version'] as Map<String, dynamic>)['get']
+            as Map<String, dynamic>)['summary'],
+        equals('Get version'),
+      );
 
       // Path parameters should be properly converted
       expect(paths['/api/{category}/{id}'], isNotNull);
@@ -247,10 +267,12 @@ void main() {
                   },
                 )
                 .get('/products/:id')
-                .handle((context) => {
-                      'id': context.pathParameters['id'],
-                      'name': 'Product ${context.pathParameters['id']}',
-                    });
+                .handle(
+                  (context) => {
+                    'id': context.pathParameters['id'],
+                    'name': 'Product ${context.pathParameters['id']}',
+                  },
+                );
           },
         );
 
@@ -268,20 +290,23 @@ void main() {
 
       // Group routes should be recognized with full path
       expect(
-          paths.keys,
-          containsAll([
-            '/api/v1/products',
-            '/api/v1/products/{id}',
-          ]));
+        paths.keys,
+        containsAll([
+          '/api/v1/products',
+          '/api/v1/products/{id}',
+        ]),
+      );
 
       expect(
-          ((paths['/api/v1/products'] as Map<String, dynamic>)['get']
-              as Map<String, dynamic>)['summary'],
-          equals('List products'));
+        ((paths['/api/v1/products'] as Map<String, dynamic>)['get']
+            as Map<String, dynamic>)['summary'],
+        equals('List products'),
+      );
       expect(
-          ((paths['/api/v1/products/{id}'] as Map<String, dynamic>)['get']
-              as Map<String, dynamic>)['summary'],
-          equals('Get product by ID'));
+        ((paths['/api/v1/products/{id}'] as Map<String, dynamic>)['get']
+            as Map<String, dynamic>)['summary'],
+        equals('Get product by ID'),
+      );
 
       await server.close();
     });
@@ -293,7 +318,7 @@ void main() {
             .swagger(
               summary: 'First route',
               responses: {
-                '200': l.schema({'message': l.string()}).required()
+                '200': l.schema({'message': l.string()}).required(),
               },
             )
             .get('/first')
@@ -310,7 +335,7 @@ void main() {
             .swagger(
               summary: 'Second route',
               responses: {
-                '200': l.schema({'message': l.string()}).required()
+                '200': l.schema({'message': l.string()}).required(),
               },
             )
             .get('/second')
@@ -326,9 +351,10 @@ void main() {
       // Only the first route (before setupSwagger) should be recognized
       expect(paths.keys, contains('/first'));
       expect(
-          ((paths['/first'] as Map<String, dynamic>)['get']
-              as Map<String, dynamic>)['summary'],
-          equals('First route'));
+        ((paths['/first'] as Map<String, dynamic>)['get']
+            as Map<String, dynamic>)['summary'],
+        equals('First route'),
+      );
 
       // The second route (after setupSwagger) is not captured
       expect(paths.keys, isNot(contains('/second')));
@@ -382,21 +408,27 @@ void main() {
       final paths = openApiSpec['paths'] as Map<String, dynamic>;
 
       // Check that extra metadata is properly persisted
-      final testExtraPath = (paths['/test-extra']
-          as Map<String, dynamic>)['get'] as Map<String, dynamic>;
+      final testExtraPath =
+          (paths['/test-extra'] as Map<String, dynamic>)['get']
+              as Map<String, dynamic>;
       expect(testExtraPath['summary'], equals('Test extra persistence'));
-      expect(testExtraPath['description'],
-          equals('This tests that swagger metadata is properly stored'));
+      expect(
+        testExtraPath['description'],
+        equals('This tests that swagger metadata is properly stored'),
+      );
       expect(testExtraPath['deprecated'], equals(true));
       expect(testExtraPath['tags'], equals(['test']));
 
       // Check isolation between routes
-      final otherPath = (paths['/other'] as Map<String, dynamic>)['get']
-          as Map<String, dynamic>;
+      final otherPath =
+          (paths['/other'] as Map<String, dynamic>)['get']
+              as Map<String, dynamic>;
       expect(otherPath['summary'], equals('Another route'));
       expect(otherPath['tags'], equals(['other']));
-      expect(otherPath['deprecated'],
-          isNull); // Should not inherit from previous route
+      expect(
+        otherPath['deprecated'],
+        isNull,
+      ); // Should not inherit from previous route
 
       await server.close();
     });
@@ -407,7 +439,7 @@ void main() {
             .swagger(
               summary: 'Test endpoint',
               responses: {
-                '200': l.schema({'test': l.boolean()}).required()
+                '200': l.schema({'test': l.boolean()}).required(),
               },
             )
             .get('/test')
@@ -425,9 +457,10 @@ void main() {
       final docResponse = await server.get('/api-docs');
       expect(docResponse.statusCode, equals(200));
       expect(
-          ((docResponse.json() as Map<String, dynamic>)['info']
-              as Map<String, dynamic>)['title'],
-          equals('UI Test API'));
+        ((docResponse.json() as Map<String, dynamic>)['info']
+            as Map<String, dynamic>)['title'],
+        equals('UI Test API'),
+      );
 
       // Test custom UI path
       final uiResponse = await server.get('/swagger-ui');

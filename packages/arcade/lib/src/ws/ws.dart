@@ -34,22 +34,20 @@ Future<void> disposeWebSocketStorage() async {
 
 typedef Emit = FutureOr<void> Function(dynamic message);
 typedef Close = FutureOr<void> Function();
-typedef WebSocketManager = ({
-  String id,
-  Emit emit,
-  Close close,
-});
+typedef WebSocketManager = ({String id, Emit emit, Close close});
 
-typedef WebSocketHandler<T extends RequestContext> = FutureOr<void> Function(
-  T context,
-  dynamic message,
-  WebSocketManager manager,
-);
+typedef WebSocketHandler<T extends RequestContext> =
+    FutureOr<void> Function(
+      T context,
+      dynamic message,
+      WebSocketManager manager,
+    );
 
-typedef OnConnection<T extends RequestContext> = FutureOr<void> Function(
-  T context,
-  WebSocketManager manager,
-);
+typedef OnConnection<T extends RequestContext> =
+    FutureOr<void> Function(
+      T context,
+      WebSocketManager manager,
+    );
 
 Future<void> setupWsConnection<T extends RequestContext>({
   required T context,
@@ -63,7 +61,8 @@ Future<void> setupWsConnection<T extends RequestContext>({
   // Validate that this is a valid WebSocket upgrade request
   if (!WebSocketTransformer.isUpgradeRequest(context.rawRequest)) {
     throw const BadRequestException(
-        message: 'Invalid WebSocket upgrade request');
+      message: 'Invalid WebSocket upgrade request',
+    );
   }
 
   final ctx = await runBeforeHooks(context, route);
@@ -153,7 +152,9 @@ Future<WebSocketConnectionInfo?> getConnectionInfo(String connectionId) async {
 
 /// Update connection metadata
 Future<void> updateConnectionMetadata(
-    String connectionId, Map<String, dynamic> metadata) async {
+  String connectionId,
+  Map<String, dynamic> metadata,
+) async {
   await wsStorageManager.updateConnectionMetadata(connectionId, metadata);
 }
 

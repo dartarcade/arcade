@@ -102,8 +102,8 @@ Future<void> _handleRequest(HttpRequest request) async {
       // Security check: ensure the resolved path is within the static directory
       try {
         final resolvedPath = file.resolveSymbolicLinksSync();
-        final staticDirPath =
-            ArcadeConfiguration.staticFilesDirectory.resolveSymbolicLinksSync();
+        final staticDirPath = ArcadeConfiguration.staticFilesDirectory
+            .resolveSymbolicLinksSync();
 
         if (!resolvedPath.startsWith(staticDirPath)) {
           Logger.root.warning('Attempted directory traversal: $resolvedPath');

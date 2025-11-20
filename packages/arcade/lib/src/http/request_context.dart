@@ -175,8 +175,9 @@ class RequestContext {
         continue;
       }
 
-      final contentDispositionType =
-          _parseFormDataContentDisposition(contentDisposition);
+      final contentDispositionType = _parseFormDataContentDisposition(
+        contentDisposition,
+      );
       if (contentDispositionType == null) {
         continue;
       }

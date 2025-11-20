@@ -47,10 +47,12 @@ void main() {
       expect(result, contains('John'));
     });
 
-    test('should throw an exception if the nested view file does not exist',
-        () {
-      expect(() => view('nested/nonexistent'), throwsException);
-    });
+    test(
+      'should throw an exception if the nested view file does not exist',
+      () {
+        expect(() => view('nested/nonexistent'), throwsException);
+      },
+    );
   });
 
   group('inheritance', () {

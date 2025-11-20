@@ -144,8 +144,9 @@ Schema? _validationsToSwagger(
               );
             }
             // Check if this ref field is required
-            final isFieldRequired = resolvedValidator.validations
-                .any((v) => v is RequiredValidation);
+            final isFieldRequired = resolvedValidator.validations.any(
+              (v) => v is RequiredValidation,
+            );
             if (isFieldRequired) {
               r.add(key);
             }
@@ -158,8 +159,9 @@ Schema? _validationsToSwagger(
             resolvedValidator.validations.isNotEmpty &&
             resolvedValidator.validations.first is SchemaValidation) {
           // Check if this ref field is required
-          final isFieldRequired = resolvedValidator.validations
-              .any((v) => v is RequiredValidation);
+          final isFieldRequired = resolvedValidator.validations.any(
+            (v) => v is RequiredValidation,
+          );
           if (isFieldRequired) {
             r.add(key);
           }

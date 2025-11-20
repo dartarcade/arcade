@@ -114,7 +114,8 @@ class ArcadeTestState {
 
     if (state['routeGroupPrefix'] != '') {
       errors.add(
-          'Route group prefix not cleared: "${state['routeGroupPrefix']}"');
+        'Route group prefix not cleared: "${state['routeGroupPrefix']}"',
+      );
     }
 
     if (state['hasCurrentProcessingRoute'] == true) {
@@ -123,22 +124,26 @@ class ArcadeTestState {
 
     if (state['globalBeforeHooksCount'] != 0) {
       errors.add(
-          'Global before hooks not cleared: ${state['globalBeforeHooksCount']} hooks remaining');
+        'Global before hooks not cleared: ${state['globalBeforeHooksCount']} hooks remaining',
+      );
     }
 
     if (state['globalAfterHooksCount'] != 0) {
       errors.add(
-          'Global after hooks not cleared: ${state['globalAfterHooksCount']} hooks remaining');
+        'Global after hooks not cleared: ${state['globalAfterHooksCount']} hooks remaining',
+      );
     }
 
     if (state['globalAfterWebSocketHooksCount'] != 0) {
       errors.add(
-          'Global after WebSocket hooks not cleared: ${state['globalAfterWebSocketHooksCount']} hooks remaining');
+        'Global after WebSocket hooks not cleared: ${state['globalAfterWebSocketHooksCount']} hooks remaining',
+      );
     }
 
     if (state['localConnectionsCount'] != 0) {
       errors.add(
-          'WebSocket connections not cleared: ${state['localConnectionsCount']} connections remaining');
+        'WebSocket connections not cleared: ${state['localConnectionsCount']} connections remaining',
+      );
     }
 
     if (errors.isNotEmpty) {

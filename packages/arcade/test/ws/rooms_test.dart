@@ -39,11 +39,13 @@ void main() {
                 await joinRoom(manager.id, room);
                 joinedClientId = manager.id;
                 joinedRoom = room;
-                manager.emit(jsonEncode({
-                  'type': 'joined',
-                  'room': room,
-                  'clientId': manager.id,
-                }));
+                manager.emit(
+                  jsonEncode({
+                    'type': 'joined',
+                    'room': room,
+                    'clientId': manager.id,
+                  }),
+                );
               }
             },
           );
@@ -59,11 +61,12 @@ void main() {
 
         // Join a room
         ws.send(
-            null,
-            jsonEncode({
-              'action': 'join',
-              'room': 'lobby',
-            }));
+          null,
+          jsonEncode({
+            'action': 'join',
+            'room': 'lobby',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
@@ -91,17 +94,21 @@ void main() {
                 case 'join':
                   final room = data['room'] as String;
                   await joinRoom(manager.id, room);
-                  manager.emit(jsonEncode({
-                    'type': 'joined',
-                    'room': room,
-                  }));
+                  manager.emit(
+                    jsonEncode({
+                      'type': 'joined',
+                      'room': room,
+                    }),
+                  );
                 case 'leave':
                   final room = data['room'] as String;
                   await leaveRoom(manager.id, room);
-                  manager.emit(jsonEncode({
-                    'type': 'left',
-                    'room': room,
-                  }));
+                  manager.emit(
+                    jsonEncode({
+                      'type': 'left',
+                      'room': room,
+                    }),
+                  );
               }
             },
           );
@@ -117,21 +124,23 @@ void main() {
 
         // Join a room
         ws.send(
-            null,
-            jsonEncode({
-              'action': 'join',
-              'room': 'lobby',
-            }));
+          null,
+          jsonEncode({
+            'action': 'join',
+            'room': 'lobby',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
         // Leave the room
         ws.send(
-            null,
-            jsonEncode({
-              'action': 'leave',
-              'room': 'lobby',
-            }));
+          null,
+          jsonEncode({
+            'action': 'leave',
+            'room': 'lobby',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
@@ -160,10 +169,12 @@ void main() {
               if (data['action'] == 'join') {
                 final room = data['room'] as String;
                 await joinRoom(manager.id, room);
-                manager.emit(jsonEncode({
-                  'type': 'joined',
-                  'room': room,
-                }));
+                manager.emit(
+                  jsonEncode({
+                    'type': 'joined',
+                    'room': room,
+                  }),
+                );
               }
             },
           );
@@ -218,22 +229,25 @@ void main() {
                 case 'join':
                   final room = data['room'] as String;
                   await joinRoom(manager.id, room);
-                  manager.emit(jsonEncode({
-                    'type': 'joined',
-                    'room': room,
-                    'clientId': manager.id,
-                  }));
+                  manager.emit(
+                    jsonEncode({
+                      'type': 'joined',
+                      'room': room,
+                      'clientId': manager.id,
+                    }),
+                  );
                 case 'broadcast':
                   final room = data['room'] as String;
                   final msg = data['message'] as String;
                   await emitToRoom(
-                      room,
-                      jsonEncode({
-                        'type': 'room-message',
-                        'room': room,
-                        'message': msg,
-                        'from': manager.id,
-                      }));
+                    room,
+                    jsonEncode({
+                      'type': 'room-message',
+                      'room': room,
+                      'message': msg,
+                      'from': manager.id,
+                    }),
+                  );
               }
             },
           );
@@ -273,12 +287,13 @@ void main() {
 
         // Client 1 broadcasts to the room
         ws1.send(
-            null,
-            jsonEncode({
-              'action': 'broadcast',
-              'room': 'game-room',
-              'message': 'Hello room!',
-            }));
+          null,
+          jsonEncode({
+            'action': 'broadcast',
+            'room': 'game-room',
+            'message': 'Hello room!',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
@@ -299,87 +314,100 @@ void main() {
         await ws3.close();
       });
 
-      test('client in multiple rooms receives messages from all rooms',
-          () async {
-        server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/room').handleWebSocket(
-            (context, message, manager) async {
-              final data =
-                  jsonDecode(message as String) as Map<String, dynamic>;
+      test(
+        'client in multiple rooms receives messages from all rooms',
+        () async {
+          server = await ArcadeTestServer.withRoutes(() {
+            route.get('/ws/room').handleWebSocket(
+              (context, message, manager) async {
+                final data =
+                    jsonDecode(message as String) as Map<String, dynamic>;
 
-              switch (data['action']) {
-                case 'join':
-                  final room = data['room'] as String;
-                  await joinRoom(manager.id, room);
-                case 'broadcast':
-                  final room = data['room'] as String;
-                  final msg = data['message'] as String;
-                  await emitToRoom(
+                switch (data['action']) {
+                  case 'join':
+                    final room = data['room'] as String;
+                    await joinRoom(manager.id, room);
+                  case 'broadcast':
+                    final room = data['room'] as String;
+                    final msg = data['message'] as String;
+                    await emitToRoom(
                       room,
                       jsonEncode({
                         'type': 'room-message',
                         'room': room,
                         'message': msg,
-                      }));
-              }
-            },
-          );
-        });
+                      }),
+                    );
+                }
+              },
+            );
+          });
 
-        // Connect two clients
-        final ws1 = await server.connectWebSocket('/ws/room');
-        final ws2 = await server.connectWebSocket('/ws/room');
+          // Connect two clients
+          final ws1 = await server.connectWebSocket('/ws/room');
+          final ws2 = await server.connectWebSocket('/ws/room');
 
-        // Collect messages
-        final messages1 = <Map<String, dynamic>>[];
-        ws1.messages.listen((msg) {
-          messages1.add(jsonDecode(msg.data as String) as Map<String, dynamic>);
-        });
+          // Collect messages
+          final messages1 = <Map<String, dynamic>>[];
+          ws1.messages.listen((msg) {
+            messages1.add(
+              jsonDecode(msg.data as String) as Map<String, dynamic>,
+            );
+          });
 
-        // Client 1 joins multiple rooms
-        ws1.send(null, jsonEncode({'action': 'join', 'room': 'room-a'}));
-        ws1.send(null, jsonEncode({'action': 'join', 'room': 'room-b'}));
+          // Client 1 joins multiple rooms
+          ws1.send(null, jsonEncode({'action': 'join', 'room': 'room-a'}));
+          ws1.send(null, jsonEncode({'action': 'join', 'room': 'room-b'}));
 
-        // Client 2 joins only room-a
-        ws2.send(null, jsonEncode({'action': 'join', 'room': 'room-a'}));
+          // Client 2 joins only room-a
+          ws2.send(null, jsonEncode({'action': 'join', 'room': 'room-a'}));
 
-        await Future.delayed(const Duration(milliseconds: 100));
-        messages1.clear();
+          await Future.delayed(const Duration(milliseconds: 100));
+          messages1.clear();
 
-        // Broadcast to room-a
-        ws2.send(
+          // Broadcast to room-a
+          ws2.send(
             null,
             jsonEncode({
               'action': 'broadcast',
               'room': 'room-a',
               'message': 'Message to room A',
-            }));
+            }),
+          );
 
-        // Broadcast to room-b (from client 1)
-        ws1.send(
+          // Broadcast to room-b (from client 1)
+          ws1.send(
             null,
             jsonEncode({
               'action': 'broadcast',
               'room': 'room-b',
               'message': 'Message to room B',
-            }));
+            }),
+          );
 
-        await Future.delayed(const Duration(milliseconds: 100));
+          await Future.delayed(const Duration(milliseconds: 100));
 
-        // Client 1 should receive both messages
-        expect(messages1.length, equals(2));
-        expect(
-            messages1.any((m) =>
-                m['room'] == 'room-a' && m['message'] == 'Message to room A'),
-            isTrue);
-        expect(
-            messages1.any((m) =>
-                m['room'] == 'room-b' && m['message'] == 'Message to room B'),
-            isTrue);
+          // Client 1 should receive both messages
+          expect(messages1.length, equals(2));
+          expect(
+            messages1.any(
+              (m) =>
+                  m['room'] == 'room-a' && m['message'] == 'Message to room A',
+            ),
+            isTrue,
+          );
+          expect(
+            messages1.any(
+              (m) =>
+                  m['room'] == 'room-b' && m['message'] == 'Message to room B',
+            ),
+            isTrue,
+          );
 
-        await ws1.close();
-        await ws2.close();
-      });
+          await ws1.close();
+          await ws2.close();
+        },
+      );
     });
 
     group('Room Edge Cases', () {
@@ -399,10 +427,12 @@ void main() {
                   manager.emit(jsonEncode({'type': 'joined', 'room': room}));
                 } catch (e) {
                   errorMessage = e.toString();
-                  manager.emit(jsonEncode({
-                    'type': 'error',
-                    'message': 'Invalid room name',
-                  }));
+                  manager.emit(
+                    jsonEncode({
+                      'type': 'error',
+                      'message': 'Invalid room name',
+                    }),
+                  );
                 }
               }
             },
@@ -419,11 +449,12 @@ void main() {
 
         // Try to join room with invalid name (contains spaces)
         ws.send(
-            null,
-            jsonEncode({
-              'action': 'join',
-              'room': 'invalid room name',
-            }));
+          null,
+          jsonEncode({
+            'action': 'join',
+            'room': 'invalid room name',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
@@ -444,10 +475,12 @@ void main() {
               if (data['action'] == 'leave') {
                 final room = data['room'] as String;
                 await leaveRoom(manager.id, room);
-                manager.emit(jsonEncode({
-                  'type': 'left',
-                  'room': room,
-                }));
+                manager.emit(
+                  jsonEncode({
+                    'type': 'left',
+                    'room': room,
+                  }),
+                );
               }
             },
           );
@@ -463,11 +496,12 @@ void main() {
 
         // Try to leave a room never joined
         ws.send(
-            null,
-            jsonEncode({
-              'action': 'leave',
-              'room': 'never-joined',
-            }));
+          null,
+          jsonEncode({
+            'action': 'leave',
+            'room': 'never-joined',
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 

@@ -96,8 +96,9 @@ class CreateCommand extends Command {
 
     final binDir = Directory('$name/bin');
     final libDir = Directory('$name/lib');
-    final dartFiles = (findFilesInDir(binDir) + findFilesInDir(libDir))
-        .where((f) => f.path.endsWith('.dart'));
+    final dartFiles = (findFilesInDir(binDir) + findFilesInDir(libDir)).where(
+      (f) => f.path.endsWith('.dart'),
+    );
     for (final file in dartFiles) {
       final lines = file.readAsLinesSync();
       final newLines = <String>[];

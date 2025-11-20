@@ -60,10 +60,12 @@ void main() {
         // Trying to make a request after close should fail
         expect(
           () => server.get('/test'),
-          throwsA(anyOf([
-            isA<StateError>(), // Client is closed
-            isA<Exception>(), // Connection error
-          ])),
+          throwsA(
+            anyOf([
+              isA<StateError>(), // Client is closed
+              isA<Exception>(), // Connection error
+            ]),
+          ),
         );
       });
 
@@ -196,8 +198,8 @@ void main() {
             return switch (bodyResult) {
               BodyParseSuccess(value: final value) => value,
               BodyParseFailure(error: final error) => {
-                  'error': 'Parse failed: $error'
-                },
+                'error': 'Parse failed: $error',
+              },
             };
           });
 
@@ -232,8 +234,10 @@ void main() {
 
         expect(response.statusCode, equals(200));
         // The exact error message may vary, just check it's an error
-        expect((response.json() as Map<String, dynamic>)['error'],
-            contains('Parse failed'));
+        expect(
+          (response.json() as Map<String, dynamic>)['error'],
+          contains('Parse failed'),
+        );
       });
     });
 
@@ -262,10 +266,13 @@ void main() {
       });
 
       test('sends custom headers', () async {
-        final response = await server.get('/headers', headers: {
-          'X-Custom-Header': 'test-value',
-          'X-Another-Header': 'another-value',
-        });
+        final response = await server.get(
+          '/headers',
+          headers: {
+            'X-Custom-Header': 'test-value',
+            'X-Another-Header': 'another-value',
+          },
+        );
 
         expect(response.statusCode, equals(200));
         final body = response.json() as Map<String, dynamic>;
@@ -274,9 +281,12 @@ void main() {
       });
 
       test('authorization header', () async {
-        final response = await server.get('/auth', headers: {
-          'Authorization': 'Bearer token123',
-        });
+        final response = await server.get(
+          '/auth',
+          headers: {
+            'Authorization': 'Bearer token123',
+          },
+        );
 
         expect(response.statusCode, equals(200));
         expect(response.json(), equals({'authorized': true}));
@@ -361,8 +371,10 @@ void main() {
         expect(response.statusCode, equals(200));
         final body = response.json() as Map<String, dynamic>;
         expect(body['id'], equals('123'));
-        expect((body['query'] as Map<String, dynamic>)['filter'],
-            equals('active'));
+        expect(
+          (body['query'] as Map<String, dynamic>)['filter'],
+          equals('active'),
+        );
         expect((body['query'] as Map<String, dynamic>)['sort'], equals('name'));
       });
 
@@ -397,8 +409,10 @@ void main() {
         // The second server overwrites the first server's routes
         // So server1 will now respond to server2's routes
         final crossResponse1 = await server1.get('/server2');
-        expect(crossResponse1.statusCode,
-            equals(200)); // Actually works due to shared state
+        expect(
+          crossResponse1.statusCode,
+          equals(200),
+        ); // Actually works due to shared state
 
         await server1.close();
         await server2.close();
@@ -446,21 +460,27 @@ void main() {
 
       setUp(() async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/with-before').before((ctx) {
-            // Use a different method to pass data
-            return ctx;
-          }).handle((ctx) {
-            return {'before': true};
-          });
+          route
+              .get('/with-before')
+              .before((ctx) {
+                // Use a different method to pass data
+                return ctx;
+              })
+              .handle((ctx) {
+                return {'before': true};
+              });
 
-          route.get('/with-after').handle((ctx) {
-            return {'initial': true};
-          }).after((ctx, result) {
-            if (result is Map) {
-              result['after'] = true;
-            }
-            return (ctx, result);
-          });
+          route
+              .get('/with-after')
+              .handle((ctx) {
+                return {'initial': true};
+              })
+              .after((ctx, result) {
+                if (result is Map) {
+                  result['after'] = true;
+                }
+                return (ctx, result);
+              });
         });
       });
 

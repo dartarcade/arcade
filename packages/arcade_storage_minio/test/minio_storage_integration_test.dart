@@ -13,7 +13,8 @@ void main() {
         final result = await Process.run('docker', ['ps']);
         if (!result.stdout.toString().contains('minio')) {
           fail(
-              'MinIO container is not running. Please run: docker-compose up -d');
+            'MinIO container is not running. Please run: docker-compose up -d',
+          );
         }
       } catch (e) {
         fail('Docker is not available or MinIO is not running: $e');
@@ -256,9 +257,11 @@ void main() {
         expect(metadata.etag, isNotEmpty);
         expect(metadata.lastModified, isNotNull);
         expect(
-            metadata.lastModified!
-                .isBefore(DateTime.now().add(Duration(seconds: 1))),
-            isTrue);
+          metadata.lastModified!.isBefore(
+            DateTime.now().add(const Duration(seconds: 1)),
+          ),
+          isTrue,
+        );
         expect(metadata.metaData, isNotNull);
 
         final metaDataMap = metadata.metaData!;
@@ -390,8 +393,10 @@ void main() {
         );
 
         final sourceStream = await storage.getObject(testBucket, 'source.txt');
-        final destStream =
-            await storage.getObject(testBucket, 'destination.txt');
+        final destStream = await storage.getObject(
+          testBucket,
+          'destination.txt',
+        );
 
         final sourceChunks = await sourceStream.toList();
         final destChunks = await destStream.toList();
@@ -426,51 +431,64 @@ void main() {
         }
       });
 
-      test('fPutObject uploads file from filesystem', () async {
-        final tempFile = File('${Directory.systemTemp.path}/test_upload.txt');
-        await tempFile.writeAsString('File content for upload');
+      test(
+        'fPutObject uploads file from filesystem',
+        () async {
+          final tempFile = File('${Directory.systemTemp.path}/test_upload.txt');
+          await tempFile.writeAsString('File content for upload');
 
-        await storage.fPutObject(
-          testBucket,
-          'uploaded-file.txt',
-          tempFile.path,
-        );
+          await storage.fPutObject(
+            testBucket,
+            'uploaded-file.txt',
+            tempFile.path,
+          );
 
-        final stream = await storage.getObject(testBucket, 'uploaded-file.txt');
-        final chunks = await stream.toList();
-        final content = String.fromCharCodes(
-          chunks.expand((chunk) => chunk),
-        );
+          final stream = await storage.getObject(
+            testBucket,
+            'uploaded-file.txt',
+          );
+          final chunks = await stream.toList();
+          final content = String.fromCharCodes(
+            chunks.expand((chunk) => chunk),
+          );
 
-        expect(content, equals('File content for upload'));
+          expect(content, equals('File content for upload'));
 
-        await tempFile.delete();
-      }, skip: !Platform.isLinux && !Platform.isMacOS && !Platform.isWindows);
+          await tempFile.delete();
+        },
+        skip: !Platform.isLinux && !Platform.isMacOS && !Platform.isWindows,
+      );
 
-      test('fGetObject downloads file to filesystem', () async {
-        const testData = 'File content for download';
-        final dataStream = Stream.value(testData.codeUnits);
+      test(
+        'fGetObject downloads file to filesystem',
+        () async {
+          const testData = 'File content for download';
+          final dataStream = Stream.value(testData.codeUnits);
 
-        await storage.putObject(
-          testBucket,
-          'download-source.txt',
-          dataStream,
-          length: testData.length,
-        );
+          await storage.putObject(
+            testBucket,
+            'download-source.txt',
+            dataStream,
+            length: testData.length,
+          );
 
-        final tempFile = File('${Directory.systemTemp.path}/test_download.txt');
-        await storage.fGetObject(
-          testBucket,
-          'download-source.txt',
-          tempFile.path,
-        );
+          final tempFile = File(
+            '${Directory.systemTemp.path}/test_download.txt',
+          );
+          await storage.fGetObject(
+            testBucket,
+            'download-source.txt',
+            tempFile.path,
+          );
 
-        expect(await tempFile.exists(), isTrue);
-        final content = await tempFile.readAsString();
-        expect(content, equals(testData));
+          expect(await tempFile.exists(), isTrue);
+          final content = await tempFile.readAsString();
+          expect(content, equals(testData));
 
-        await tempFile.delete();
-      }, skip: !Platform.isLinux && !Platform.isMacOS && !Platform.isWindows);
+          await tempFile.delete();
+        },
+        skip: !Platform.isLinux && !Platform.isMacOS && !Platform.isWindows,
+      );
     });
 
     group('Error Handling', () {

@@ -15,40 +15,54 @@ void main() {
     group('Request Properties', () {
       test('provides access to HTTP method', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/test').handle((ctx) => {
-                'method': ctx.method.methodString,
-                'isGet': ctx.method == HttpMethod.get,
-              });
-          route.post('/test').handle((ctx) => {
-                'method': ctx.method.methodString,
-                'isPost': ctx.method == HttpMethod.post,
-              });
+          route
+              .get('/test')
+              .handle(
+                (ctx) => {
+                  'method': ctx.method.methodString,
+                  'isGet': ctx.method == HttpMethod.get,
+                },
+              );
+          route
+              .post('/test')
+              .handle(
+                (ctx) => {
+                  'method': ctx.method.methodString,
+                  'isPost': ctx.method == HttpMethod.post,
+                },
+              );
         });
 
         var response = await server.get('/test');
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'method': 'GET',
-              'isGet': true,
-            }));
+          response,
+          hasJsonBody({
+            'method': 'GET',
+            'isGet': true,
+          }),
+        );
 
         response = await server.post('/test');
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'method': 'POST',
-              'isPost': true,
-            }));
+          response,
+          hasJsonBody({
+            'method': 'POST',
+            'isPost': true,
+          }),
+        );
       });
 
       test('provides access to request path', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/api/v1/users').handle((ctx) => {
-                'path': ctx.path,
-              });
+          route
+              .get('/api/v1/users')
+              .handle(
+                (ctx) => {
+                  'path': ctx.path,
+                },
+              );
         });
 
         final response = await server.get('/api/v1/users');
@@ -58,11 +72,15 @@ void main() {
 
       test('provides access to request headers', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/headers').handle((ctx) => {
-                'userAgent': ctx.requestHeaders.value('user-agent'),
-                'customHeader': ctx.requestHeaders.value('x-custom'),
-                'hasAuth': ctx.requestHeaders.value('authorization') != null,
-              });
+          route
+              .get('/headers')
+              .handle(
+                (ctx) => {
+                  'userAgent': ctx.requestHeaders.value('user-agent'),
+                  'customHeader': ctx.requestHeaders.value('x-custom'),
+                  'hasAuth': ctx.requestHeaders.value('authorization') != null,
+                },
+              );
         });
 
         final response = await server.get(
@@ -80,76 +98,95 @@ void main() {
 
       test('provides access to query parameters', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/search').handle((ctx) => {
-                'query': ctx.queryParameters['q'],
-                'limit': ctx.queryParameters['limit'],
-                'allParams': ctx.queryParameters,
-              });
+          route
+              .get('/search')
+              .handle(
+                (ctx) => {
+                  'query': ctx.queryParameters['q'],
+                  'limit': ctx.queryParameters['limit'],
+                  'allParams': ctx.queryParameters,
+                },
+              );
         });
 
-        final response =
-            await server.get('/search?q=arcade&limit=10&sort=name');
+        final response = await server.get(
+          '/search?q=arcade&limit=10&sort=name',
+        );
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'query': 'arcade',
+          response,
+          hasJsonBody({
+            'query': 'arcade',
+            'limit': '10',
+            'allParams': {
+              'q': 'arcade',
               'limit': '10',
-              'allParams': {
-                'q': 'arcade',
-                'limit': '10',
-                'sort': 'name',
-              },
-            }));
+              'sort': 'name',
+            },
+          }),
+        );
       });
 
       test('provides access to path parameters', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/users/:userId/posts/:postId').handle((ctx) => {
-                'userId': ctx.pathParameters['userId'],
-                'postId': ctx.pathParameters['postId'],
-                'allParams': ctx.pathParameters,
-              });
+          route
+              .get('/users/:userId/posts/:postId')
+              .handle(
+                (ctx) => {
+                  'userId': ctx.pathParameters['userId'],
+                  'postId': ctx.pathParameters['postId'],
+                  'allParams': ctx.pathParameters,
+                },
+              );
         });
 
         final response = await server.get('/users/123/posts/456');
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
+          response,
+          hasJsonBody({
+            'userId': '123',
+            'postId': '456',
+            'allParams': {
               'userId': '123',
               'postId': '456',
-              'allParams': {
-                'userId': '123',
-                'postId': '456',
-              },
-            }));
+            },
+          }),
+        );
       });
 
       test('provides access to route metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/secure', extra: {
-            'requiresAuth': true,
-            'minRole': 'admin',
-          }).handle((ctx) => {
-                'routePath': ctx.route.path,
-                'routeMethod': ctx.route.method?.methodString,
-                'metadata': ctx.route.metadata?.extra,
-              });
+          route
+              .get(
+                '/secure',
+                extra: {
+                  'requiresAuth': true,
+                  'minRole': 'admin',
+                },
+              )
+              .handle(
+                (ctx) => {
+                  'routePath': ctx.route.path,
+                  'routeMethod': ctx.route.method?.methodString,
+                  'metadata': ctx.route.metadata?.extra,
+                },
+              );
         });
 
         final response = await server.get('/secure');
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'routePath': '/secure',
-              'routeMethod': 'GET',
-              'metadata': {
-                'requiresAuth': true,
-                'minRole': 'admin',
-              },
-            }));
+          response,
+          hasJsonBody({
+            'routePath': '/secure',
+            'routeMethod': 'GET',
+            'metadata': {
+              'requiresAuth': true,
+              'minRole': 'admin',
+            },
+          }),
+        );
       });
     });
 
@@ -173,30 +210,33 @@ void main() {
             final result = await ctx.jsonMap();
             return switch (result) {
               BodyParseSuccess(:final value) => {
-                  'success': true,
-                  'data': value,
-                },
+                'success': true,
+                'data': value,
+              },
               BodyParseFailure(:final error) => () {
-                  ctx.statusCode = 400;
-                  return {
-                    'success': false,
-                    'error': error.toString(),
-                  };
-                }(),
+                ctx.statusCode = 400;
+                return {
+                  'success': false,
+                  'error': error.toString(),
+                };
+              }(),
             };
           });
         });
 
         // Valid JSON
-        var response =
-            await server.post('/json', body: {'name': 'Test', 'age': 25});
+        var response = await server.post(
+          '/json',
+          body: {'name': 'Test', 'age': 25},
+        );
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'success': true,
-              'data': {'name': 'Test', 'age': 25},
-            }));
+          response,
+          hasJsonBody({
+            'success': true,
+            'data': {'name': 'Test', 'age': 25},
+          }),
+        );
 
         // Invalid JSON
         response = await server.post('/json', body: 'not json');
@@ -211,14 +251,14 @@ void main() {
             final result = await ctx.jsonList();
             return switch (result) {
               BodyParseSuccess(:final value) => {
-                  'success': true,
-                  'count': value.length,
-                  'items': value,
-                },
+                'success': true,
+                'count': value.length,
+                'items': value,
+              },
               BodyParseFailure() => () {
-                  ctx.statusCode = 400;
-                  return {'success': false};
-                }(),
+                ctx.statusCode = 400;
+                return {'success': false};
+              }(),
             };
           });
         });
@@ -226,12 +266,13 @@ void main() {
         final response = await server.post('/array', body: [1, 2, 3, 4, 5]);
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'success': true,
-              'count': 5,
-              'items': [1, 2, 3, 4, 5],
-            }));
+          response,
+          hasJsonBody({
+            'success': true,
+            'count': 5,
+            'items': [1, 2, 3, 4, 5],
+          }),
+        );
       });
 
       test('parses form data', () async {
@@ -240,13 +281,13 @@ void main() {
             final result = await ctx.formData();
             return switch (result) {
               BodyParseSuccess(:final value) => {
-                  'fields': value.data,
-                  'fileCount': value.files.length,
-                },
+                'fields': value.data,
+                'fileCount': value.files.length,
+              },
               BodyParseFailure() => () {
-                  ctx.statusCode = 400;
-                  return {'error': 'Failed to parse form data'};
-                }(),
+                ctx.statusCode = 400;
+                return {'error': 'Failed to parse form data'};
+              }(),
             };
           });
         });
@@ -282,14 +323,15 @@ test@example.com\r
 
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'fields': {
-                'username': 'testuser',
-                'email': 'test@example.com',
-              },
-              'fileCount': 0,
-            }));
+          response,
+          hasJsonBody({
+            'fields': {
+              'username': 'testuser',
+              'email': 'test@example.com',
+            },
+            'fileCount': 0,
+          }),
+        );
 
         client.close();
       });
@@ -420,8 +462,10 @@ test@example.com\r
         server = await ArcadeTestServer.withRoutes(() {
           route.post('/bytes').handle((ctx) async {
             final bytes = await ctx.rawBody;
-            final totalBytes =
-                bytes.fold<int>(0, (sum, chunk) => sum + chunk.length);
+            final totalBytes = bytes.fold<int>(
+              0,
+              (sum, chunk) => sum + chunk.length,
+            );
             return {
               'chunks': bytes.length,
               'totalBytes': totalBytes,
@@ -432,11 +476,12 @@ test@example.com\r
         final response = await server.post('/bytes', body: 'Test data');
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'chunks': 1,
-              'totalBytes': 9, // "Test data".length
-            }));
+          response,
+          hasJsonBody({
+            'chunks': 1,
+            'totalBytes': 9, // "Test data".length
+          }),
+        );
       });
     });
 
@@ -508,12 +553,13 @@ test@example.com\r
 
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'name': 'John Doe',
-              'email': 'john@example.com',
-              'age': '30',
-            }));
+          response,
+          hasJsonBody({
+            'name': 'John Doe',
+            'email': 'john@example.com',
+            'age': '30',
+          }),
+        );
 
         client.close();
       });

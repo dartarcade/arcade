@@ -15,7 +15,8 @@ void main() {
         final result = await Process.run('docker', ['ps']);
         if (!result.stdout.toString().contains('redis')) {
           fail(
-              'Redis container is not running. Please run: docker-compose up -d');
+            'Redis container is not running. Please run: docker-compose up -d',
+          );
         }
       } catch (e) {
         fail('Docker is not available or Redis is not running: $e');
@@ -76,7 +77,7 @@ void main() {
           'name': 'Test User',
           'age': 30,
           'active': true,
-          'tags': ['dart', 'redis', 'cache']
+          'tags': ['dart', 'redis', 'cache'],
         };
         await cache.set('json_key', json);
 
@@ -115,7 +116,10 @@ void main() {
 
       test('setWithTtl expires keys', () async {
         await cache.setWithTtl(
-            'ttl_key', 'expires soon', const Duration(seconds: 1));
+          'ttl_key',
+          'expires soon',
+          const Duration(seconds: 1),
+        );
 
         // Key should exist immediately
         expect(await cache.contains('ttl_key'), isTrue);
@@ -179,18 +183,25 @@ void main() {
         expect(count2, equals(1));
 
         expect(
-            messages.length, greaterThanOrEqualTo(3)); // subscribe + 2 messages
+          messages.length,
+          greaterThanOrEqualTo(3),
+        ); // subscribe + 2 messages
 
         // Check subscribe event
-        final subscribeEvent = messages.firstWhere((e) => e is PubSubSubscribed,
-            orElse: () => throw StateError('No subscribe event found'));
+        final subscribeEvent = messages.firstWhere(
+          (e) => e is PubSubSubscribed,
+          orElse: () => throw StateError('No subscribe event found'),
+        );
         expect(subscribeEvent, isA<PubSubSubscribed>());
-        expect((subscribeEvent as PubSubSubscribed).channel,
-            equals('test_channel'));
+        expect(
+          (subscribeEvent as PubSubSubscribed).channel,
+          equals('test_channel'),
+        );
 
         // Check message events
-        final messageEvents =
-            messages.whereType<PubSubMessage<String>>().toList();
+        final messageEvents = messages
+            .whereType<PubSubMessage<String>>()
+            .toList();
         expect(messageEvents.length, equals(2));
         expect(messageEvents[0].data, equals('Hello'));
         expect(messageEvents[1].data, equals('World'));
@@ -286,9 +297,13 @@ void main() {
         expect(messages.length, equals(3));
 
         expect(
-            messages.where((m) => m.channel == 'channel1').length, equals(2));
+          messages.where((m) => m.channel == 'channel1').length,
+          equals(2),
+        );
         expect(
-            messages.where((m) => m.channel == 'channel2').length, equals(1));
+          messages.where((m) => m.channel == 'channel2').length,
+          equals(1),
+        );
 
         await listener.cancel();
         await cache.unsubscribe(['channel1', 'channel2']);

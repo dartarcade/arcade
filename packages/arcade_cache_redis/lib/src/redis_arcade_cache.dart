@@ -186,13 +186,16 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
             switch (kind) {
               case 'subscribe':
                 final count = data[2] as int;
-                controller.add(PubSubSubscribed(channel.toString(), count)
-                    as PubSubEvent<T>);
+                controller.add(
+                  PubSubSubscribed(channel.toString(), count) as PubSubEvent<T>,
+                );
 
               case 'unsubscribe':
                 final count = data[2] as int;
-                controller.add(PubSubUnsubscribed(channel.toString(), count)
-                    as PubSubEvent<T>);
+                controller.add(
+                  PubSubUnsubscribed(channel.toString(), count)
+                      as PubSubEvent<T>,
+                );
 
               case 'message':
                 final rawData = data[2];
@@ -202,8 +205,9 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
                     ? messageMapper(messageData)
                     : messageData as T;
 
-                controller
-                    .add(PubSubMessage<T>(channel.toString(), mappedData));
+                controller.add(
+                  PubSubMessage<T>(channel.toString(), mappedData),
+                );
             }
           }
         },

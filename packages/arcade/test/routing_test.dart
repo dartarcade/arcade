@@ -189,16 +189,18 @@ void main() {
           });
         });
 
-        final response =
-            await server.get('/filter?status=active&limit=10&sort=name');
+        final response = await server.get(
+          '/filter?status=active&limit=10&sort=name',
+        );
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'status': 'active',
-              'limit': '10',
-              'sort': 'name',
-            }));
+          response,
+          hasJsonBody({
+            'status': 'active',
+            'limit': '10',
+            'sort': 'name',
+          }),
+        );
       });
 
       test('query parameters with special characters', () async {
@@ -208,15 +210,17 @@ void main() {
           });
         });
 
-        final response =
-            await server.get('/search?q=hello+world&email=test%40example.com');
+        final response = await server.get(
+          '/search?q=hello+world&email=test%40example.com',
+        );
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'q': 'hello world',
-              'email': 'test@example.com',
-            }));
+          response,
+          hasJsonBody({
+            'q': 'hello world',
+            'email': 'test@example.com',
+          }),
+        );
       });
 
       test('empty query parameters', () async {
@@ -330,7 +334,7 @@ void main() {
               (ctx) {
                 ctx.responseHeaders.add('X-API-Version', 'v1');
                 return ctx;
-              }
+              },
             ],
           );
         });
@@ -461,30 +465,35 @@ void main() {
     group('Route Metadata', () {
       test('routes can have metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/users',
-              extra: {'requiresAuth': true, 'role': 'admin'}).handle((ctx) {
-            return {'meta': ctx.route.metadata?.extra};
-          });
+          route
+              .get('/users', extra: {'requiresAuth': true, 'role': 'admin'})
+              .handle((ctx) {
+                return {'meta': ctx.route.metadata?.extra};
+              });
         });
 
         final response = await server.get('/users');
         expect(response, isOk());
         expect(
-            response,
-            hasJsonBody({
-              'meta': {'requiresAuth': true, 'role': 'admin'}
-            }));
+          response,
+          hasJsonBody({
+            'meta': {'requiresAuth': true, 'role': 'admin'},
+          }),
+        );
       });
 
       test('route metadata persists through hooks', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/secure', extra: {'secure': true}).before((ctx) {
-            final isSecure = ctx.route.metadata?.extra?['secure'] == true;
-            if (isSecure) {
-              ctx.responseHeaders.add('X-Secure', 'true');
-            }
-            return ctx;
-          }).handle((ctx) => 'secured');
+          route
+              .get('/secure', extra: {'secure': true})
+              .before((ctx) {
+                final isSecure = ctx.route.metadata?.extra?['secure'] == true;
+                if (isSecure) {
+                  ctx.responseHeaders.add('X-Secure', 'true');
+                }
+                return ctx;
+              })
+              .handle((ctx) => 'secured');
         });
 
         final response = await server.get('/secure');

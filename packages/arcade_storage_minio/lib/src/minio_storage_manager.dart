@@ -21,8 +21,9 @@ class MinioStorageManager implements BaseStorageManager<MinioConnectionInfo> {
     final (:endPoint, :accessKey, :secretKey, :useSSL, :region) =
         connectionInfo;
 
-    final uri =
-        Uri.parse(endPoint.contains('://') ? endPoint : 'http://$endPoint');
+    final uri = Uri.parse(
+      endPoint.contains('://') ? endPoint : 'http://$endPoint',
+    );
 
     _minio = Minio(
       endPoint: uri.host.isEmpty ? uri.path : uri.host,

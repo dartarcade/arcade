@@ -163,8 +163,8 @@ class MemoryCacheManager implements BaseCacheManager<void> {
     }
 
     // Store a factory function to create properly typed messages
-    _messageFactories[subscriptionId] =
-        (String ch, dynamic data) => PubSubMessage<T>(ch, data as T);
+    _messageFactories[subscriptionId] = (String ch, dynamic data) =>
+        PubSubMessage<T>(ch, data as T);
 
     // Track subscriptions synchronously
     for (final channel in channels) {
@@ -181,7 +181,8 @@ class MemoryCacheManager implements BaseCacheManager<void> {
         }
 
         controller.add(
-            PubSubSubscribed(channel, totalSubscriptions) as PubSubEvent<T>);
+          PubSubSubscribed(channel, totalSubscriptions) as PubSubEvent<T>,
+        );
       }
     });
 

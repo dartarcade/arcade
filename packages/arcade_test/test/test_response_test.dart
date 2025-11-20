@@ -133,11 +133,13 @@ void main() {
         expect(str, contains('TestResponse'));
         expect(str, contains('statusCode: 200'));
         expect(
-            str,
-            contains(
-                'contentType: text/html')); // Arcade returns text/html for strings
-        expect(str,
-            contains('bodyLength: 19')); // "Plain text response" is 19 chars
+          str,
+          contains('contentType: text/html'),
+        ); // Arcade returns text/html for strings
+        expect(
+          str,
+          contains('bodyLength: 19'),
+        ); // "Plain text response" is 19 chars
       });
     });
   });

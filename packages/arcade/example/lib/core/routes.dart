@@ -55,11 +55,11 @@ void defineRoutes() {
         onConnect: exampleController.onWsConnect,
       )
       .after(
-    (context, handleResult, id) {
-      print('After websocket handler for $id');
-      return (context, handleResult, id);
-    },
-  );
+        (context, handleResult, id) {
+          print('After websocket handler for $id');
+          return (context, handleResult, id);
+        },
+      );
 
   route.get('/any/*').handle((context) => 'Any route');
 
@@ -73,7 +73,9 @@ void defineRoutes() {
     ],
     defineRoutes: (route) {
       route().get('/').handle((context) => 'Group route');
-      route().get('/hello/:name').handle(
+      route()
+          .get('/hello/:name')
+          .handle(
             (context) =>
                 'Group route with path parameter: ${context.pathParameters['name']}',
           );

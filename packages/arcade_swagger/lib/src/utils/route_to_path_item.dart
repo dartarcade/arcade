@@ -32,10 +32,12 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
   for (final MapEntry(
         key: path,
         value: metadataForPath,
-      ) in groupedRoutes.entries) {
+      )
+      in groupedRoutes.entries) {
     if (path.isEmpty) continue;
-    final swaggerFormattedPath =
-        path.replaceAllMapped(RegExp(r':(\w+)'), (match) {
+    final swaggerFormattedPath = path.replaceAllMapped(RegExp(r':(\w+)'), (
+      match,
+    ) {
       return '{${match.group(1)}}';
     });
 

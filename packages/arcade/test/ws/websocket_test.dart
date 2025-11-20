@@ -59,11 +59,13 @@ void main() {
         server = await ArcadeTestServer.withRoutes(() {
           route.get('/ws/json').handleWebSocket((context, message, manager) {
             final data = jsonDecode(message as String) as Map<String, dynamic>;
-            manager.emit(jsonEncode({
-              'type': 'response',
-              'original': data,
-              'timestamp': DateTime.now().toIso8601String(),
-            }));
+            manager.emit(
+              jsonEncode({
+                'type': 'response',
+                'original': data,
+                'timestamp': DateTime.now().toIso8601String(),
+              }),
+            );
           });
         });
 
@@ -76,8 +78,10 @@ void main() {
             jsonDecode(response.data as String) as Map<String, dynamic>;
 
         expect(responseData['type'], equals('response'));
-        expect(responseData['original'],
-            equals({'type': 'request', 'data': 'test'}));
+        expect(
+          responseData['original'],
+          equals({'type': 'request', 'data': 'test'}),
+        );
         expect(responseData, contains('timestamp'));
 
         await ws.close();
@@ -141,14 +145,16 @@ void main() {
       test('WebSocket handler has access to request context', () async {
         server = await ArcadeTestServer.withRoutes(() {
           route.get('/ws/context').handleWebSocket((context, message, manager) {
-            manager.emit(jsonEncode({
-              'path': context.path,
-              'method': context.method.methodString,
-              'headers': {
-                'user-agent':
-                    context.requestHeaders.value('user-agent') ?? 'not-set',
-              },
-            }));
+            manager.emit(
+              jsonEncode({
+                'path': context.path,
+                'method': context.method.methodString,
+                'headers': {
+                  'user-agent':
+                      context.requestHeaders.value('user-agent') ?? 'not-set',
+                },
+              }),
+            );
           });
         });
 
@@ -171,16 +177,20 @@ void main() {
 
       test('WebSocket with path parameters', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route
-              .get('/ws/room/:roomId/user/:userId')
-              .handleWebSocket((context, message, manager) {
+          route.get('/ws/room/:roomId/user/:userId').handleWebSocket((
+            context,
+            message,
+            manager,
+          ) {
             final roomId = context.pathParameters['roomId'];
             final userId = context.pathParameters['userId'];
-            manager.emit(jsonEncode({
-              'roomId': roomId,
-              'userId': userId,
-              'message': message,
-            }));
+            manager.emit(
+              jsonEncode({
+                'roomId': roomId,
+                'userId': userId,
+                'message': message,
+              }),
+            );
           });
         });
 
@@ -204,16 +214,19 @@ void main() {
           route.get('/ws/query').handleWebSocket((context, message, manager) {
             final token = context.queryParameters['token'];
             final debug = context.queryParameters['debug'] == 'true';
-            manager.emit(jsonEncode({
-              'authenticated': token == 'valid-token',
-              'debug': debug,
-              'message': message,
-            }));
+            manager.emit(
+              jsonEncode({
+                'authenticated': token == 'valid-token',
+                'debug': debug,
+                'message': message,
+              }),
+            );
           });
         });
 
-        final ws = await server
-            .connectWebSocket('/ws/query?token=valid-token&debug=true');
+        final ws = await server.connectWebSocket(
+          '/ws/query?token=valid-token&debug=true',
+        );
 
         ws.send(null, 'Test message');
 
@@ -234,15 +247,17 @@ void main() {
         final connectedIds = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/lifecycle').handleWebSocket(
-            (context, message, manager) {
-              manager.emit('Message received: $message');
-            },
-            onConnect: (context, manager) {
-              connectedIds.add(manager.id);
-              manager.emit('Welcome! Your ID is: ${manager.id}');
-            },
-          );
+          route
+              .get('/ws/lifecycle')
+              .handleWebSocket(
+                (context, message, manager) {
+                  manager.emit('Message received: $message');
+                },
+                onConnect: (context, manager) {
+                  connectedIds.add(manager.id);
+                  manager.emit('Welcome! Your ID is: ${manager.id}');
+                },
+              );
         });
 
         final ws = await server.connectWebSocket('/ws/lifecycle');
@@ -297,7 +312,8 @@ void main() {
           const Duration(seconds: 2),
           onTimeout: () {
             throw TimeoutException(
-                'WebSocket did not close after manager.close()');
+              'WebSocket did not close after manager.close()',
+            );
           },
         );
 
@@ -311,20 +327,23 @@ void main() {
         final disconnectedIds = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/disconnect').handleWebSocket(
-            (context, message, manager) {
-              if (message == 'ping') {
-                manager.emit('pong');
-              }
-            },
-            onConnect: (context, manager) {
-              // Track when this specific connection is cleaned up
-            },
-          ).after((context, result, wsId) {
-            // After hook runs when WebSocket disconnects
-            disconnectedIds.add(wsId);
-            return (context, result, wsId);
-          });
+          route
+              .get('/ws/disconnect')
+              .handleWebSocket(
+                (context, message, manager) {
+                  if (message == 'ping') {
+                    manager.emit('pong');
+                  }
+                },
+                onConnect: (context, manager) {
+                  // Track when this specific connection is cleaned up
+                },
+              )
+              .after((context, result, wsId) {
+                // After hook runs when WebSocket disconnects
+                disconnectedIds.add(wsId);
+                return (context, result, wsId);
+              });
         });
 
         final ws = await server.connectWebSocket('/ws/disconnect');
@@ -402,17 +421,22 @@ void main() {
         final executedHooks = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/hooks').before((ctx) {
-            executedHooks.add('before-hook');
-            ctx.responseHeaders.add('x-hook-executed', 'true');
-            return ctx;
-          }).handleWebSocket((context, message, manager) {
-            manager.emit(jsonEncode({
-              'message': message,
-              'hookExecuted':
-                  context.responseHeaders['x-hook-executed'] != null,
-            }));
-          });
+          route
+              .get('/ws/hooks')
+              .before((ctx) {
+                executedHooks.add('before-hook');
+                ctx.responseHeaders.add('x-hook-executed', 'true');
+                return ctx;
+              })
+              .handleWebSocket((context, message, manager) {
+                manager.emit(
+                  jsonEncode({
+                    'message': message,
+                    'hookExecuted':
+                        context.responseHeaders['x-hook-executed'] != null,
+                  }),
+                );
+              });
         });
 
         final ws = await server.connectWebSocket('/ws/hooks');
@@ -436,13 +460,15 @@ void main() {
           route
               .get('/ws/after-hook')
               .handleWebSocket((context, message, manager) {
-            manager.emit('Original: $message');
-            // WebSocket handlers don't return values
-          }).after((context, result, wsId) {
-            afterHookMessages
-                .add('After hook executed for: $wsId when disconnecting');
-            return (context, result, wsId);
-          });
+                manager.emit('Original: $message');
+                // WebSocket handlers don't return values
+              })
+              .after((context, result, wsId) {
+                afterHookMessages.add(
+                  'After hook executed for: $wsId when disconnecting',
+                );
+                return (context, result, wsId);
+              });
         });
 
         final ws = await server.connectWebSocket('/ws/after-hook');
@@ -513,9 +539,11 @@ void main() {
     group('WebSocket Broadcasting', () {
       test('emitToAll broadcasts to all connected clients', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route
-              .get('/ws/broadcast')
-              .handleWebSocket((context, message, manager) async {
+          route.get('/ws/broadcast').handleWebSocket((
+            context,
+            message,
+            manager,
+          ) async {
             if (message == 'broadcast') {
               await emitToAll('Broadcast message from ${manager.id}');
             }
@@ -558,21 +586,23 @@ void main() {
         final clientIds = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/direct').handleWebSocket(
-            (context, message, manager) async {
-              if (message == 'get-id') {
-                manager.emit(manager.id);
-              } else if (message.toString().startsWith('send-to:')) {
-                final parts = message.toString().split(':');
-                final targetId = parts[1];
-                final msg = parts[2];
-                await emitTo(targetId, 'Direct message: $msg');
-              }
-            },
-            onConnect: (context, manager) {
-              clientIds.add(manager.id);
-            },
-          );
+          route
+              .get('/ws/direct')
+              .handleWebSocket(
+                (context, message, manager) async {
+                  if (message == 'get-id') {
+                    manager.emit(manager.id);
+                  } else if (message.toString().startsWith('send-to:')) {
+                    final parts = message.toString().split(':');
+                    final targetId = parts[1];
+                    final msg = parts[2];
+                    await emitTo(targetId, 'Direct message: $msg');
+                  }
+                },
+                onConnect: (context, manager) {
+                  clientIds.add(manager.id);
+                },
+              );
         });
 
         final ws1 = await server.connectWebSocket('/ws/direct');
@@ -614,8 +644,10 @@ void main() {
         // Only client 2 should receive the message
         expect(messages1, isEmpty);
         expect(messages2.length, equals(1));
-        expect(messages2.first.toString(),
-            equals('Direct message: Hello Client 2'));
+        expect(
+          messages2.first.toString(),
+          equals('Direct message: Hello Client 2'),
+        );
 
         await ws1.close();
         await ws2.close();

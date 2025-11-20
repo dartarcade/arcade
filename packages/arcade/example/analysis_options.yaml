@@ -1,5 +1,8 @@
 include: package:lint/analysis_options.yaml
 
+formatter:
+  trailing_commas: preserve
+
 linter:
   rules:
     avoid_print: false
