@@ -6,8 +6,5 @@ class BucketInfo {
   /// The creation date of the bucket
   final DateTime? creationDate;
 
-  const BucketInfo({
-    required this.name,
-    this.creationDate,
-  });
+  const BucketInfo({required this.name, this.creationDate});
 }

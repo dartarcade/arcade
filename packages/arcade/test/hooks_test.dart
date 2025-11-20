@@ -17,61 +17,66 @@ void main() {
         final executionOrder = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/test').before((ctx) {
-            executionOrder.add('before');
-            ctx.responseHeaders.add('X-Before', 'executed');
-            return ctx;
-          }).handle((ctx) {
-            executionOrder.add('handler');
-            return {'order': executionOrder};
-          });
+          route
+              .get('/test')
+              .before((ctx) {
+                executionOrder.add('before');
+                ctx.responseHeaders.add('X-Before', 'executed');
+                return ctx;
+              })
+              .handle((ctx) {
+                executionOrder.add('handler');
+                return {'order': executionOrder};
+              });
         });
 
         final response = await server.get('/test');
         expect(response, isOk());
         expect(response.header('X-Before'), equals('executed'));
         expect(
-            response,
-            hasJsonBody({
-              'order': ['before', 'handler'],
-            }));
+          response,
+          hasJsonBody({
+            'order': ['before', 'handler'],
+          }),
+        );
       });
 
       test('can modify request context', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/user/:id').before((ctx) {
-            // Add computed data to context
-            ctx.responseHeaders.add('X-User-Id', ctx.pathParameters['id']!);
-            return ctx;
-          }).handle((ctx) {
-            return {
-              'userId': ctx.pathParameters['id'],
-              'hasHeader': ctx.responseHeaders.value('X-User-Id') != null,
-            };
-          });
+          route
+              .get('/user/:id')
+              .before((ctx) {
+                // Add computed data to context
+                ctx.responseHeaders.add('X-User-Id', ctx.pathParameters['id']!);
+                return ctx;
+              })
+              .handle((ctx) {
+                return {
+                  'userId': ctx.pathParameters['id'],
+                  'hasHeader': ctx.responseHeaders.value('X-User-Id') != null,
+                };
+              });
         });
 
         final response = await server.get('/user/123');
         expect(response, isOk());
         expect(response.header('X-User-Id'), equals('123'));
-        expect(
-            response,
-            hasJsonBody({
-              'userId': '123',
-              'hasHeader': true,
-            }));
+        expect(response, hasJsonBody({'userId': '123', 'hasHeader': true}));
       });
 
       test('can short-circuit request', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/protected').before((ctx) {
-            final token = ctx.requestHeaders.value('authorization');
-            if (token != 'Bearer valid-token') {
-              ctx.statusCode = 401;
-              throw const UnauthorizedException(message: 'Invalid token');
-            }
-            return ctx;
-          }).handle((ctx) => {'message': 'Protected resource'});
+          route
+              .get('/protected')
+              .before((ctx) {
+                final token = ctx.requestHeaders.value('authorization');
+                if (token != 'Bearer valid-token') {
+                  ctx.statusCode = 401;
+                  throw const UnauthorizedException(message: 'Invalid token');
+                }
+                return ctx;
+              })
+              .handle((ctx) => {'message': 'Protected resource'});
         });
 
         // Without auth
@@ -91,22 +96,27 @@ void main() {
         final executionOrder = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/test').before((ctx) {
-            executionOrder.add('before1');
-            ctx.responseHeaders.add('X-Hook-1', 'true');
-            return ctx;
-          }).before((ctx) {
-            executionOrder.add('before2');
-            ctx.responseHeaders.add('X-Hook-2', 'true');
-            return ctx;
-          }).before((ctx) {
-            executionOrder.add('before3');
-            ctx.responseHeaders.add('X-Hook-3', 'true');
-            return ctx;
-          }).handle((ctx) {
-            executionOrder.add('handler');
-            return {'order': executionOrder};
-          });
+          route
+              .get('/test')
+              .before((ctx) {
+                executionOrder.add('before1');
+                ctx.responseHeaders.add('X-Hook-1', 'true');
+                return ctx;
+              })
+              .before((ctx) {
+                executionOrder.add('before2');
+                ctx.responseHeaders.add('X-Hook-2', 'true');
+                return ctx;
+              })
+              .before((ctx) {
+                executionOrder.add('before3');
+                ctx.responseHeaders.add('X-Hook-3', 'true');
+                return ctx;
+              })
+              .handle((ctx) {
+                executionOrder.add('handler');
+                return {'order': executionOrder};
+              });
         });
 
         final response = await server.get('/test');
@@ -115,20 +125,24 @@ void main() {
         expect(response.header('X-Hook-2'), equals('true'));
         expect(response.header('X-Hook-3'), equals('true'));
         expect(
-            response,
-            hasJsonBody({
-              'order': ['before1', 'before2', 'before3', 'handler'],
-            }));
+          response,
+          hasJsonBody({
+            'order': ['before1', 'before2', 'before3', 'handler'],
+          }),
+        );
       });
 
       test('async before hooks', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/async').before((ctx) async {
-            // Simulate async operation
-            await Future.delayed(const Duration(milliseconds: 10));
-            ctx.responseHeaders.add('X-Async', 'completed');
-            return ctx;
-          }).handle((ctx) => {'async': 'handled'});
+          route
+              .get('/async')
+              .before((ctx) async {
+                // Simulate async operation
+                await Future.delayed(const Duration(milliseconds: 10));
+                ctx.responseHeaders.add('X-Async', 'completed');
+                return ctx;
+              })
+              .handle((ctx) => {'async': 'handled'});
         });
 
         final response = await server.get('/async');
@@ -143,20 +157,23 @@ void main() {
         final executionOrder = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/test').handle((ctx) {
-            executionOrder.add('handler');
-            return {'order': executionOrder};
-          }).after((ctx, result) {
-            executionOrder.add('after');
-            ctx.responseHeaders.add('X-After', 'executed');
-            // Modify the result
-            if (result is Map<String, dynamic>) {
-              final modifiedResult = Map<String, dynamic>.from(result);
-              modifiedResult['afterExecuted'] = true;
-              return (ctx, modifiedResult);
-            }
-            return (ctx, result);
-          });
+          route
+              .get('/test')
+              .handle((ctx) {
+                executionOrder.add('handler');
+                return {'order': executionOrder};
+              })
+              .after((ctx, result) {
+                executionOrder.add('after');
+                ctx.responseHeaders.add('X-After', 'executed');
+                // Modify the result
+                if (result is Map<String, dynamic>) {
+                  final modifiedResult = Map<String, dynamic>.from(result);
+                  modifiedResult['afterExecuted'] = true;
+                  return (ctx, modifiedResult);
+                }
+                return (ctx, result);
+              });
         });
 
         final response = await server.get('/test');
@@ -170,64 +187,72 @@ void main() {
 
       test('can modify response', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/data').handle((ctx) {
-            return {'data': 'original'};
-          }).after((ctx, result) {
-            ctx.responseHeaders.add('X-Modified', 'true');
-            // Transform the response
-            if (result is Map) {
-              return (
-                ctx,
-                {
-                  ...result,
-                  'modified': true,
-                  'timestamp': '2024-01-01',
+          route
+              .get('/data')
+              .handle((ctx) {
+                return {'data': 'original'};
+              })
+              .after((ctx, result) {
+                ctx.responseHeaders.add('X-Modified', 'true');
+                // Transform the response
+                if (result is Map) {
+                  return (
+                    ctx,
+                    {...result, 'modified': true, 'timestamp': '2024-01-01'},
+                  );
                 }
-              );
-            }
-            return (ctx, result);
-          });
+                return (ctx, result);
+              });
         });
 
         final response = await server.get('/data');
         expect(response, isOk());
         expect(response.header('X-Modified'), equals('true'));
         expect(
-            response,
-            hasJsonBody({
-              'data': 'original',
-              'modified': true,
-              'timestamp': '2024-01-01',
-            }));
+          response,
+          hasJsonBody({
+            'data': 'original',
+            'modified': true,
+            'timestamp': '2024-01-01',
+          }),
+        );
       });
 
       test('multiple after hooks execute in order', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/test').handle((ctx) => {'value': 0}).after((ctx, result) {
-            ctx.responseHeaders.add('X-After-1', 'true');
-            if (result is Map<String, dynamic>) {
-              final modifiedResult = Map<String, dynamic>.from(result);
-              modifiedResult['value'] = (modifiedResult['value'] as int) + 1;
-              return (ctx, modifiedResult);
-            }
-            return (ctx, result);
-          }).after((ctx, result) {
-            ctx.responseHeaders.add('X-After-2', 'true');
-            if (result is Map<String, dynamic>) {
-              final modifiedResult = Map<String, dynamic>.from(result);
-              modifiedResult['value'] = (modifiedResult['value'] as int) + 10;
-              return (ctx, modifiedResult);
-            }
-            return (ctx, result);
-          }).after((ctx, result) {
-            ctx.responseHeaders.add('X-After-3', 'true');
-            if (result is Map<String, dynamic>) {
-              final modifiedResult = Map<String, dynamic>.from(result);
-              modifiedResult['value'] = (modifiedResult['value'] as int) + 100;
-              return (ctx, modifiedResult);
-            }
-            return (ctx, result);
-          });
+          route
+              .get('/test')
+              .handle((ctx) => {'value': 0})
+              .after((ctx, result) {
+                ctx.responseHeaders.add('X-After-1', 'true');
+                if (result is Map<String, dynamic>) {
+                  final modifiedResult = Map<String, dynamic>.from(result);
+                  modifiedResult['value'] =
+                      (modifiedResult['value'] as int) + 1;
+                  return (ctx, modifiedResult);
+                }
+                return (ctx, result);
+              })
+              .after((ctx, result) {
+                ctx.responseHeaders.add('X-After-2', 'true');
+                if (result is Map<String, dynamic>) {
+                  final modifiedResult = Map<String, dynamic>.from(result);
+                  modifiedResult['value'] =
+                      (modifiedResult['value'] as int) + 10;
+                  return (ctx, modifiedResult);
+                }
+                return (ctx, result);
+              })
+              .after((ctx, result) {
+                ctx.responseHeaders.add('X-After-3', 'true');
+                if (result is Map<String, dynamic>) {
+                  final modifiedResult = Map<String, dynamic>.from(result);
+                  modifiedResult['value'] =
+                      (modifiedResult['value'] as int) + 100;
+                  return (ctx, modifiedResult);
+                }
+                return (ctx, result);
+              });
         });
 
         final response = await server.get('/test');
@@ -240,19 +265,22 @@ void main() {
 
       test('async after hooks', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/async').handle((ctx) {
-            return {'status': 'processing'};
-          }).after((ctx, result) async {
-            // Simulate async operation
-            await Future.delayed(const Duration(milliseconds: 10));
-            ctx.responseHeaders.add('X-Async-After', 'completed');
-            if (result is Map<String, dynamic>) {
-              final modifiedResult = Map<String, dynamic>.from(result);
-              modifiedResult['status'] = 'completed';
-              return (ctx, modifiedResult);
-            }
-            return (ctx, result);
-          });
+          route
+              .get('/async')
+              .handle((ctx) {
+                return {'status': 'processing'};
+              })
+              .after((ctx, result) async {
+                // Simulate async operation
+                await Future.delayed(const Duration(milliseconds: 10));
+                ctx.responseHeaders.add('X-Async-After', 'completed');
+                if (result is Map<String, dynamic>) {
+                  final modifiedResult = Map<String, dynamic>.from(result);
+                  modifiedResult['status'] = 'completed';
+                  return (ctx, modifiedResult);
+                }
+                return (ctx, result);
+              });
         });
 
         final response = await server.get('/async');
@@ -373,32 +401,37 @@ void main() {
           });
 
           // Route with its own hooks
-          route.get('/test').before((ctx) {
-            executionOrder.add('route-before');
-            return ctx;
-          }).handle((ctx) {
-            executionOrder.add('handler');
-            return {'order': executionOrder};
-          }).after((ctx, result) {
-            executionOrder.add('route-after');
-            return (ctx, result);
-          });
+          route
+              .get('/test')
+              .before((ctx) {
+                executionOrder.add('route-before');
+                return ctx;
+              })
+              .handle((ctx) {
+                executionOrder.add('handler');
+                return {'order': executionOrder};
+              })
+              .after((ctx, result) {
+                executionOrder.add('route-after');
+                return (ctx, result);
+              });
         });
 
         final response = await server.get('/test');
         expect(response, isOk());
         // Global before -> Route before -> Handler -> Global after -> Route after
         expect(
-            response,
-            hasJsonBody({
-              'order': [
-                'global-before',
-                'route-before',
-                'handler',
-                'global-after',
-                'route-after'
-              ],
-            }));
+          response,
+          hasJsonBody({
+            'order': [
+              'global-before',
+              'route-before',
+              'handler',
+              'global-after',
+              'route-after',
+            ],
+          }),
+        );
       });
 
       test('multiple global hooks', () async {
@@ -441,10 +474,14 @@ void main() {
     group('Hook Error Handling', () {
       test('before hook throwing exception', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/error').before((ctx) {
-            throw const BadRequestException(
-                message: 'Invalid request from hook');
-          }).handle((ctx) => {'message': 'Should not reach here'});
+          route
+              .get('/error')
+              .before((ctx) {
+                throw const BadRequestException(
+                  message: 'Invalid request from hook',
+                );
+              })
+              .handle((ctx) => {'message': 'Should not reach here'});
         });
 
         final response = await server.get('/error');
@@ -456,12 +493,16 @@ void main() {
 
       test('after hook throwing exception', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/error').handle((ctx) {
-            return {'status': 'ok'};
-          }).after((ctx, result) {
-            throw const InternalServerErrorException(
-                message: 'After hook error');
-          });
+          route
+              .get('/error')
+              .handle((ctx) {
+                return {'status': 'ok'};
+              })
+              .after((ctx, result) {
+                throw const InternalServerErrorException(
+                  message: 'After hook error',
+                );
+              });
         });
 
         final response = await server.get('/error');
@@ -473,10 +514,13 @@ void main() {
 
       test('async hook errors', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/async-error').before((ctx) async {
-            await Future.delayed(const Duration(milliseconds: 10));
-            throw const ForbiddenException(message: 'Async forbidden');
-          }).handle((ctx) => {'message': 'Should not reach here'});
+          route
+              .get('/async-error')
+              .before((ctx) async {
+                await Future.delayed(const Duration(milliseconds: 10));
+                throw const ForbiddenException(message: 'Async forbidden');
+              })
+              .handle((ctx) => {'message': 'Should not reach here'});
         });
 
         final response = await server.get('/async-error');
@@ -495,7 +539,8 @@ void main() {
             final authHeader = ctx.requestHeaders.value('authorization');
             if (authHeader == null || !authHeader.startsWith('Bearer ')) {
               throw const UnauthorizedException(
-                  message: 'Authentication required');
+                message: 'Authentication required',
+              );
             }
 
             // Extract token and add user info to headers (simplified)
@@ -520,13 +565,19 @@ void main() {
               .before(requireAuth())
               .handle((ctx) => {'message': 'Protected content'});
 
-          route.get('/admin').before(requireAuth()).before((ctx) {
-            // Additional admin check
-            if (ctx.responseHeaders.value('X-User-Role') != 'admin') {
-              throw const ForbiddenException(message: 'Admin access required');
-            }
-            return ctx;
-          }).handle((ctx) => {'message': 'Admin content'});
+          route
+              .get('/admin')
+              .before(requireAuth())
+              .before((ctx) {
+                // Additional admin check
+                if (ctx.responseHeaders.value('X-User-Role') != 'admin') {
+                  throw const ForbiddenException(
+                    message: 'Admin access required',
+                  );
+                }
+                return ctx;
+              })
+              .handle((ctx) => {'message': 'Admin content'});
         });
 
         // Public endpoint
@@ -599,10 +650,14 @@ void main() {
         BeforeHookHandler corsHook() {
           return (ctx) {
             ctx.responseHeaders.add('Access-Control-Allow-Origin', '*');
-            ctx.responseHeaders.add('Access-Control-Allow-Methods',
-                'GET, POST, PUT, DELETE, OPTIONS');
             ctx.responseHeaders.add(
-                'Access-Control-Allow-Headers', 'Content-Type, Authorization');
+              'Access-Control-Allow-Methods',
+              'GET, POST, PUT, DELETE, OPTIONS',
+            );
+            ctx.responseHeaders.add(
+              'Access-Control-Allow-Headers',
+              'Content-Type, Authorization',
+            );
 
             // Handle preflight
             if (ctx.method == HttpMethod.options) {
@@ -633,7 +688,9 @@ void main() {
         response = await server.options('/api/data');
         expect(response.statusCode, equals(204));
         expect(
-            response.header('Access-Control-Allow-Methods'), contains('GET'));
+          response.header('Access-Control-Allow-Methods'),
+          contains('GET'),
+        );
         expect(response.body, isEmpty);
       });
 
@@ -641,8 +698,10 @@ void main() {
         final requestCounts = <String, int>{};
         final requestTimes = <String, DateTime>{};
 
-        BeforeHookHandler rateLimitHook(
-            {int limit = 5, Duration window = const Duration(minutes: 1)}) {
+        BeforeHookHandler rateLimitHook({
+          int limit = 5,
+          Duration window = const Duration(minutes: 1),
+        }) {
           return (ctx) {
             final clientId =
                 ctx.requestHeaders.value('x-client-id') ?? 'anonymous';
@@ -659,7 +718,8 @@ void main() {
             if (count > limit) {
               ctx.statusCode = 503;
               throw const ServiceUnavailableException(
-                  message: 'Rate limit exceeded');
+                message: 'Rate limit exceeded',
+              );
             }
 
             // Update counts
@@ -668,8 +728,10 @@ void main() {
 
             // Add rate limit headers
             ctx.responseHeaders.add('X-RateLimit-Limit', limit.toString());
-            ctx.responseHeaders
-                .add('X-RateLimit-Remaining', (limit - count).toString());
+            ctx.responseHeaders.add(
+              'X-RateLimit-Remaining',
+              (limit - count).toString(),
+            );
 
             return ctx;
           };
@@ -690,8 +752,10 @@ void main() {
           );
           expect(response, isOk());
           expect(response.header('X-RateLimit-Limit'), equals('3'));
-          expect(response.header('X-RateLimit-Remaining'),
-              equals((3 - i).toString()));
+          expect(
+            response.header('X-RateLimit-Remaining'),
+            equals((3 - i).toString()),
+          );
         }
 
         // Fourth request should be rate limited

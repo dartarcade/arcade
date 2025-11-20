@@ -32,7 +32,8 @@ class WebSocketConnectionInfo {
       rooms: Set<String>.from(json['rooms'] as List? ?? []),
       connectTime: DateTime.parse(json['connectTime'] as String),
       metadata: Map<String, dynamic>.from(
-          json['metadata'] as Map<String, dynamic>? ?? {}),
+        json['metadata'] as Map<String, dynamic>? ?? {},
+      ),
     );
   }
 
@@ -40,7 +41,8 @@ class WebSocketConnectionInfo {
 
   factory WebSocketConnectionInfo.fromJsonString(String jsonString) =>
       WebSocketConnectionInfo.fromJson(
-          jsonDecode(jsonString) as Map<String, dynamic>);
+        jsonDecode(jsonString) as Map<String, dynamic>,
+      );
 
   WebSocketConnectionInfo copyWith({
     String? id,
@@ -87,13 +89,7 @@ class WebSocketConnectionInfo {
 
   @override
   int get hashCode {
-    return Object.hash(
-      id,
-      serverInstanceId,
-      rooms,
-      connectTime,
-      metadata,
-    );
+    return Object.hash(id, serverInstanceId, rooms, connectTime, metadata);
   }
 
   @override

@@ -67,7 +67,9 @@ void main() {
       test('empty response returns 200 not 204', () async {
         final response = await server.get('/empty');
         expect(
-            response, hasStatus(200)); // Arcade returns 200 for null, not 204
+          response,
+          hasStatus(200),
+        ); // Arcade returns 200 for null, not 204
       });
 
       test('isBadRequest matcher', () async {
@@ -202,9 +204,9 @@ void main() {
 
         expect(jsonResponse, hasContentType('application/json'));
         expect(
-            textResponse,
-            hasContentType(
-                'text/html')); // Arcade returns text/html for strings
+          textResponse,
+          hasContentType('text/html'),
+        ); // Arcade returns text/html for strings
 
         // Negative tests
         expect(jsonResponse, isNot(hasContentType('text/html')));
@@ -217,8 +219,10 @@ void main() {
         final emptyResponse = await server.get('/empty');
 
         expect(response.body, equals('Hello, World!'));
-        expect(emptyResponse.body,
-            equals('null')); // Arcade returns "null" for null responses
+        expect(
+          emptyResponse.body,
+          equals('null'),
+        ); // Arcade returns "null" for null responses
       });
 
       test('hasJsonBody matcher with exact match', () async {
@@ -255,12 +259,16 @@ void main() {
 
       test('hasJsonPath matcher', () async {
         final testServer = await ArcadeTestServer.withRoutes(() {
-          route.get('/nested').handle((ctx) => {
-                'user': {
-                  'name': 'John',
-                  'address': {'city': 'New York'}
-                }
-              });
+          route
+              .get('/nested')
+              .handle(
+                (ctx) => {
+                  'user': {
+                    'name': 'John',
+                    'address': {'city': 'New York'},
+                  },
+                },
+              );
         });
 
         final response = await testServer.get('/nested');
@@ -294,8 +302,10 @@ void main() {
         final textResponse = await server.get('/text');
         final jsonResponse = await server.get('/json');
 
-        expect(textResponse.contentType?.mimeType,
-            equals('text/html')); // Arcade returns text/html
+        expect(
+          textResponse.contentType?.mimeType,
+          equals('text/html'),
+        ); // Arcade returns text/html
         expect(jsonResponse.contentType?.mimeType, isNot(equals('text/html')));
       });
     });
@@ -303,13 +313,10 @@ void main() {
     group('Matcher Error Messages', () {
       test('provides helpful error messages', () {
         // This test captures error messages to ensure they're helpful
-        expect(
-          () async {
-            final response = await server.get('/json');
-            expect(response, hasStatus(404));
-          },
-          throwsA(isA<TestFailure>()),
-        );
+        expect(() async {
+          final response = await server.get('/json');
+          expect(response, hasStatus(404));
+        }, throwsA(isA<TestFailure>()));
       });
     });
   });

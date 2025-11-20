@@ -10,9 +10,8 @@ import 'package:meta/meta.dart';
 @internal
 final List<BaseRoute> routes = [];
 
-typedef RouteHandler<T extends RequestContext> = FutureOr<dynamic> Function(
-  T context,
-);
+typedef RouteHandler<T extends RequestContext> =
+    FutureOr<dynamic> Function(T context);
 
 enum HttpMethod {
   any('ANY'),
@@ -134,16 +133,11 @@ class _BeforeRoute<T extends RequestContext> extends _Route<T> {
 
   _AfterRoute<T> handle(RouteHandler<T> handler) {
     this.handler = handler;
-    currentProcessingRoute = _AfterRoute<T>._(
-      method,
-      path,
-      beforeHooks,
-      [],
-      metadata: metadata,
-    )
-      ..handler = handler as RouteHandler<RequestContext>?
-      ..wsHandler = wsHandler
-      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    currentProcessingRoute =
+        _AfterRoute<T>._(method, path, beforeHooks, [], metadata: metadata)
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as _AfterRoute<T>;
   }
 
@@ -152,16 +146,17 @@ class _BeforeRoute<T extends RequestContext> extends _Route<T> {
     OnConnection<T>? onConnect,
   }) {
     this.wsHandler = wsHandler;
-    currentProcessingRoute = _AfterWebSocketRoute<T>._(
-      method,
-      path,
-      beforeHooks,
-      [],
-      metadata: metadata,
-    )
-      ..wsHandler = wsHandler
-      ..onWebSocketConnect = onConnect
-      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    currentProcessingRoute =
+        _AfterWebSocketRoute<T>._(
+            method,
+            path,
+            beforeHooks,
+            [],
+            metadata: metadata,
+          )
+          ..wsHandler = wsHandler
+          ..onWebSocketConnect = onConnect
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as _AfterWebSocketRoute<T>;
   }
 }
@@ -181,18 +176,20 @@ class _AfterRoute<T extends RequestContext> extends _Route<T> {
   _AfterRoute<U> after<U extends RequestContext, V, W>(
     AfterHookHandler<T, U, V, W> hook,
   ) {
-    afterHooks
-        .add((context, handleResult) => hook(context as T, handleResult as V));
-    currentProcessingRoute = _AfterRoute<U>._(
-      method,
-      path,
-      beforeHooks,
-      afterHooks,
-      metadata: metadata,
-    )
-      ..handler = handler as RouteHandler<RequestContext>?
-      ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
-      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    afterHooks.add(
+      (context, handleResult) => hook(context as T, handleResult as V),
+    );
+    currentProcessingRoute =
+        _AfterRoute<U>._(
+            method,
+            path,
+            beforeHooks,
+            afterHooks,
+            metadata: metadata,
+          )
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as _AfterRoute<U>;
   }
 
@@ -200,16 +197,17 @@ class _AfterRoute<T extends RequestContext> extends _Route<T> {
     List<AfterHookHandler> hooks,
   ) {
     afterHooks.addAll(hooks);
-    currentProcessingRoute = _AfterRoute<U>._(
-      method,
-      path,
-      beforeHooks,
-      afterHooks,
-      metadata: metadata,
-    )
-      ..handler = handler as RouteHandler<RequestContext>?
-      ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
-      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    currentProcessingRoute =
+        _AfterRoute<U>._(
+            method,
+            path,
+            beforeHooks,
+            afterHooks,
+            metadata: metadata,
+          )
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as _AfterRoute<U>;
   }
 }
@@ -232,17 +230,18 @@ class _AfterWebSocketRoute<T extends RequestContext> extends _Route<T> {
     afterWebSocketHooks.add(
       (context, handleResult, id) => hook(context as T, handleResult as V, id),
     );
-    currentProcessingRoute = _AfterWebSocketRoute<U>._(
-      method,
-      path,
-      beforeHooks,
-      afterWebSocketHooks,
-      metadata: metadata,
-    )
-      ..handler = handler as RouteHandler<RequestContext>?
-      ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
-      ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
-      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    currentProcessingRoute =
+        _AfterWebSocketRoute<U>._(
+            method,
+            path,
+            beforeHooks,
+            afterWebSocketHooks,
+            metadata: metadata,
+          )
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
+          ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as _AfterWebSocketRoute<U>;
   }
 
@@ -250,17 +249,18 @@ class _AfterWebSocketRoute<T extends RequestContext> extends _Route<T> {
     List<AfterWebSocketHookHandler> hooks,
   ) {
     afterWebSocketHooks.addAll(hooks);
-    currentProcessingRoute = _AfterRoute<U>._(
-      method,
-      path,
-      beforeHooks,
-      afterHooks,
-      metadata: metadata,
-    )
-      ..handler = handler as RouteHandler<RequestContext>?
-      ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
-      ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
-      ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
+    currentProcessingRoute =
+        _AfterRoute<U>._(
+            method,
+            path,
+            beforeHooks,
+            afterHooks,
+            metadata: metadata,
+          )
+          ..handler = handler as RouteHandler<RequestContext>?
+          ..wsHandler = wsHandler as WebSocketHandler<RequestContext>?
+          ..onWebSocketConnect = onWebSocketConnect as OnConnection<U>?
+          ..notFoundHandler = notFoundHandler as RouteHandler<RequestContext>?;
     return currentProcessingRoute! as _AfterRoute<U>;
   }
 }
@@ -328,7 +328,7 @@ final class RouteBuilder<T extends RequestContext> {
   void group<R extends RequestContext>(
     String path, {
     required FutureOr<void> Function(RouteBuilder<R> Function() route)
-        defineRoutes,
+    defineRoutes,
     List<BeforeHookHandler> before = const [],
     List<AfterHookHandler> after = const [],
   }) {

@@ -26,16 +26,9 @@ Future<void> main() async {
 
 class RoutesCommand extends Command {
   RoutesCommand() {
-    argParser.addFlag(
-      'json',
-      help: 'Output in JSON format',
-    );
+    argParser.addFlag('json', help: 'Output in JSON format');
 
-    argParser.addOption(
-      'output',
-      help: 'Output file',
-      defaultsTo: 'stdout',
-    );
+    argParser.addOption('output', help: 'Output file', defaultsTo: 'stdout');
 
     argParser.addOption(
       'route-export-path',
@@ -83,9 +76,7 @@ class RoutesCommand extends Command {
     final data = jsonDecode(routeExportOutput) as List;
 
     if (json) {
-      print(
-        const JsonEncoder.withIndent('  ').convert(data),
-      );
+      print(const JsonEncoder.withIndent('  ').convert(data));
     } else {
       final formatter = TableFormatter(
         data.cast<Map<String, dynamic>>().map(RouteMetadata.fromJson).toList(),

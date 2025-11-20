@@ -71,23 +71,25 @@ void main() {
       expect(response.text(), isEmpty);
     });
 
-    test('bodyBytes handles binary data that cannot be decoded as UTF-8',
-        () async {
-      // Create invalid UTF-8 sequence
-      final invalidUtf8 = [0xFF, 0xFE, 0xFD, 0xFC];
+    test(
+      'bodyBytes handles binary data that cannot be decoded as UTF-8',
+      () async {
+        // Create invalid UTF-8 sequence
+        final invalidUtf8 = [0xFF, 0xFE, 0xFD, 0xFC];
 
-      server.listen((request) {
-        request.response
-          ..headers.contentType = ContentType.binary
-          ..add(invalidUtf8)
-          ..close();
-      });
+        server.listen((request) {
+          request.response
+            ..headers.contentType = ContentType.binary
+            ..add(invalidUtf8)
+            ..close();
+        });
 
-      final response = await client.get('/test');
-      expect(response.bodyBytes, equals(invalidUtf8));
-      // Body should be empty string when UTF-8 decoding fails
-      expect(response.body, isEmpty);
-    });
+        final response = await client.get('/test');
+        expect(response.bodyBytes, equals(invalidUtf8));
+        // Body should be empty string when UTF-8 decoding fails
+        expect(response.body, isEmpty);
+      },
+    );
 
     test('contentLength returns correct length', () async {
       const testText = 'Test content with known length';

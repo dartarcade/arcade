@@ -25,10 +25,7 @@ class WebSocketMessage {
   ///
   /// [data] is required and contains the raw message data.
   /// [event] is optional and represents the event type for structured messages.
-  const WebSocketMessage({
-    required this.data,
-    this.event,
-  });
+  const WebSocketMessage({required this.data, this.event});
 
   /// Creates a WebSocketMessage from raw data received from the server.
   ///
@@ -107,7 +104,7 @@ class TestWebSocket {
   bool _isClosed = false;
 
   TestWebSocket._(this._channel)
-      : _messageController = StreamController<WebSocketMessage>.broadcast() {
+    : _messageController = StreamController<WebSocketMessage>.broadcast() {
     _subscription = _channel.stream.listen(
       (data) {
         if (!_isClosed) {
@@ -193,10 +190,7 @@ class TestWebSocket {
 
     dynamic message;
     if (event != null) {
-      message = jsonEncode({
-        'event': event,
-        'data': data,
-      });
+      message = jsonEncode({'event': event, 'data': data});
     } else {
       message = data is String ? data : jsonEncode(data);
     }

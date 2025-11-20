@@ -55,12 +55,9 @@ void main() {
 
     group('Basic Static File Serving', () {
       test('serves static files from configured directory', () async {
-        server = await ArcadeTestServer.withRoutes(
-          () {
-            route.get('/api/test').handle((ctx) => {'message': 'API endpoint'});
-          },
-          staticFilesDirectory: tempDir,
-        );
+        server = await ArcadeTestServer.withRoutes(() {
+          route.get('/api/test').handle((ctx) => {'message': 'API endpoint'});
+        }, staticFilesDirectory: tempDir);
 
         // Test static file
         final response = await server.get('/test.txt');
@@ -80,23 +77,25 @@ void main() {
         expect(response.text(), equals('Deep nested content'));
       });
 
-      test('does not automatically serve index.html for directory paths',
-          () async {
-        server = await ArcadeTestServer.withRoutes(
-          () {},
-          staticFilesDirectory: tempDir,
-        );
+      test(
+        'does not automatically serve index.html for directory paths',
+        () async {
+          server = await ArcadeTestServer.withRoutes(
+            () {},
+            staticFilesDirectory: tempDir,
+          );
 
-        // Root directory does not automatically serve index.html
-        final response = await server.get('/');
-        expect(response, isNotFound());
+          // Root directory does not automatically serve index.html
+          final response = await server.get('/');
+          expect(response, isNotFound());
 
-        // But index.html can be accessed directly
-        final indexResponse = await server.get('/index.html');
-        expect(indexResponse, isOk());
-        expect(indexResponse.text(), equals('<h1>Welcome to Arcade</h1>'));
-        expect(indexResponse.contentType?.mimeType, equals('text/html'));
-      });
+          // But index.html can be accessed directly
+          final indexResponse = await server.get('/index.html');
+          expect(indexResponse, isOk());
+          expect(indexResponse.text(), equals('<h1>Welcome to Arcade</h1>'));
+          expect(indexResponse.contentType?.mimeType, equals('text/html'));
+        },
+      );
 
       test('returns 404 for non-existent static files', () async {
         server = await ArcadeTestServer.withRoutes(
@@ -157,12 +156,9 @@ void main() {
 
     group('Route Priority', () {
       test('routes take priority over static files', () async {
-        server = await ArcadeTestServer.withRoutes(
-          () {
-            route.get('/test.txt').handle((ctx) => 'Dynamic route response');
-          },
-          staticFilesDirectory: tempDir,
-        );
+        server = await ArcadeTestServer.withRoutes(() {
+          route.get('/test.txt').handle((ctx) => 'Dynamic route response');
+        }, staticFilesDirectory: tempDir);
 
         final response = await server.get('/test.txt');
         expect(response, isOk());
@@ -170,12 +166,9 @@ void main() {
       });
 
       test('wildcard routes can override static files', () async {
-        server = await ArcadeTestServer.withRoutes(
-          () {
-            route.get('/*').handle((ctx) => 'Catch all route');
-          },
-          staticFilesDirectory: tempDir,
-        );
+        server = await ArcadeTestServer.withRoutes(() {
+          route.get('/*').handle((ctx) => 'Catch all route');
+        }, staticFilesDirectory: tempDir);
 
         final response = await server.get('/test.txt');
         expect(response, isOk());
@@ -239,8 +232,9 @@ void main() {
 
     group('Configuration', () {
       test('can change static directory during initialization', () async {
-        final altDir =
-            await Directory.systemTemp.createTemp('arcade_alt_static_');
+        final altDir = await Directory.systemTemp.createTemp(
+          'arcade_alt_static_',
+        );
         final altFile = File('${altDir.path}/alt.txt');
         await altFile.writeAsString('Alternative content');
 
@@ -263,12 +257,9 @@ void main() {
       test('handles non-existent static directory gracefully', () async {
         final nonExistentDir = Directory('${tempDir.path}/does_not_exist');
 
-        server = await ArcadeTestServer.withRoutes(
-          () {
-            route.get('/api/test').handle((ctx) => 'API works');
-          },
-          staticFilesDirectory: nonExistentDir,
-        );
+        server = await ArcadeTestServer.withRoutes(() {
+          route.get('/api/test').handle((ctx) => 'API works');
+        }, staticFilesDirectory: nonExistentDir);
 
         // API routes should still work
         var response = await server.get('/api/test');
@@ -337,30 +328,32 @@ void main() {
     });
 
     group('HTTP Methods', () {
-      test('serves static files for all HTTP methods (potential issue)',
-          () async {
-        server = await ArcadeTestServer.withRoutes(
-          () {},
-          staticFilesDirectory: tempDir,
-        );
+      test(
+        'serves static files for all HTTP methods (potential issue)',
+        () async {
+          server = await ArcadeTestServer.withRoutes(
+            () {},
+            staticFilesDirectory: tempDir,
+          );
 
-        // GET should work
-        var response = await server.get('/test.txt');
-        expect(response, isOk());
+          // GET should work
+          var response = await server.get('/test.txt');
+          expect(response, isOk());
 
-        // Note: Arcade serves static files for all methods - this could be a security issue
-        response = await server.post('/test.txt');
-        expect(response, isOk());
-        expect(response.text(), equals('Hello from static file'));
+          // Note: Arcade serves static files for all methods - this could be a security issue
+          response = await server.post('/test.txt');
+          expect(response, isOk());
+          expect(response.text(), equals('Hello from static file'));
 
-        response = await server.put('/test.txt');
-        expect(response, isOk());
-        expect(response.text(), equals('Hello from static file'));
+          response = await server.put('/test.txt');
+          expect(response, isOk());
+          expect(response.text(), equals('Hello from static file'));
 
-        response = await server.delete('/test.txt');
-        expect(response, isOk());
-        expect(response.text(), equals('Hello from static file'));
-      });
+          response = await server.delete('/test.txt');
+          expect(response, isOk());
+          expect(response.text(), equals('Hello from static file'));
+        },
+      );
 
       test('HEAD requests work for static files', () async {
         server = await ArcadeTestServer.withRoutes(
@@ -377,14 +370,14 @@ void main() {
 
     group('Integration with Routes', () {
       test('static files work with route groups', () async {
-        server = await ArcadeTestServer.withRoutes(
-          () {
-            route.group('/api', defineRoutes: (route) {
+        server = await ArcadeTestServer.withRoutes(() {
+          route.group(
+            '/api',
+            defineRoutes: (route) {
               route().get('/test').handle((ctx) => {'api': 'response'});
-            });
-          },
-          staticFilesDirectory: tempDir,
-        );
+            },
+          );
+        }, staticFilesDirectory: tempDir);
 
         // API route
         var response = await server.get('/api/test');

@@ -56,29 +56,14 @@ abstract interface class BaseStorageManager<C> {
   ///
   /// [bucket] is the bucket name.
   /// [prefix] is an optional prefix to filter objects.
-  Future<List<ObjectInfo>> listObjects(
-    String bucket, {
-    String? prefix,
-  });
+  Future<List<ObjectInfo>> listObjects(String bucket, {String? prefix});
 
   /// Copies an object from source to destination within the same bucket.
-  Future<void> copyObject(
-    String bucket,
-    String source,
-    String destination,
-  );
+  Future<void> copyObject(String bucket, String source, String destination);
 
   /// Uploads an object from a file path.
-  Future<void> fPutObject(
-    String bucket,
-    String objectName,
-    String filePath,
-  );
+  Future<void> fPutObject(String bucket, String objectName, String filePath);
 
   /// Downloads an object to a file path.
-  Future<void> fGetObject(
-    String bucket,
-    String objectName,
-    String filePath,
-  );
+  Future<void> fGetObject(String bucket, String objectName, String filePath);
 }

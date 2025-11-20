@@ -75,7 +75,8 @@ void main() {
         server = await ArcadeTestServer.withRoutes(() {
           route.get('/method-not-allowed').handle((ctx) {
             throw const MethodNotAllowedException(
-                message: 'Method not supported');
+              message: 'Method not supported',
+            );
           });
         });
 
@@ -121,7 +122,8 @@ void main() {
         server = await ArcadeTestServer.withRoutes(() {
           route.get('/unprocessable').handle((ctx) {
             throw const UnprocessableEntityException(
-                message: 'Validation failed');
+              message: 'Validation failed',
+            );
           });
         });
 
@@ -137,7 +139,8 @@ void main() {
         server = await ArcadeTestServer.withRoutes(() {
           route.get('/internal-error').handle((ctx) {
             throw const InternalServerErrorException(
-                message: 'Something went wrong');
+              message: 'Something went wrong',
+            );
           });
         });
 
@@ -153,7 +156,8 @@ void main() {
         server = await ArcadeTestServer.withRoutes(() {
           route.get('/unavailable').handle((ctx) {
             throw const ServiceUnavailableException(
-                message: 'Service temporarily unavailable');
+              message: 'Service temporarily unavailable',
+            );
           });
         });
 
@@ -201,11 +205,9 @@ void main() {
                   'profile': {
                     'age': 'Must be a number',
                     'email': 'Required field',
-                  }
+                  },
                 },
-                'settings': {
-                  'notifications': 'Invalid value',
-                }
+                'settings': {'notifications': 'Invalid value'},
               },
             );
           });
@@ -260,7 +262,8 @@ void main() {
           route.get('/async-error').handle((ctx) async {
             await Future.delayed(const Duration(milliseconds: 10));
             throw const InternalServerErrorException(
-                message: 'Async operation failed');
+              message: 'Async operation failed',
+            );
           });
         });
 
@@ -273,10 +276,14 @@ void main() {
 
       test('exceptions in before hooks', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/hook-error').before((ctx) {
-            throw const UnauthorizedException(
-                message: 'Hook validation failed');
-          }).handle((ctx) => {'message': 'Should not reach here'});
+          route
+              .get('/hook-error')
+              .before((ctx) {
+                throw const UnauthorizedException(
+                  message: 'Hook validation failed',
+                );
+              })
+              .handle((ctx) => {'message': 'Should not reach here'});
         });
 
         final response = await server.get('/hook-error');
@@ -288,12 +295,16 @@ void main() {
 
       test('exceptions in after hooks', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/after-hook-error').handle((ctx) {
-            return {'status': 'ok'};
-          }).after((ctx, result) {
-            throw const InternalServerErrorException(
-                message: 'Post-processing failed');
-          });
+          route
+              .get('/after-hook-error')
+              .handle((ctx) {
+                return {'status': 'ok'};
+              })
+              .after((ctx, result) {
+                throw const InternalServerErrorException(
+                  message: 'Post-processing failed',
+                );
+              });
         });
 
         final response = await server.get('/after-hook-error');
@@ -310,7 +321,8 @@ void main() {
             defineRoutes: (route) {
               route().get('/error').handle((ctx) {
                 throw const NotFoundException(
-                    message: 'API endpoint not found');
+                  message: 'API endpoint not found',
+                );
               });
             },
           );
@@ -346,10 +358,7 @@ void main() {
             throw const ArcadeHttpException(
               'Custom validation error',
               422,
-              errors: {
-                'field1': 'Error 1',
-                'field2': 'Error 2',
-              },
+              errors: {'field1': 'Error 1', 'field2': 'Error 2'},
             );
           });
         });
@@ -359,10 +368,7 @@ void main() {
         final body = response.json() as Map<String, dynamic>;
         final error = body['error'] as Map<String, dynamic>;
         expect(error['message'], equals('Custom validation error'));
-        expect(error['errors'], {
-          'field1': 'Error 1',
-          'field2': 'Error 2',
-        });
+        expect(error['errors'], {'field1': 'Error 1', 'field2': 'Error 2'});
       });
     });
 
@@ -371,7 +377,8 @@ void main() {
         server = await ArcadeTestServer.withRoutes(() {
           route.get('/error-with-stack').handle((ctx) {
             throw const InternalServerErrorException(
-                message: 'Error with stack trace');
+              message: 'Error with stack trace',
+            );
           });
         });
 

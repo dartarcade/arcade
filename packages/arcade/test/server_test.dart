@@ -140,10 +140,7 @@ void main() {
       await server.close();
 
       // After closing, attempts to use the server should fail
-      expect(
-        () async => await server.get('/close-test'),
-        throwsA(anything),
-      );
+      expect(() async => await server.get('/close-test'), throwsA(anything));
     });
 
     test('static file serving configuration', () async {
@@ -160,12 +157,9 @@ void main() {
       expect(await testFile.exists(), isTrue);
       expect(await indexFile.exists(), isTrue);
 
-      server = await ArcadeTestServer.withRoutes(
-        () {
-          route.get('/api/test').handle((ctx) => 'api endpoint');
-        },
-        staticFilesDirectory: tempDir,
-      );
+      server = await ArcadeTestServer.withRoutes(() {
+        route.get('/api/test').handle((ctx) => 'api endpoint');
+      }, staticFilesDirectory: tempDir);
 
       // Test API route works
       final apiResponse = await server.get('/api/test');

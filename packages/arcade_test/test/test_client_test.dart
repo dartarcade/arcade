@@ -17,8 +17,8 @@ void main() {
           return switch (bodyResult) {
             BodyParseSuccess(value: final value) => value,
             BodyParseFailure(error: final error) => {
-                'error': 'Parse failed: $error'
-              },
+              'error': 'Parse failed: $error',
+            },
           };
         });
 
@@ -124,7 +124,7 @@ void main() {
         final data = {
           'name': 'Test',
           'value': 42,
-          'nested': {'key': 'value'}
+          'nested': {'key': 'value'},
         };
         final response = await client.post('/echo', body: data);
 
@@ -137,7 +137,7 @@ void main() {
           1,
           2,
           3,
-          {'key': 'value'}
+          {'key': 'value'},
         ];
         final response = await client.post('/echo-any', body: data);
 
@@ -167,18 +167,20 @@ void main() {
         final data = {'test': true};
         final response = await client.post('/echo', body: data);
 
-        expect(response.headers['content-type']?.first,
-            contains('application/json'));
+        expect(
+          response.headers['content-type']?.first,
+          contains('application/json'),
+        );
         expect(response.json(), equals(data));
       });
     });
 
     group('Headers', () {
       test('sends custom headers', () async {
-        final response = await client.get('/headers', headers: {
-          'X-Custom-Header': 'custom-value',
-          'X-Test': 'test-value',
-        });
+        final response = await client.get(
+          '/headers',
+          headers: {'X-Custom-Header': 'custom-value', 'X-Test': 'test-value'},
+        );
 
         expect(response.statusCode, equals(200));
         final body = response.json() as Map<String, dynamic>;
@@ -192,9 +194,9 @@ void main() {
         expect(response.statusCode, equals(200));
         final body = response.json() as Map<String, dynamic>;
         expect(
-            body['content-type'],
-            contains(
-                'application/json')); // This should work as it's a string in the map
+          body['content-type'],
+          contains('application/json'),
+        ); // This should work as it's a string in the map
       });
 
       test('preserves user content-type header', () async {
@@ -225,8 +227,10 @@ void main() {
 
         expect(response.statusCode, equals(200));
         expect(response.isJson, isFalse);
-        expect(response.contentType?.mimeType,
-            contains('text/html')); // Arcade returns text/html for strings
+        expect(
+          response.contentType?.mimeType,
+          contains('text/html'),
+        ); // Arcade returns text/html for strings
         expect(response.text(), equals('Plain text response'));
       });
 
@@ -243,7 +247,9 @@ void main() {
 
         expect(response.statusCode, equals(404));
         expect(
-            response.statusCode >= 200 && response.statusCode < 300, isFalse);
+          response.statusCode >= 200 && response.statusCode < 300,
+          isFalse,
+        );
       });
     });
 
@@ -273,10 +279,12 @@ void main() {
 
         expect(
           () => badClient.get('/test'),
-          throwsA(anyOf([
-            isA<ArgumentError>(), // Invalid port
-            isA<Exception>(), // Other connection errors
-          ])),
+          throwsA(
+            anyOf([
+              isA<ArgumentError>(), // Invalid port
+              isA<Exception>(), // Other connection errors
+            ]),
+          ),
         );
 
         badClient.close();

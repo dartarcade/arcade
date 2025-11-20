@@ -21,15 +21,9 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
     _connection = RedisConnection();
 
     if (secure) {
-      _command = await _connection.connectSecure(
-        host,
-        port,
-      );
+      _command = await _connection.connectSecure(host, port);
     } else {
-      _command = await _connection.connect(
-        host,
-        port,
-      );
+      _command = await _connection.connect(host, port);
     }
   }
 
@@ -75,20 +69,18 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
 
   @override
   FutureOr<Map<String, dynamic>?> getJson(String key) {
-    return get(key).then(
-      (value) {
-        if (value == null) return null;
-        try {
-          final decoded = jsonDecode(value.toString());
-          if (decoded is Map<String, dynamic>) {
-            return decoded;
-          }
-          return null;
-        } catch (_) {
-          return null;
+    return get(key).then((value) {
+      if (value == null) return null;
+      try {
+        final decoded = jsonDecode(value.toString());
+        if (decoded is Map<String, dynamic>) {
+          return decoded;
         }
-      },
-    );
+        return null;
+      } catch (_) {
+        return null;
+      }
+    });
   }
 
   @override
@@ -186,13 +178,16 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
             switch (kind) {
               case 'subscribe':
                 final count = data[2] as int;
-                controller.add(PubSubSubscribed(channel.toString(), count)
-                    as PubSubEvent<T>);
+                controller.add(
+                  PubSubSubscribed(channel.toString(), count) as PubSubEvent<T>,
+                );
 
               case 'unsubscribe':
                 final count = data[2] as int;
-                controller.add(PubSubUnsubscribed(channel.toString(), count)
-                    as PubSubEvent<T>);
+                controller.add(
+                  PubSubUnsubscribed(channel.toString(), count)
+                      as PubSubEvent<T>,
+                );
 
               case 'message':
                 final rawData = data[2];
@@ -202,8 +197,9 @@ class RedisCacheManager implements BaseCacheManager<RedisConnectionInfo> {
                     ? messageMapper(messageData)
                     : messageData as T;
 
-                controller
-                    .add(PubSubMessage<T>(channel.toString(), mappedData));
+                controller.add(
+                  PubSubMessage<T>(channel.toString(), mappedData),
+                );
             }
           }
         },

@@ -78,11 +78,7 @@ class ArcadeTestServer {
       final port = await _findAvailablePort();
 
       // Use Arcade's actual runServer implementation
-      await runServer(
-        port: port,
-        init: init,
-        logLevel: logLevel,
-      );
+      await runServer(port: port, init: init, logLevel: logLevel);
 
       // Get the server instance that was stored by runServer
       if (serverInstance == null) {
@@ -145,10 +141,7 @@ class ArcadeTestServer {
   /// Optional [headers] can be provided for the request.
   ///
   /// Returns a [TestResponse] with the server's response.
-  Future<TestResponse> get(
-    String path, {
-    Map<String, String>? headers,
-  }) {
+  Future<TestResponse> get(String path, {Map<String, String>? headers}) {
     return _client.get(path, headers: headers);
   }
 
@@ -203,10 +196,7 @@ class ArcadeTestServer {
   /// Optional [headers] can be provided for the request.
   ///
   /// Returns a [TestResponse] with the server's response.
-  Future<TestResponse> delete(
-    String path, {
-    Map<String, String>? headers,
-  }) {
+  Future<TestResponse> delete(String path, {Map<String, String>? headers}) {
     return _client.delete(path, headers: headers);
   }
 
@@ -216,10 +206,7 @@ class ArcadeTestServer {
   /// Optional [headers] can be provided for the request.
   ///
   /// Returns a [TestResponse] with the server's response.
-  Future<TestResponse> head(
-    String path, {
-    Map<String, String>? headers,
-  }) {
+  Future<TestResponse> head(String path, {Map<String, String>? headers}) {
     return _client.head(path, headers: headers);
   }
 
@@ -229,10 +216,7 @@ class ArcadeTestServer {
   /// Optional [headers] can be provided for the request.
   ///
   /// Returns a [TestResponse] with the server's response.
-  Future<TestResponse> options(
-    String path, {
-    Map<String, String>? headers,
-  }) {
+  Future<TestResponse> options(String path, {Map<String, String>? headers}) {
     return _client.options(path, headers: headers);
   }
 

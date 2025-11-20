@@ -60,7 +60,7 @@ void main() {
           'name': 'Test User',
           'age': 30,
           'active': true,
-          'tags': ['dart', 'memory', 'cache']
+          'tags': ['dart', 'memory', 'cache'],
         };
         await cache.set('json_key', json);
 
@@ -99,7 +99,10 @@ void main() {
 
       test('setWithTtl expires keys', () async {
         await cache.setWithTtl(
-            'ttl_key', 'expires soon', const Duration(milliseconds: 10));
+          'ttl_key',
+          'expires soon',
+          const Duration(milliseconds: 10),
+        );
 
         // Key should exist immediately
         expect(await cache.contains('ttl_key'), isTrue);
@@ -163,19 +166,26 @@ void main() {
         expect(count2, equals(1));
 
         expect(
-            messages.length, greaterThanOrEqualTo(3)); // subscribe + 2 messages
+          messages.length,
+          greaterThanOrEqualTo(3),
+        ); // subscribe + 2 messages
 
         // Check subscribe event
-        final subscribeEvent = messages.firstWhere((e) => e is PubSubSubscribed,
-            orElse: () => throw StateError('No subscribe event found'));
+        final subscribeEvent = messages.firstWhere(
+          (e) => e is PubSubSubscribed,
+          orElse: () => throw StateError('No subscribe event found'),
+        );
         expect(subscribeEvent, isA<PubSubSubscribed>());
-        expect((subscribeEvent as PubSubSubscribed).channel,
-            equals('test_channel'));
+        expect(
+          (subscribeEvent as PubSubSubscribed).channel,
+          equals('test_channel'),
+        );
         expect(subscribeEvent.subscriberCount, equals(1));
 
         // Check message events
-        final messageEvents =
-            messages.whereType<PubSubMessage<String>>().toList();
+        final messageEvents = messages
+            .whereType<PubSubMessage<String>>()
+            .toList();
         expect(messageEvents.length, equals(2));
         expect(messageEvents[0].data, equals('Hello'));
         expect(messageEvents[1].data, equals('World'));
@@ -189,10 +199,9 @@ void main() {
         final subscribeCompleter = Completer<void>();
         final messagesCompleter = Completer<void>();
 
-        final subscription = cache.subscribe<int>(
-          ['number_channel'],
-          messageMapper: (data) => int.parse(data.toString()),
-        );
+        final subscription = cache.subscribe<int>([
+          'number_channel',
+        ], messageMapper: (data) => int.parse(data.toString()));
 
         final listener = subscription.listen((event) {
           if (event is PubSubSubscribed && !subscribeCompleter.isCompleted) {
@@ -271,9 +280,13 @@ void main() {
         expect(messages.length, equals(3));
 
         expect(
-            messages.where((m) => m.channel == 'channel1').length, equals(2));
+          messages.where((m) => m.channel == 'channel1').length,
+          equals(2),
+        );
         expect(
-            messages.where((m) => m.channel == 'channel2').length, equals(1));
+          messages.where((m) => m.channel == 'channel2').length,
+          equals(1),
+        );
 
         await listener.cancel();
         await cache.unsubscribe(['channel1', 'channel2']);
@@ -284,10 +297,9 @@ void main() {
         final subscribeCompleter = Completer<void>();
         final messageCompleter = Completer<void>();
 
-        final subscription = cache.subscribe<Map<String, dynamic>>(
-          ['json_channel'],
-          messageMapper: (data) => data as Map<String, dynamic>,
-        );
+        final subscription = cache.subscribe<Map<String, dynamic>>([
+          'json_channel',
+        ], messageMapper: (data) => data as Map<String, dynamic>);
 
         final listener = subscription.listen((event) {
           if (event is PubSubSubscribed && !subscribeCompleter.isCompleted) {
@@ -347,8 +359,9 @@ void main() {
 
         // Wait for first message
         await expectLater(
-          firstMessageCompleter.future
-              .timeout(const Duration(milliseconds: 100)),
+          firstMessageCompleter.future.timeout(
+            const Duration(milliseconds: 100),
+          ),
           completes,
         );
 
@@ -432,38 +445,40 @@ void main() {
         await cache.unsubscribe(['concurrent']);
       });
 
-      test('PubSubSubscribed event includes correct subscriber count',
-          () async {
-        final subscribeEvents = <PubSubSubscribed>[];
-        final completer1 = Completer<void>();
-        final completer2 = Completer<void>();
+      test(
+        'PubSubSubscribed event includes correct subscriber count',
+        () async {
+          final subscribeEvents = <PubSubSubscribed>[];
+          final completer1 = Completer<void>();
+          final completer2 = Completer<void>();
 
-        // First subscription
-        final sub1 = cache.subscribe<String>(['count_test']);
-        sub1.listen((event) {
-          if (event is PubSubSubscribed) {
-            subscribeEvents.add(event);
-            completer1.complete();
-          }
-        });
+          // First subscription
+          final sub1 = cache.subscribe<String>(['count_test']);
+          sub1.listen((event) {
+            if (event is PubSubSubscribed) {
+              subscribeEvents.add(event);
+              completer1.complete();
+            }
+          });
 
-        await completer1.future.timeout(const Duration(milliseconds: 100));
-        expect(subscribeEvents.last.subscriberCount, equals(1));
+          await completer1.future.timeout(const Duration(milliseconds: 100));
+          expect(subscribeEvents.last.subscriberCount, equals(1));
 
-        // Second subscription to same channel
-        final sub2 = cache.subscribe<String>(['count_test']);
-        sub2.listen((event) {
-          if (event is PubSubSubscribed) {
-            subscribeEvents.add(event);
-            completer2.complete();
-          }
-        });
+          // Second subscription to same channel
+          final sub2 = cache.subscribe<String>(['count_test']);
+          sub2.listen((event) {
+            if (event is PubSubSubscribed) {
+              subscribeEvents.add(event);
+              completer2.complete();
+            }
+          });
 
-        await completer2.future.timeout(const Duration(milliseconds: 100));
-        expect(subscribeEvents.last.subscriberCount, equals(2));
+          await completer2.future.timeout(const Duration(milliseconds: 100));
+          expect(subscribeEvents.last.subscriberCount, equals(2));
 
-        await cache.unsubscribe(['count_test']);
-      });
+          await cache.unsubscribe(['count_test']);
+        },
+      );
 
       test('PubSubUnsubscribed event is emitted on unsubscribe', () async {
         final events = <PubSubEvent>[];
@@ -481,8 +496,9 @@ void main() {
         });
 
         // Wait for subscription
-        await subscribeCompleter.future
-            .timeout(const Duration(milliseconds: 100));
+        await subscribeCompleter.future.timeout(
+          const Duration(milliseconds: 100),
+        );
 
         // Unsubscribe
         await cache.unsubscribe(['unsub_event_test']);
@@ -503,9 +519,15 @@ void main() {
     group('TTL and Expiration', () {
       test('keys expire after TTL duration', () async {
         await cache.setWithTtl(
-            'expire1', 'value1', const Duration(milliseconds: 10));
+          'expire1',
+          'value1',
+          const Duration(milliseconds: 10),
+        );
         await cache.setWithTtl(
-            'expire2', 'value2', const Duration(milliseconds: 20));
+          'expire2',
+          'value2',
+          const Duration(milliseconds: 20),
+        );
         await cache.set('no_expire', 'permanent');
 
         // All keys should exist initially
@@ -530,7 +552,10 @@ void main() {
 
       test('expired keys are removed on access', () async {
         await cache.setWithTtl(
-            'auto_remove', 'value', const Duration(milliseconds: 10));
+          'auto_remove',
+          'value',
+          const Duration(milliseconds: 10),
+        );
 
         // Key exists initially
         expect(await cache.get<String>('auto_remove'), equals('value'));
@@ -545,7 +570,10 @@ void main() {
 
       test('contains returns false for expired keys', () async {
         await cache.setWithTtl(
-            'check_expire', 'value', const Duration(milliseconds: 10));
+          'check_expire',
+          'value',
+          const Duration(milliseconds: 10),
+        );
 
         expect(await cache.contains('check_expire'), isTrue);
 
@@ -556,11 +584,18 @@ void main() {
 
       test('get operations return null for expired keys', () async {
         await cache.setWithTtl(
-            'expire_test', 'string_value', const Duration(milliseconds: 10));
-        await cache.setWithTtl(
-            'expire_list', ['a', 'b', 'c'], const Duration(milliseconds: 10));
-        await cache.setWithTtl(
-            'expire_json', {'key': 'value'}, const Duration(milliseconds: 10));
+          'expire_test',
+          'string_value',
+          const Duration(milliseconds: 10),
+        );
+        await cache.setWithTtl('expire_list', [
+          'a',
+          'b',
+          'c',
+        ], const Duration(milliseconds: 10));
+        await cache.setWithTtl('expire_json', {
+          'key': 'value',
+        }, const Duration(milliseconds: 10));
 
         // Wait for expiration
         await Future.delayed(const Duration(milliseconds: 15));
@@ -614,19 +649,15 @@ void main() {
             {
               'id': 1,
               'name': 'User 1',
-              'tags': ['admin', 'active']
+              'tags': ['admin', 'active'],
             },
             {
               'id': 2,
               'name': 'User 2',
-              'tags': ['user']
+              'tags': ['user'],
             },
           ],
-          'metadata': {
-            'version': '1.0',
-            'count': 2,
-            'active': true,
-          }
+          'metadata': {'version': '1.0', 'count': 2, 'active': true},
         };
 
         await cache.set('complex', complexObject);
@@ -655,20 +686,26 @@ void main() {
         final subscribeCompleter = Completer<void>();
         var subscribedCount = 0;
 
-        sub1.listen((event) {
-          if (event is PubSubSubscribed) {
-            subscribedCount++;
-            if (subscribedCount == 1 && !subscribeCompleter.isCompleted) {
-              subscribeCompleter.complete();
+        sub1.listen(
+          (event) {
+            if (event is PubSubSubscribed) {
+              subscribedCount++;
+              if (subscribedCount == 1 && !subscribeCompleter.isCompleted) {
+                subscribeCompleter.complete();
+              }
             }
-          }
-        }, onDone: () {
-          if (!completer1.isCompleted) completer1.complete();
-        });
+          },
+          onDone: () {
+            if (!completer1.isCompleted) completer1.complete();
+          },
+        );
 
-        sub2.listen(null, onDone: () {
-          if (!completer2.isCompleted) completer2.complete();
-        });
+        sub2.listen(
+          null,
+          onDone: () {
+            if (!completer2.isCompleted) completer2.complete();
+          },
+        );
 
         // Wait for at least one subscription to be established
         await expectLater(
@@ -750,7 +787,10 @@ void main() {
         // Set multiple keys with short TTL
         for (var i = 0; i < 10; i++) {
           await cache.setWithTtl(
-              'temp_$i', 'value_$i', const Duration(milliseconds: 10));
+            'temp_$i',
+            'value_$i',
+            const Duration(milliseconds: 10),
+          );
         }
 
         // Also set some permanent keys

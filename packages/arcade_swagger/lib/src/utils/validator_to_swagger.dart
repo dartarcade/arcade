@@ -28,9 +28,7 @@ Schema? _validationsToSwagger(
     if (fieldName != null && isRequired) {
       requiredKeys.add(fieldName);
     }
-    return const Schema.string(
-      example: 'any',
-    );
+    return const Schema.string(example: 'any');
   }
 
   if (first is BoolValidation) {
@@ -71,9 +69,7 @@ Schema? _validationsToSwagger(
             'Self-referential validator must have a name. Use .withName() to set it.',
           );
         }
-        return Schema.array(
-          items: Schema.object(ref: itemValidator.name),
-        );
+        return Schema.array(items: Schema.object(ref: itemValidator.name));
       }
     }
 
@@ -81,18 +77,14 @@ Schema? _validationsToSwagger(
     if (itemValidator.name != null &&
         itemValidator.validations.isNotEmpty &&
         itemValidator.validations.first is SchemaValidation) {
-      return Schema.array(
-        items: Schema.object(ref: itemValidator.name),
-      );
+      return Schema.array(items: Schema.object(ref: itemValidator.name));
     }
 
     return Schema.array(
-      items: _validationsToSwagger(
-        itemValidator.validations,
-        null,
-        [],
-        [...processingStack, itemValidator],
-      )!,
+      items: _validationsToSwagger(itemValidator.validations, null, [], [
+        ...processingStack,
+        itemValidator,
+      ])!,
     );
   }
 
@@ -100,9 +92,7 @@ Schema? _validationsToSwagger(
     if (fieldName != null && isRequired) {
       requiredKeys.add(fieldName);
     }
-    return const Schema.map(
-      example: {},
-    );
+    return const Schema.map(example: {});
   }
 
   if (first is NullValidation) {
@@ -144,8 +134,9 @@ Schema? _validationsToSwagger(
               );
             }
             // Check if this ref field is required
-            final isFieldRequired = resolvedValidator.validations
-                .any((v) => v is RequiredValidation);
+            final isFieldRequired = resolvedValidator.validations.any(
+              (v) => v is RequiredValidation,
+            );
             if (isFieldRequired) {
               r.add(key);
             }
@@ -158,8 +149,9 @@ Schema? _validationsToSwagger(
             resolvedValidator.validations.isNotEmpty &&
             resolvedValidator.validations.first is SchemaValidation) {
           // Check if this ref field is required
-          final isFieldRequired = resolvedValidator.validations
-              .any((v) => v is RequiredValidation);
+          final isFieldRequired = resolvedValidator.validations.any(
+            (v) => v is RequiredValidation,
+          );
           if (isFieldRequired) {
             r.add(key);
           }

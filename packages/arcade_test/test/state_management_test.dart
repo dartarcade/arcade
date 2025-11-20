@@ -86,8 +86,10 @@ void main() {
 
         final snapshot = ArcadeTestState.getStateSnapshot();
 
-        expect(snapshot['routeCount'],
-            greaterThanOrEqualTo(0)); // Routes may be processed differently
+        expect(
+          snapshot['routeCount'],
+          greaterThanOrEqualTo(0),
+        ); // Routes may be processed differently
         expect(snapshot['globalBeforeHooksCount'], equals(1));
         expect(snapshot['globalAfterHooksCount'], equals(0));
         expect(snapshot['localConnectionsCount'] ?? 0, equals(0));

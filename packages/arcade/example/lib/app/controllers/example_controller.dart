@@ -14,10 +14,7 @@ class ExampleController {
   }
 
   Map<String, dynamic> get(covariant AuthedRequestContext context) {
-    return {
-      'query': context.queryParameters,
-      'path': context.pathParameters,
-    };
+    return {'query': context.queryParameters, 'path': context.pathParameters};
   }
 
   Future<Map<String, dynamic>> post(
@@ -39,8 +36,9 @@ class ExampleController {
     final data = await context.formData();
     return switch (data) {
       BodyParseSuccess(value: final data) => data.files.first.path,
-      BodyParseFailure(error: final e) => throw e as Object? ??
-          const BadRequestException(message: 'Invalid input'),
+      BodyParseFailure(error: final e) =>
+        throw e as Object? ??
+            const BadRequestException(message: 'Invalid input'),
     };
   }
 

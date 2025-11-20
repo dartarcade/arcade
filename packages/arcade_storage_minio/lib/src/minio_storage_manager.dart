@@ -21,8 +21,9 @@ class MinioStorageManager implements BaseStorageManager<MinioConnectionInfo> {
     final (:endPoint, :accessKey, :secretKey, :useSSL, :region) =
         connectionInfo;
 
-    final uri =
-        Uri.parse(endPoint.contains('://') ? endPoint : 'http://$endPoint');
+    final uri = Uri.parse(
+      endPoint.contains('://') ? endPoint : 'http://$endPoint',
+    );
 
     _minio = Minio(
       endPoint: uri.host.isEmpty ? uri.path : uri.host,
@@ -53,10 +54,7 @@ class MinioStorageManager implements BaseStorageManager<MinioConnectionInfo> {
   Future<List<BucketInfo>> listBuckets() async {
     final buckets = await _minio.listBuckets();
     return buckets.map((bucket) {
-      return BucketInfo(
-        name: bucket.name,
-        creationDate: bucket.creationDate,
-      );
+      return BucketInfo(name: bucket.name, creationDate: bucket.creationDate);
     }).toList();
   }
 
@@ -73,12 +71,7 @@ class MinioStorageManager implements BaseStorageManager<MinioConnectionInfo> {
     int? length,
   }) async {
     final uint8ListStream = data.map((chunk) => Uint8List.fromList(chunk));
-    await _minio.putObject(
-      bucket,
-      objectName,
-      uint8ListStream,
-      size: length,
-    );
+    await _minio.putObject(bucket, objectName, uint8ListStream, size: length);
   }
 
   @override
@@ -112,14 +105,8 @@ class MinioStorageManager implements BaseStorageManager<MinioConnectionInfo> {
   }
 
   @override
-  Future<List<ObjectInfo>> listObjects(
-    String bucket, {
-    String? prefix,
-  }) async {
-    final results = _minio.listObjects(
-      bucket,
-      prefix: prefix ?? '',
-    );
+  Future<List<ObjectInfo>> listObjects(String bucket, {String? prefix}) async {
+    final results = _minio.listObjects(bucket, prefix: prefix ?? '');
     final allObjects = <ObjectInfo>[];
     await for (final result in results) {
       for (final object in result.objects) {
@@ -142,11 +129,7 @@ class MinioStorageManager implements BaseStorageManager<MinioConnectionInfo> {
     String source,
     String destination,
   ) async {
-    await _minio.copyObject(
-      bucket,
-      destination,
-      '$bucket/$source',
-    );
+    await _minio.copyObject(bucket, destination, '$bucket/$source');
   }
 
   @override

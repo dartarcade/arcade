@@ -10,10 +10,7 @@ class TestContext extends RequestContext {
   final Map<String, dynamic> extra = {};
 
   TestContext.from(RequestContext ctx)
-      : super(
-          route: ctx.route,
-          request: ctx.rawRequest,
-        );
+    : super(route: ctx.route, request: ctx.rawRequest);
 }
 
 void main() {
@@ -27,16 +24,17 @@ void main() {
     group('Basic Metadata', () {
       test('stores and retrieves metadata on GET routes', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/users',
-              extra: {'requiresAuth': true, 'role': 'admin'}).handle((ctx) {
-            final metadata = ctx.route.metadata;
-            return {
-              'type': metadata?.type,
-              'path': metadata?.path,
-              'method': metadata?.method.name,
-              'extra': metadata?.extra,
-            };
-          });
+          route
+              .get('/users', extra: {'requiresAuth': true, 'role': 'admin'})
+              .handle((ctx) {
+                final metadata = ctx.route.metadata;
+                return {
+                  'type': metadata?.type,
+                  'path': metadata?.path,
+                  'method': metadata?.method.name,
+                  'extra': metadata?.extra,
+                };
+              });
         });
 
         final response = await server.get('/users');
@@ -54,74 +52,80 @@ void main() {
 
       test('stores and retrieves metadata on POST routes', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.post('/api/data',
-              extra: {'rateLimit': 100, 'version': 'v1'}).handle((ctx) {
-            final metadata = ctx.route.metadata;
-            return {
-              'hasMetadata': metadata != null,
-              'rateLimit': metadata?.extra?['rateLimit'],
-              'version': metadata?.extra?['version'],
-            };
-          });
+          route
+              .post('/api/data', extra: {'rateLimit': 100, 'version': 'v1'})
+              .handle((ctx) {
+                final metadata = ctx.route.metadata;
+                return {
+                  'hasMetadata': metadata != null,
+                  'rateLimit': metadata?.extra?['rateLimit'],
+                  'version': metadata?.extra?['version'],
+                };
+              });
         });
 
         final response = await server.post('/api/data', body: {'test': true});
         expect(response, isOk());
         expect(
           response,
-          hasJsonBody({
-            'hasMetadata': true,
-            'rateLimit': 100,
-            'version': 'v1',
-          }),
+          hasJsonBody({'hasMetadata': true, 'rateLimit': 100, 'version': 'v1'}),
         );
       });
 
       test(
-          'supports different metadata for different HTTP methods on same path',
-          () async {
-        server = await ArcadeTestServer.withRoutes(() {
-          route.get('/resource', extra: {'operation': 'read'}).handle(
-              (ctx) => {'metadata': ctx.route.metadata?.extra});
+        'supports different metadata for different HTTP methods on same path',
+        () async {
+          server = await ArcadeTestServer.withRoutes(() {
+            route
+                .get('/resource', extra: {'operation': 'read'})
+                .handle((ctx) => {'metadata': ctx.route.metadata?.extra});
 
-          route.post('/resource', extra: {'operation': 'create'}).handle(
-              (ctx) => {'metadata': ctx.route.metadata?.extra});
+            route
+                .post('/resource', extra: {'operation': 'create'})
+                .handle((ctx) => {'metadata': ctx.route.metadata?.extra});
 
-          route.put('/resource', extra: {'operation': 'update'}).handle(
-              (ctx) => {'metadata': ctx.route.metadata?.extra});
+            route
+                .put('/resource', extra: {'operation': 'update'})
+                .handle((ctx) => {'metadata': ctx.route.metadata?.extra});
 
-          route.delete('/resource', extra: {'operation': 'delete'}).handle(
-              (ctx) => {'metadata': ctx.route.metadata?.extra});
-        });
+            route
+                .delete('/resource', extra: {'operation': 'delete'})
+                .handle((ctx) => {'metadata': ctx.route.metadata?.extra});
+          });
 
-        final getResponse = await server.get('/resource');
-        expect(
+          final getResponse = await server.get('/resource');
+          expect(
             getResponse,
             hasJsonBody({
-              'metadata': {'operation': 'read'}
-            }));
+              'metadata': {'operation': 'read'},
+            }),
+          );
 
-        final postResponse = await server.post('/resource', body: {});
-        expect(
+          final postResponse = await server.post('/resource', body: {});
+          expect(
             postResponse,
             hasJsonBody({
-              'metadata': {'operation': 'create'}
-            }));
+              'metadata': {'operation': 'create'},
+            }),
+          );
 
-        final putResponse = await server.put('/resource', body: {});
-        expect(
+          final putResponse = await server.put('/resource', body: {});
+          expect(
             putResponse,
             hasJsonBody({
-              'metadata': {'operation': 'update'}
-            }));
+              'metadata': {'operation': 'update'},
+            }),
+          );
 
-        final deleteResponse = await server.delete('/resource');
-        expect(
+          final deleteResponse = await server.delete('/resource');
+          expect(
             deleteResponse,
             hasJsonBody({
-              'metadata': {'operation': 'delete'}
-            }));
-      });
+              'metadata': {'operation': 'delete'},
+            }),
+          );
+        },
+      );
 
       test('handles routes without metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
@@ -135,13 +139,7 @@ void main() {
 
         final response = await server.get('/no-metadata');
         expect(response, isOk());
-        expect(
-          response,
-          hasJsonBody({
-            'hasMetadata': true,
-            'extra': null,
-          }),
-        );
+        expect(response, hasJsonBody({'hasMetadata': true, 'extra': null}));
       });
 
       test('supports empty metadata map', () async {
@@ -156,31 +154,30 @@ void main() {
 
         final response = await server.get('/empty-meta');
         expect(response, isOk());
-        expect(
-          response,
-          hasJsonBody({
-            'hasExtra': true,
-            'extraIsEmpty': true,
-          }),
-        );
+        expect(response, hasJsonBody({'hasExtra': true, 'extraIsEmpty': true}));
       });
 
       test('supports complex metadata structures', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/complex', extra: {
-            'auth': {
-              'required': true,
-              'roles': ['admin', 'moderator'],
-              'scopes': ['read', 'write'],
-            },
-            'rateLimit': {
-              'requests': 100,
-              'window': 3600,
-              'strategy': 'sliding',
-            },
-            'features': ['beta', 'experimental'],
-            'version': 2,
-          }).handle((ctx) => ctx.route.metadata?.extra ?? {});
+          route
+              .get(
+                '/complex',
+                extra: {
+                  'auth': {
+                    'required': true,
+                    'roles': ['admin', 'moderator'],
+                    'scopes': ['read', 'write'],
+                  },
+                  'rateLimit': {
+                    'requests': 100,
+                    'window': 3600,
+                    'strategy': 'sliding',
+                  },
+                  'features': ['beta', 'experimental'],
+                  'version': 2,
+                },
+              )
+              .handle((ctx) => ctx.route.metadata?.extra ?? {});
         });
 
         final response = await server.get('/complex');
@@ -208,41 +205,37 @@ void main() {
     group('Metadata with Hooks', () {
       test('metadata is accessible in before hooks', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/secure',
-              extra: {'requiresAuth': true, 'minRole': 'user'}).before((ctx) {
-            final requiresAuth =
-                ctx.route.metadata?.extra?['requiresAuth'] == true;
-            final minRole = ctx.route.metadata?.extra?['minRole'];
+          route
+              .get('/secure', extra: {'requiresAuth': true, 'minRole': 'user'})
+              .before((ctx) {
+                final requiresAuth =
+                    ctx.route.metadata?.extra?['requiresAuth'] == true;
+                final minRole = ctx.route.metadata?.extra?['minRole'];
 
-            if (requiresAuth) {
-              // Simulate auth check
-              final testCtx = TestContext.from(ctx);
-              testCtx.extra['authChecked'] = true;
-              testCtx.extra['minRole'] = minRole;
-              return testCtx;
-            }
+                if (requiresAuth) {
+                  // Simulate auth check
+                  final testCtx = TestContext.from(ctx);
+                  testCtx.extra['authChecked'] = true;
+                  testCtx.extra['minRole'] = minRole;
+                  return testCtx;
+                }
 
-            return ctx;
-          }).handle((ctx) {
-            if (ctx is TestContext) {
-              return {
-                'authChecked': ctx.extra['authChecked'],
-                'minRole': ctx.extra['minRole'],
-              };
-            }
-            return {'authChecked': false, 'minRole': null};
-          });
+                return ctx;
+              })
+              .handle((ctx) {
+                if (ctx is TestContext) {
+                  return {
+                    'authChecked': ctx.extra['authChecked'],
+                    'minRole': ctx.extra['minRole'],
+                  };
+                }
+                return {'authChecked': false, 'minRole': null};
+              });
         });
 
         final response = await server.get('/secure');
         expect(response, isOk());
-        expect(
-          response,
-          hasJsonBody({
-            'authChecked': true,
-            'minRole': 'user',
-          }),
-        );
+        expect(response, hasJsonBody({'authChecked': true, 'minRole': 'user'}));
       });
 
       test('metadata is accessible in after hooks', () async {
@@ -259,11 +252,7 @@ void main() {
                   // Simulate logging
                   return (
                     ctx,
-                    {
-                      'result': result,
-                      'logged': true,
-                      'logLevel': logLevel,
-                    }
+                    {'result': result, 'logged': true, 'logLevel': logLevel},
                   );
                 }
 
@@ -285,37 +274,37 @@ void main() {
 
       test('metadata flows through multiple hooks', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/flow', extra: {'step': 0}).before((ctx) {
-            final step = ctx.route.metadata?.extra?['step'] as int;
-            final testCtx = TestContext.from(ctx);
-            testCtx.extra['step1'] = step + 1;
-            return testCtx;
-          }).before((ctx) {
-            final step = ctx.route.metadata?.extra?['step'] as int;
-            ctx.extra['step2'] = step + 2;
-            return ctx;
-          }).handle((RequestContext ctx) {
-            final step = ctx.route.metadata?.extra?['step'] as int;
-            if (ctx is TestContext) {
-              return {
-                'originalStep': step,
-                'step1': ctx.extra['step1'],
-                'step2': ctx.extra['step2'],
-              };
-            }
-            return {'originalStep': step};
-          });
+          route
+              .get('/flow', extra: {'step': 0})
+              .before((ctx) {
+                final step = ctx.route.metadata?.extra?['step'] as int;
+                final testCtx = TestContext.from(ctx);
+                testCtx.extra['step1'] = step + 1;
+                return testCtx;
+              })
+              .before((ctx) {
+                final step = ctx.route.metadata?.extra?['step'] as int;
+                ctx.extra['step2'] = step + 2;
+                return ctx;
+              })
+              .handle((RequestContext ctx) {
+                final step = ctx.route.metadata?.extra?['step'] as int;
+                if (ctx is TestContext) {
+                  return {
+                    'originalStep': step,
+                    'step1': ctx.extra['step1'],
+                    'step2': ctx.extra['step2'],
+                  };
+                }
+                return {'originalStep': step};
+              });
         });
 
         final response = await server.get('/flow');
         expect(response, isOk());
         expect(
           response,
-          hasJsonBody({
-            'originalStep': 0,
-            'step1': 1,
-            'step2': 2,
-          }),
+          hasJsonBody({'originalStep': 0, 'step1': 1, 'step2': 2}),
         );
       });
     });
@@ -323,22 +312,22 @@ void main() {
     group('Metadata with Route Groups', () {
       test('routes in groups have their own metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.group<RequestContext>('/api', defineRoutes: (route) {
-            route().get('/v1/users', extra: {
-              'version': 1,
-              'deprecated': false
-            }).handle((ctx) => ctx.route.metadata?.extra ?? {});
+          route.group<RequestContext>(
+            '/api',
+            defineRoutes: (route) {
+              route()
+                  .get('/v1/users', extra: {'version': 1, 'deprecated': false})
+                  .handle((ctx) => ctx.route.metadata?.extra ?? {});
 
-            route().get('/v2/users', extra: {
-              'version': 2,
-              'deprecated': false
-            }).handle((ctx) => ctx.route.metadata?.extra ?? {});
+              route()
+                  .get('/v2/users', extra: {'version': 2, 'deprecated': false})
+                  .handle((ctx) => ctx.route.metadata?.extra ?? {});
 
-            route().get('/v0/users', extra: {
-              'version': 0,
-              'deprecated': true
-            }).handle((ctx) => ctx.route.metadata?.extra ?? {});
-          });
+              route()
+                  .get('/v0/users', extra: {'version': 0, 'deprecated': true})
+                  .handle((ctx) => ctx.route.metadata?.extra ?? {});
+            },
+          );
         });
 
         final v1Response = await server.get('/api/v1/users');
@@ -353,29 +342,53 @@ void main() {
 
       test('nested groups preserve metadata at each level', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.group<RequestContext>('/api', defineRoutes: (route) {
-            route().group<RequestContext>('/admin', defineRoutes: (route) {
-              route().get('/users', extra: {
-                'area': 'admin',
-                'resource': 'users',
-                'permissions': ['read', 'write', 'delete'],
-              }).handle((ctx) => ctx.route.metadata?.extra ?? {});
+          route.group<RequestContext>(
+            '/api',
+            defineRoutes: (route) {
+              route().group<RequestContext>(
+                '/admin',
+                defineRoutes: (route) {
+                  route()
+                      .get(
+                        '/users',
+                        extra: {
+                          'area': 'admin',
+                          'resource': 'users',
+                          'permissions': ['read', 'write', 'delete'],
+                        },
+                      )
+                      .handle((ctx) => ctx.route.metadata?.extra ?? {});
 
-              route().get('/settings', extra: {
-                'area': 'admin',
-                'resource': 'settings',
-                'permissions': ['read', 'write'],
-              }).handle((ctx) => ctx.route.metadata?.extra ?? {});
-            });
+                  route()
+                      .get(
+                        '/settings',
+                        extra: {
+                          'area': 'admin',
+                          'resource': 'settings',
+                          'permissions': ['read', 'write'],
+                        },
+                      )
+                      .handle((ctx) => ctx.route.metadata?.extra ?? {});
+                },
+              );
 
-            route().group<RequestContext>('/public', defineRoutes: (route) {
-              route().get('/info', extra: {
-                'area': 'public',
-                'resource': 'info',
-                'permissions': ['read'],
-              }).handle((ctx) => ctx.route.metadata?.extra ?? {});
-            });
-          });
+              route().group<RequestContext>(
+                '/public',
+                defineRoutes: (route) {
+                  route()
+                      .get(
+                        '/info',
+                        extra: {
+                          'area': 'public',
+                          'resource': 'info',
+                          'permissions': ['read'],
+                        },
+                      )
+                      .handle((ctx) => ctx.route.metadata?.extra ?? {});
+                },
+              );
+            },
+          );
         });
 
         final adminUsers = await server.get('/api/admin/users');
@@ -413,17 +426,25 @@ void main() {
     group('Metadata with Path Parameters', () {
       test('metadata is available for parameterized routes', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/users/:id', extra: {
-            'resource': 'user',
-            'paramValidation': {'id': 'uuid'},
-          }).handle((ctx) => {
-                'params': ctx.pathParameters,
-                'metadata': ctx.route.metadata?.extra,
-              });
+          route
+              .get(
+                '/users/:id',
+                extra: {
+                  'resource': 'user',
+                  'paramValidation': {'id': 'uuid'},
+                },
+              )
+              .handle(
+                (ctx) => {
+                  'params': ctx.pathParameters,
+                  'metadata': ctx.route.metadata?.extra,
+                },
+              );
         });
 
-        final response =
-            await server.get('/users/123e4567-e89b-12d3-a456-426614174000');
+        final response = await server.get(
+          '/users/123e4567-e89b-12d3-a456-426614174000',
+        );
         expect(response, isOk());
         expect(
           response,
@@ -439,15 +460,18 @@ void main() {
 
       test('metadata works with multiple path parameters', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/posts/:year/:month/:slug', extra: {
-            'resource': 'blog-post',
-            'cache': true,
-            'ttl': 3600,
-          }).handle((ctx) => {
-                'params': ctx.pathParameters,
-                'cacheEnabled': ctx.route.metadata?.extra?['cache'] == true,
-                'ttl': ctx.route.metadata?.extra?['ttl'],
-              });
+          route
+              .get(
+                '/posts/:year/:month/:slug',
+                extra: {'resource': 'blog-post', 'cache': true, 'ttl': 3600},
+              )
+              .handle(
+                (ctx) => {
+                  'params': ctx.pathParameters,
+                  'cacheEnabled': ctx.route.metadata?.extra?['cache'] == true,
+                  'ttl': ctx.route.metadata?.extra?['ttl'],
+                },
+              );
         });
 
         final response = await server.get('/posts/2024/01/hello-world');
@@ -455,11 +479,7 @@ void main() {
         expect(
           response,
           hasJsonBody({
-            'params': {
-              'year': '2024',
-              'month': '01',
-              'slug': 'hello-world',
-            },
+            'params': {'year': '2024', 'month': '01', 'slug': 'hello-world'},
             'cacheEnabled': true,
             'ttl': 3600,
           }),
@@ -479,7 +499,8 @@ void main() {
                   ctx.requestHeaders.value('x-user-role') ?? 'guest';
               if (userRole != requiredRole && userRole != 'admin') {
                 throw const ForbiddenException(
-                    message: 'Insufficient permissions');
+                  message: 'Insufficient permissions',
+                );
               }
             }
             return ctx;
@@ -487,11 +508,13 @@ void main() {
 
           route.get('/public').handle((ctx) => {'message': 'Public access'});
 
-          route.get('/users-only', extra: {'requiredRole': 'user'}).handle(
-              (ctx) => {'message': 'User access granted'});
+          route
+              .get('/users-only', extra: {'requiredRole': 'user'})
+              .handle((ctx) => {'message': 'User access granted'});
 
-          route.get('/admin-only', extra: {'requiredRole': 'admin'}).handle(
-              (ctx) => {'message': 'Admin access granted'});
+          route
+              .get('/admin-only', extra: {'requiredRole': 'admin'})
+              .handle((ctx) => {'message': 'Admin access granted'});
         });
 
         // Public route - no auth required
@@ -540,7 +563,8 @@ void main() {
               if (count >= rateLimit) {
                 // Using ServiceUnavailableException as TooManyRequestsException doesn't exist
                 throw const ServiceUnavailableException(
-                    message: 'Rate limit exceeded');
+                  message: 'Rate limit exceeded',
+                );
               }
               requestCounts[path] = count + 1;
             }
@@ -549,8 +573,9 @@ void main() {
 
           route.get('/unlimited').handle((ctx) => {'message': 'No rate limit'});
 
-          route.get('/limited', extra: {'rateLimit': 3}).handle(
-              (ctx) => {'message': 'Request processed'});
+          route
+              .get('/limited', extra: {'rateLimit': 3})
+              .handle((ctx) => {'message': 'Request processed'});
         });
 
         // Unlimited endpoint
@@ -574,78 +599,94 @@ void main() {
       test('API versioning with metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
           // Version selection based on header
-          route.get('/api/users', extra: {
-            'versions': {
-              'v1': (RequestContext ctx) => {
-                    'version': 1,
-                    'data': ['user1']
+          route
+              .get(
+                '/api/users',
+                extra: {
+                  'versions': {
+                    'v1': (RequestContext ctx) => {
+                      'version': 1,
+                      'data': ['user1'],
+                    },
+                    'v2': (RequestContext ctx) => {
+                      'version': 2,
+                      'data': ['user1', 'user2'],
+                    },
+                    'v3': (RequestContext ctx) => {
+                      'version': 3,
+                      'users': [
+                        {'id': 1, 'name': 'user1'},
+                        {'id': 2, 'name': 'user2'},
+                      ],
+                    },
                   },
-              'v2': (RequestContext ctx) => {
-                    'version': 2,
-                    'data': ['user1', 'user2']
-                  },
-              'v3': (RequestContext ctx) => {
-                    'version': 3,
-                    'users': [
-                      {'id': 1, 'name': 'user1'},
-                      {'id': 2, 'name': 'user2'},
-                    ]
-                  },
-            }
-          }).handle((ctx) {
-            final versions = ctx.route.metadata?.extra?['versions']
-                as Map<String, Function>?;
-            final requestedVersion =
-                ctx.requestHeaders.value('api-version') ?? 'v2';
-            final handler = versions?[requestedVersion] as Map<String, dynamic>
-                Function(RequestContext)?;
+                },
+              )
+              .handle((ctx) {
+                final versions =
+                    ctx.route.metadata?.extra?['versions']
+                        as Map<String, Function>?;
+                final requestedVersion =
+                    ctx.requestHeaders.value('api-version') ?? 'v2';
+                final handler =
+                    versions?[requestedVersion]
+                        as Map<String, dynamic> Function(RequestContext)?;
 
-            if (handler != null) {
-              return handler(ctx);
-            }
+                if (handler != null) {
+                  return handler(ctx);
+                }
 
-            return {'error': 'Unsupported API version'};
-          });
+                return {'error': 'Unsupported API version'};
+              });
         });
 
         // Default version (v2)
         final defaultResponse = await server.get('/api/users');
         expect(defaultResponse, isOk());
         expect(
-            defaultResponse,
-            hasJsonBody({
-              'version': 2,
-              'data': ['user1', 'user2']
-            }));
+          defaultResponse,
+          hasJsonBody({
+            'version': 2,
+            'data': ['user1', 'user2'],
+          }),
+        );
 
         // v1
-        final v1Response =
-            await server.get('/api/users', headers: {'api-version': 'v1'});
+        final v1Response = await server.get(
+          '/api/users',
+          headers: {'api-version': 'v1'},
+        );
         expect(v1Response, isOk());
         expect(
-            v1Response,
-            hasJsonBody({
-              'version': 1,
-              'data': ['user1']
-            }));
+          v1Response,
+          hasJsonBody({
+            'version': 1,
+            'data': ['user1'],
+          }),
+        );
 
         // v3
-        final v3Response =
-            await server.get('/api/users', headers: {'api-version': 'v3'});
+        final v3Response = await server.get(
+          '/api/users',
+          headers: {'api-version': 'v3'},
+        );
         expect(v3Response, isOk());
         expect(
-            v3Response,
-            hasJsonBody({
-              'version': 3,
-              'users': [
-                {'id': 1, 'name': 'user1'},
-                {'id': 2, 'name': 'user2'},
-              ]
-            }));
+          v3Response,
+          hasJsonBody({
+            'version': 3,
+            'users': [
+              {'id': 1, 'name': 'user1'},
+              {'id': 2, 'name': 'user2'},
+            ],
+          }),
+        );
 
         // Unsupported version
-        final v4Response =
-            await server.get('/api/users', headers: {'api-version': 'v4'});
+        final v4Response = await server.get(
+          '/api/users',
+          headers: {'api-version': 'v4'},
+        );
         expect(v4Response, isOk());
         expect(v4Response, hasJsonBody({'error': 'Unsupported API version'}));
       });
@@ -657,18 +698,25 @@ void main() {
         await initializeWebSocketStorage();
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/chat', extra: {
-            'protocol': 'chat-v1',
-            'maxConnections': 100,
-            'features': ['typing-indicators', 'read-receipts'],
-          }).handleWebSocket((context, message, manager) {
-            final metadata = context.route.metadata?.extra;
-            manager.emit(jsonEncode({
-              'echo': message,
-              'protocol': metadata?['protocol'],
-              'features': metadata?['features'],
-            }));
-          });
+          route
+              .get(
+                '/ws/chat',
+                extra: {
+                  'protocol': 'chat-v1',
+                  'maxConnections': 100,
+                  'features': ['typing-indicators', 'read-receipts'],
+                },
+              )
+              .handleWebSocket((context, message, manager) {
+                final metadata = context.route.metadata?.extra;
+                manager.emit(
+                  jsonEncode({
+                    'echo': message,
+                    'protocol': metadata?['protocol'],
+                    'features': metadata?['features'],
+                  }),
+                );
+              });
         });
 
         final ws = await server.connectWebSocket('/ws/chat');
@@ -689,7 +737,9 @@ void main() {
         expect(data['echo'], equals('Hello WebSocket'));
         expect(data['protocol'], equals('chat-v1'));
         expect(
-            data['features'], equals(['typing-indicators', 'read-receipts']));
+          data['features'],
+          equals(['typing-indicators', 'read-receipts']),
+        );
 
         await ws.close();
 
@@ -702,15 +752,16 @@ void main() {
       test('notFound routes can have metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
           route.notFound(
-              (ctx) => {
-                    'error': 'Route not found',
-                    'path': ctx.path,
-                    'metadata': ctx.route.metadata?.extra,
-                  },
-              extra: {
-                'errorType': 'not_found',
-                'suggestions': ['/api/users', '/api/posts'],
-              });
+            (ctx) => {
+              'error': 'Route not found',
+              'path': ctx.path,
+              'metadata': ctx.route.metadata?.extra,
+            },
+            extra: {
+              'errorType': 'not_found',
+              'suggestions': ['/api/users', '/api/posts'],
+            },
+          );
         });
 
         final response = await server.get('/non-existent');
@@ -733,25 +784,28 @@ void main() {
       test('can retrieve all route metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
           route.get('/users', extra: {'resource': 'users'}).handle((ctx) => []);
-          route.post('/users', extra: {
-            'resource': 'users',
-            'action': 'create'
-          }).handle((ctx) => {});
+          route
+              .post('/users', extra: {'resource': 'users', 'action': 'create'})
+              .handle((ctx) => {});
           route.get('/posts', extra: {'resource': 'posts'}).handle((ctx) => []);
 
           route.get('/metadata').handle((ctx) {
             final allMetadata = getRouteMetadata();
             // Filter to our test routes
             final testRoutes = allMetadata
-                .where((m) =>
-                    m.path == '/users' ||
-                    m.path == '/posts' ||
-                    m.path == '/metadata')
-                .map((m) => {
-                      'path': m.path,
-                      'method': m.method.name,
-                      'extra': m.extra,
-                    })
+                .where(
+                  (m) =>
+                      m.path == '/users' ||
+                      m.path == '/posts' ||
+                      m.path == '/metadata',
+                )
+                .map(
+                  (m) => {
+                    'path': m.path,
+                    'method': m.method.name,
+                    'extra': m.extra,
+                  },
+                )
                 .toList();
             return testRoutes;
           });

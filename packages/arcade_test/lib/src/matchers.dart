@@ -349,8 +349,9 @@ class _HasStatusMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -374,8 +375,9 @@ class _HasStatusMatcher extends Matcher {
     }
 
     if (item is TestResponse) {
-      return mismatchDescription
-          .add('had status code ${item.statusCode} instead of $expectedStatus');
+      return mismatchDescription.add(
+        'had status code ${item.statusCode} instead of $expectedStatus',
+      );
     }
 
     return mismatchDescription.add('was not a TestResponse');
@@ -386,8 +388,9 @@ class _IsServerErrorMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -412,7 +415,8 @@ class _IsServerErrorMatcher extends Matcher {
 
     if (item is TestResponse) {
       return mismatchDescription.add(
-          'had status code ${item.statusCode} which is not a server error (5xx)');
+        'had status code ${item.statusCode} which is not a server error (5xx)',
+      );
     }
 
     return mismatchDescription.add('was not a TestResponse');
@@ -427,8 +431,9 @@ class _HasJsonBodyMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -479,10 +484,15 @@ class _HasJsonBodyMatcher extends Matcher {
         final actual = item.json();
         if (expected is Matcher) {
           return (expected as Matcher).describeMismatch(
-              actual, mismatchDescription, matchState, verbose);
+            actual,
+            mismatchDescription,
+            matchState,
+            verbose,
+          );
         }
-        return equals(expected)
-            .describeMismatch(actual, mismatchDescription, matchState, verbose);
+        return equals(
+          expected,
+        ).describeMismatch(actual, mismatchDescription, matchState, verbose);
       } catch (e) {
         return mismatchDescription.add('could not parse JSON: $e');
       }
@@ -500,8 +510,9 @@ class _HasTextBodyMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -538,11 +549,16 @@ class _HasTextBodyMatcher extends Matcher {
     if (item is TestResponse) {
       final actual = item.body;
       if (expected is Matcher) {
-        return (expected as Matcher)
-            .describeMismatch(actual, mismatchDescription, matchState, verbose);
+        return (expected as Matcher).describeMismatch(
+          actual,
+          mismatchDescription,
+          matchState,
+          verbose,
+        );
       }
-      return equals(expected)
-          .describeMismatch(actual, mismatchDescription, matchState, verbose);
+      return equals(
+        expected,
+      ).describeMismatch(actual, mismatchDescription, matchState, verbose);
     }
 
     return mismatchDescription.add('was not a TestResponse');
@@ -553,8 +569,9 @@ class _HasEmptyBodyMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -578,8 +595,9 @@ class _HasEmptyBodyMatcher extends Matcher {
     }
 
     if (item is TestResponse) {
-      return mismatchDescription
-          .add('had body with ${item.body.length} characters: "${item.body}"');
+      return mismatchDescription.add(
+        'had body with ${item.body.length} characters: "${item.body}"',
+      );
     }
 
     return mismatchDescription.add('was not a TestResponse');
@@ -594,8 +612,9 @@ class _ContainsJsonKeyMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -634,8 +653,9 @@ class _ContainsJsonKeyMatcher extends Matcher {
 
   @override
   Description describe(Description description) {
-    return description
-        .add('HTTP response with JSON body containing key "$key"');
+    return description.add(
+      'HTTP response with JSON body containing key "$key"',
+    );
   }
 
   @override
@@ -656,8 +676,11 @@ class _ContainsJsonKeyMatcher extends Matcher {
     if (item is TestResponse) {
       try {
         final json = item.json();
-        return mismatchDescription.add('JSON body did not contain key "$key"').add(
-            '\nActual JSON: ${const JsonEncoder.withIndent('  ').convert(json)}');
+        return mismatchDescription
+            .add('JSON body did not contain key "$key"')
+            .add(
+              '\nActual JSON: ${const JsonEncoder.withIndent('  ').convert(json)}',
+            );
       } catch (e) {
         return mismatchDescription.add('could not parse JSON: $e');
       }
@@ -676,8 +699,9 @@ class _HasJsonPathMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -786,7 +810,8 @@ class _HasJsonPathMatcher extends Matcher {
         mismatchDescription.add('\nActual body: ${matchState['body']}');
       } else if (matchState['json'] != null) {
         mismatchDescription.add(
-            '\nActual JSON: ${const JsonEncoder.withIndent('  ').convert(matchState['json'])}');
+          '\nActual JSON: ${const JsonEncoder.withIndent('  ').convert(matchState['json'])}',
+        );
       }
       return mismatchDescription;
     }
@@ -797,8 +822,11 @@ class _HasJsonPathMatcher extends Matcher {
         final actual = _getJsonPath(json, path);
 
         if (actual == null) {
-          return mismatchDescription.add('JSON path "$path" was not found').add(
-              '\nActual JSON: ${const JsonEncoder.withIndent('  ').convert(json)}');
+          return mismatchDescription
+              .add('JSON path "$path" was not found')
+              .add(
+                '\nActual JSON: ${const JsonEncoder.withIndent('  ').convert(json)}',
+              );
         }
 
         mismatchDescription
@@ -810,7 +838,11 @@ class _HasJsonPathMatcher extends Matcher {
         if (expected is Matcher) {
           mismatchDescription.add('\n');
           (expected as Matcher).describeMismatch(
-              actual, mismatchDescription, matchState, verbose);
+            actual,
+            mismatchDescription,
+            matchState,
+            verbose,
+          );
         }
 
         return mismatchDescription;
@@ -832,8 +864,9 @@ class _HasHeaderMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -897,8 +930,9 @@ class _HasHeaderMatcher extends Matcher {
         final availableHeaders =
             matchState['availableHeaders'] as List<String>?;
         if (availableHeaders != null && availableHeaders.isNotEmpty) {
-          mismatchDescription
-              .add('\nAvailable headers: ${availableHeaders.join(', ')}');
+          mismatchDescription.add(
+            '\nAvailable headers: ${availableHeaders.join(', ')}',
+          );
         }
         return mismatchDescription;
       }
@@ -908,7 +942,11 @@ class _HasHeaderMatcher extends Matcher {
       if (expectedValue is Matcher) {
         mismatchDescription.add('header "$name" ');
         return (expectedValue as Matcher).describeMismatch(
-            actualValue, mismatchDescription, matchState, verbose);
+          actualValue,
+          mismatchDescription,
+          matchState,
+          verbose,
+        );
       }
       return mismatchDescription
           .add('header "$name" was ')
@@ -929,8 +967,9 @@ class _HasContentTypeMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -945,8 +984,9 @@ class _HasContentTypeMatcher extends Matcher {
 
   @override
   Description describe(Description description) {
-    return description
-        .add('HTTP response with content type "$expectedMimeType"');
+    return description.add(
+      'HTTP response with content type "$expectedMimeType"',
+    );
   }
 
   @override
@@ -966,9 +1006,10 @@ class _HasContentTypeMatcher extends Matcher {
       }
 
       final contentType = item.contentType;
-      return mismatchDescription
-          .add('had content type "${contentType?.mimeType}" '
-              'instead of "$expectedMimeType"');
+      return mismatchDescription.add(
+        'had content type "${contentType?.mimeType}" '
+        'instead of "$expectedMimeType"',
+      );
     }
 
     return mismatchDescription.add('was not a TestResponse');
@@ -979,8 +1020,9 @@ class _IsJsonResponseMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -1008,8 +1050,9 @@ class _IsJsonResponseMatcher extends Matcher {
       if (contentType == null) {
         return mismatchDescription.add('had no content type header');
       }
-      return mismatchDescription
-          .add('had content type "${contentType.mimeType}" which is not JSON');
+      return mismatchDescription.add(
+        'had content type "${contentType.mimeType}" which is not JSON',
+      );
     }
 
     return mismatchDescription.add('was not a TestResponse');
@@ -1020,8 +1063,9 @@ class _IsHtmlResponseMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! TestResponse) {
-      addStateInfo(matchState,
-          {'error': 'Expected TestResponse but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected TestResponse but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -1049,8 +1093,9 @@ class _IsHtmlResponseMatcher extends Matcher {
       if (contentType == null) {
         return mismatchDescription.add('had no content type header');
       }
-      return mismatchDescription
-          .add('had content type "${contentType.mimeType}" which is not HTML');
+      return mismatchDescription.add(
+        'had content type "${contentType.mimeType}" which is not HTML',
+      );
     }
 
     return mismatchDescription.add('was not a TestResponse');
@@ -1065,8 +1110,9 @@ class _HasEventMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! WebSocketMessage) {
-      addStateInfo(matchState,
-          {'error': 'Expected WebSocketMessage but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected WebSocketMessage but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -1091,11 +1137,13 @@ class _HasEventMatcher extends Matcher {
 
     if (item is WebSocketMessage) {
       if (item.event == null) {
-        return mismatchDescription
-            .add('had no event (raw message: ${item.data})');
+        return mismatchDescription.add(
+          'had no event (raw message: ${item.data})',
+        );
       }
-      return mismatchDescription
-          .add('had event "${item.event}" instead of "$expectedEvent"');
+      return mismatchDescription.add(
+        'had event "${item.event}" instead of "$expectedEvent"',
+      );
     }
 
     return mismatchDescription.add('was not a WebSocketMessage');
@@ -1110,8 +1158,9 @@ class _HasMessageDataMatcher extends Matcher {
   @override
   bool matches(dynamic item, Map matchState) {
     if (item is! WebSocketMessage) {
-      addStateInfo(matchState,
-          {'error': 'Expected WebSocketMessage but got ${item.runtimeType}'});
+      addStateInfo(matchState, {
+        'error': 'Expected WebSocketMessage but got ${item.runtimeType}',
+      });
       return false;
     }
 
@@ -1148,10 +1197,15 @@ class _HasMessageDataMatcher extends Matcher {
       if (expected is Matcher) {
         mismatchDescription.add('message data ');
         return (expected as Matcher).describeMismatch(
-            item.data, mismatchDescription, matchState, verbose);
+          item.data,
+          mismatchDescription,
+          matchState,
+          verbose,
+        );
       }
-      return equals(expected).describeMismatch(
-          item.data, mismatchDescription, matchState, verbose);
+      return equals(
+        expected,
+      ).describeMismatch(item.data, mismatchDescription, matchState, verbose);
     }
 
     return mismatchDescription.add('was not a WebSocketMessage');

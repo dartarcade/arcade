@@ -133,7 +133,7 @@ Future<({RequestContext context, Object? handleResult})> runAfterHooks(
 }
 
 Future<({RequestContext context, Object? handleResult, String wsId})>
-    runAfterWebSocketHooks(
+runAfterWebSocketHooks(
   RequestContext context,
   BaseRoute route,
   dynamic result,
@@ -216,8 +216,11 @@ Future<void> writeResponse({
     result = await result;
   }
 
-  final (context: newCtx, handleResult: newResult) =
-      await runAfterHooks(ctx, route, result);
+  final (context: newCtx, handleResult: newResult) = await runAfterHooks(
+    ctx,
+    route,
+    result,
+  );
   ctx = newCtx;
   result = newResult;
 

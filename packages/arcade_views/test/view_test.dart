@@ -7,9 +7,7 @@ import 'package:test/test.dart';
 void main() {
   group('view', () {
     tearDown(() {
-      ArcadeConfiguration.override(
-        viewsDirectory: Directory('views'),
-      );
+      ArcadeConfiguration.override(viewsDirectory: Directory('views'));
     });
 
     test('should return a string', () {
@@ -24,9 +22,7 @@ void main() {
     });
 
     test('should throw an exception if the views directory does not exist', () {
-      ArcadeConfiguration.override(
-        viewsDirectory: Directory('nonexistent'),
-      );
+      ArcadeConfiguration.override(viewsDirectory: Directory('nonexistent'));
       expect(() => view('index'), throwsException);
     });
 
@@ -47,10 +43,12 @@ void main() {
       expect(result, contains('John'));
     });
 
-    test('should throw an exception if the nested view file does not exist',
-        () {
-      expect(() => view('nested/nonexistent'), throwsException);
-    });
+    test(
+      'should throw an exception if the nested view file does not exist',
+      () {
+        expect(() => view('nested/nonexistent'), throwsException);
+      },
+    );
   });
 
   group('inheritance', () {

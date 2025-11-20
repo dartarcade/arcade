@@ -110,8 +110,12 @@ class RadixTrie {
     for (final paramChild in node.paramChildren.values) {
       final newParams = Map<String, String>.from(params);
       newParams[paramChild.paramName!] = Uri.decodeFull(segment);
-      final result =
-          _searchRecursive(paramChild, segments, index + 1, newParams);
+      final result = _searchRecursive(
+        paramChild,
+        segments,
+        index + 1,
+        newParams,
+      );
       if (result.$1 != null) return result;
     }
 
@@ -178,9 +182,11 @@ Map<String, String> makePathParameters(BaseRoute? route, Uri uri) {
     final routePathSegments = _normalizePath(route.path).split('/');
     final pathSegments = _normalizePath(uri.path).split('/');
 
-    for (var i = 0;
-        i < routePathSegments.length && i < pathSegments.length;
-        i++) {
+    for (
+      var i = 0;
+      i < routePathSegments.length && i < pathSegments.length;
+      i++
+    ) {
       final routePathSegment = routePathSegments[i];
       final pathSegment = pathSegments[i];
 
@@ -212,10 +218,7 @@ void invalidateRouteCache() {
 
 /// Exposes optimized route finding with path parameters for external use
 (BaseRoute? route, BaseRoute? notFoundRoute, Map<String, String> pathParams)
-    findRouteWithPathParams({
-  required HttpMethod method,
-  required Uri uri,
-}) {
+findRouteWithPathParams({required HttpMethod method, required Uri uri}) {
   return optimizedRouter.findRouteWithParams(method: method, uri: uri);
 }
 
@@ -254,10 +257,7 @@ class OptimizedRouter {
   }
 
   (BaseRoute? route, BaseRoute? notFoundRoute, Map<String, String> pathParams)
-      findRouteWithParams({
-    required HttpMethod method,
-    required Uri uri,
-  }) {
+  findRouteWithParams({required HttpMethod method, required Uri uri}) {
     _buildIndex();
 
     // Try method-specific trie first

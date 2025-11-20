@@ -28,20 +28,24 @@ void main() {
         String? connectionId;
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/info').handleWebSocket(
-            (context, message, manager) async {
-              connectionId = manager.id;
-              if (message == 'get-info') {
-                final info = await getConnectionInfo(manager.id);
-                manager.emit(jsonEncode({
+          route.get('/ws/info').handleWebSocket((
+            context,
+            message,
+            manager,
+          ) async {
+            connectionId = manager.id;
+            if (message == 'get-info') {
+              final info = await getConnectionInfo(manager.id);
+              manager.emit(
+                jsonEncode({
                   'id': info?.id,
                   'serverInstanceId': info?.serverInstanceId,
                   'hasConnectTime': info?.connectTime != null,
                   'metadata': info?.metadata,
-                }));
-              }
-            },
-          );
+                }),
+              );
+            }
+          });
         });
 
         final ws = await server.connectWebSocket('/ws/info');
@@ -74,23 +78,24 @@ void main() {
 
       test('updates connection metadata', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/metadata').handleWebSocket(
-            (context, message, manager) async {
-              final data =
-                  jsonDecode(message as String) as Map<String, dynamic>;
+          route.get('/ws/metadata').handleWebSocket((
+            context,
+            message,
+            manager,
+          ) async {
+            final data = jsonDecode(message as String) as Map<String, dynamic>;
 
-              if (data['action'] == 'update-metadata') {
-                await updateConnectionMetadata(
-                    manager.id, data['metadata'] as Map<String, dynamic>);
+            if (data['action'] == 'update-metadata') {
+              await updateConnectionMetadata(
+                manager.id,
+                data['metadata'] as Map<String, dynamic>,
+              );
 
-                // Get updated info
-                final info = await getConnectionInfo(manager.id);
-                manager.emit(jsonEncode({
-                  'metadata': info?.metadata,
-                }));
-              }
-            },
-          );
+              // Get updated info
+              final info = await getConnectionInfo(manager.id);
+              manager.emit(jsonEncode({'metadata': info?.metadata}));
+            }
+          });
         });
 
         final ws = await server.connectWebSocket('/ws/metadata');
@@ -103,15 +108,16 @@ void main() {
 
         // Update metadata
         ws.send(
-            null,
-            jsonEncode({
-              'action': 'update-metadata',
-              'metadata': {
-                'username': 'test-user',
-                'role': 'admin',
-                'custom': {'level': 5},
-              },
-            }));
+          null,
+          jsonEncode({
+            'action': 'update-metadata',
+            'metadata': {
+              'username': 'test-user',
+              'role': 'admin',
+              'custom': {'level': 5},
+            },
+          }),
+        );
 
         await Future.delayed(const Duration(milliseconds: 100));
 
@@ -128,9 +134,9 @@ void main() {
 
       test('returns null for non-existent connection', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/dummy').handleWebSocket(
-                (context, message, manager) {},
-              );
+          route
+              .get('/ws/dummy')
+              .handleWebSocket((context, message, manager) {});
         });
 
         // Check non-existent connection
@@ -144,18 +150,22 @@ void main() {
         final connectionIds = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/list').handleWebSocket(
-            (context, message, manager) async {
-              connectionIds.add(manager.id);
-              if (message == 'list-all') {
-                final connections = await getAllConnections();
-                manager.emit(jsonEncode({
+          route.get('/ws/list').handleWebSocket((
+            context,
+            message,
+            manager,
+          ) async {
+            connectionIds.add(manager.id);
+            if (message == 'list-all') {
+              final connections = await getAllConnections();
+              manager.emit(
+                jsonEncode({
                   'count': connections.length,
                   'ids': connections.map((c) => c.id).toList(),
-                }));
-              }
-            },
-          );
+                }),
+              );
+            }
+          });
         });
 
         // Connect multiple clients
@@ -185,54 +195,63 @@ void main() {
         await ws3.close();
       });
 
-      test('getLocalConnections returns only local server connections',
-          () async {
-        server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/local').handleWebSocket(
-            (context, message, manager) async {
+      test(
+        'getLocalConnections returns only local server connections',
+        () async {
+          server = await ArcadeTestServer.withRoutes(() {
+            route.get('/ws/local').handleWebSocket((
+              context,
+              message,
+              manager,
+            ) async {
               if (message == 'list-local') {
                 final connections = await getLocalConnections();
-                manager.emit(jsonEncode({
-                  'count': connections.length,
-                  'allSameServer': connections
-                      .every((c) => c.serverInstanceId == serverInstanceId),
-                }));
+                manager.emit(
+                  jsonEncode({
+                    'count': connections.length,
+                    'allSameServer': connections.every(
+                      (c) => c.serverInstanceId == serverInstanceId,
+                    ),
+                  }),
+                );
               }
-            },
-          );
-        });
+            });
+          });
 
-        final ws = await server.connectWebSocket('/ws/local');
+          final ws = await server.connectWebSocket('/ws/local');
 
-        // Collect messages
-        final messages = <Map<String, dynamic>>[];
-        ws.messages.listen((msg) {
-          messages.add(jsonDecode(msg.data as String) as Map<String, dynamic>);
-        });
+          // Collect messages
+          final messages = <Map<String, dynamic>>[];
+          ws.messages.listen((msg) {
+            messages.add(
+              jsonDecode(msg.data as String) as Map<String, dynamic>,
+            );
+          });
 
-        ws.send(null, 'list-local');
+          ws.send(null, 'list-local');
 
-        await Future.delayed(const Duration(milliseconds: 100));
+          await Future.delayed(const Duration(milliseconds: 100));
 
-        // Verify local connections
-        expect(messages.length, equals(1));
-        expect(messages[0]['count'], greaterThan(0));
-        expect(messages[0]['allSameServer'], isTrue);
+          // Verify local connections
+          expect(messages.length, equals(1));
+          expect(messages[0]['count'], greaterThan(0));
+          expect(messages[0]['allSameServer'], isTrue);
 
-        await ws.close();
-      });
+          await ws.close();
+        },
+      );
     });
 
     group('Local Connection Tracking', () {
       test('hasLocalConnections returns correct state', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/has-local').handleWebSocket(
-            (context, message, manager) {
-              manager.emit(jsonEncode({
-                'hasLocal': hasLocalConnections,
-              }));
-            },
-          );
+          route.get('/ws/has-local').handleWebSocket((
+            context,
+            message,
+            manager,
+          ) {
+            manager.emit(jsonEncode({'hasLocal': hasLocalConnections}));
+          });
         });
 
         // Before any connections
@@ -256,16 +275,12 @@ void main() {
         final trackedIds = <String>[];
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/ids').handleWebSocket(
-            (context, message, manager) {
-              trackedIds.add(manager.id);
-              if (message == 'get-ids') {
-                manager.emit(jsonEncode({
-                  'ids': localConnectionIds.toList(),
-                }));
-              }
-            },
-          );
+          route.get('/ws/ids').handleWebSocket((context, message, manager) {
+            trackedIds.add(manager.id);
+            if (message == 'get-ids') {
+              manager.emit(jsonEncode({'ids': localConnectionIds.toList()}));
+            }
+          });
         });
 
         // Connect multiple clients
@@ -300,17 +315,21 @@ void main() {
         String? instanceId2;
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/instance').handleWebSocket(
-            (context, message, manager) async {
-              if (message == 'get-instance') {
-                final info = await getConnectionInfo(manager.id);
-                manager.emit(jsonEncode({
+          route.get('/ws/instance').handleWebSocket((
+            context,
+            message,
+            manager,
+          ) async {
+            if (message == 'get-instance') {
+              final info = await getConnectionInfo(manager.id);
+              manager.emit(
+                jsonEncode({
                   'serverInstanceId': info?.serverInstanceId,
                   'globalInstanceId': serverInstanceId,
-                }));
-              }
-            },
-          );
+                }),
+              );
+            }
+          });
         });
 
         final ws1 = await server.connectWebSocket('/ws/instance');
@@ -342,9 +361,13 @@ void main() {
         expect(instanceId2, isNotNull);
         expect(instanceId1, equals(instanceId2));
         expect(
-            messages1[0]['globalInstanceId'] as String?, equals(instanceId1));
+          messages1[0]['globalInstanceId'] as String?,
+          equals(instanceId1),
+        );
         expect(
-            messages2[0]['globalInstanceId'] as String?, equals(instanceId2));
+          messages2[0]['globalInstanceId'] as String?,
+          equals(instanceId2),
+        );
 
         await ws1.close();
         await ws2.close();
@@ -354,16 +377,18 @@ void main() {
     group('Connection Health', () {
       test('validateConnectionHealth maintains healthy connections', () async {
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/health').handleWebSocket(
-            (context, message, manager) async {
-              if (message == 'validate') {
-                await validateConnectionHealth();
-                manager.emit('health-check-complete');
-              } else {
-                manager.emit('echo: $message');
-              }
-            },
-          );
+          route.get('/ws/health').handleWebSocket((
+            context,
+            message,
+            manager,
+          ) async {
+            if (message == 'validate') {
+              await validateConnectionHealth();
+              manager.emit('health-check-complete');
+            } else {
+              manager.emit('echo: $message');
+            }
+          });
         });
 
         final ws = await server.connectWebSocket('/ws/health');
@@ -398,17 +423,19 @@ void main() {
         final connectedIds = <String>{};
 
         server = await ArcadeTestServer.withRoutes(() {
-          route.get('/ws/concurrent').handleWebSocket(
-            (context, message, manager) async {
-              if (message == 'broadcast') {
-                await emitToAll('Broadcast from ${manager.id}');
-              }
-            },
-            onConnect: (context, manager) {
-              connectedIds.add(manager.id);
-              manager.emit('connected: ${manager.id}');
-            },
-          );
+          route
+              .get('/ws/concurrent')
+              .handleWebSocket(
+                (context, message, manager) async {
+                  if (message == 'broadcast') {
+                    await emitToAll('Broadcast from ${manager.id}');
+                  }
+                },
+                onConnect: (context, manager) {
+                  connectedIds.add(manager.id);
+                  manager.emit('connected: ${manager.id}');
+                },
+              );
         });
 
         // Collect messages

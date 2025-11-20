@@ -135,7 +135,8 @@ class WebSocketStorageManager {
       if (maxConnectionsPerServer != null &&
           _localWebSockets.length >= maxConnectionsPerServer!) {
         throw StateError(
-            'Maximum connections reached: $maxConnectionsPerServer');
+          'Maximum connections reached: $maxConnectionsPerServer',
+        );
       }
 
       // Reserve the connection slot
@@ -183,8 +184,10 @@ class WebSocketStorageManager {
               // This is critical: without personal channel, direct messages won't work
               _personalSubscriptions.remove(connectionId);
               try {
-                webSocket.close(1011,
-                    'Lost subscription to personal channel - reconnect required');
+                webSocket.close(
+                  1011,
+                  'Lost subscription to personal channel - reconnect required',
+                );
               } catch (_) {
                 // WebSocket might already be closed
               }
@@ -273,7 +276,8 @@ class WebSocketStorageManager {
   }
 
   Future<WebSocketConnectionInfo?> getConnectionInfo(
-      String connectionId) async {
+    String connectionId,
+  ) async {
     final json = await _cache.getJson('ws:connection:$connectionId');
     if (json == null) return null;
     return WebSocketConnectionInfo.fromJson(json);
@@ -306,8 +310,10 @@ class WebSocketStorageManager {
 
     // Validate room name
     if (!_validRoomName.hasMatch(room)) {
-      throw ArgumentError('Invalid room name: $room. '
-          'Room names must only contain letters, numbers, hyphens, and underscores.');
+      throw ArgumentError(
+        'Invalid room name: $room. '
+        'Room names must only contain letters, numbers, hyphens, and underscores.',
+      );
     }
 
     // Synchronize room operations to prevent race conditions
@@ -393,8 +399,10 @@ class WebSocketStorageManager {
 
     // Validate room name
     if (!_validRoomName.hasMatch(room)) {
-      throw ArgumentError('Invalid room name: $room. '
-          'Room names must only contain letters, numbers, hyphens, and underscores.');
+      throw ArgumentError(
+        'Invalid room name: $room. '
+        'Room names must only contain letters, numbers, hyphens, and underscores.',
+      );
     }
 
     // Synchronize room operations to prevent race conditions
@@ -449,7 +457,9 @@ class WebSocketStorageManager {
   }
 
   Future<void> updateConnectionMetadata(
-      String connectionId, Map<String, dynamic> metadata) async {
+    String connectionId,
+    Map<String, dynamic> metadata,
+  ) async {
     final connectionInfo = await getConnectionInfo(connectionId);
     if (connectionInfo == null) return;
 
@@ -485,7 +495,8 @@ class WebSocketStorageManager {
   void _ensureInitialized() {
     if (!_initialized) {
       throw StateError(
-          'WebSocketStorageManager not initialized. Call init() first.');
+        'WebSocketStorageManager not initialized. Call init() first.',
+      );
     }
     if (_disposed) {
       throw StateError('WebSocketStorageManager has been disposed');
@@ -552,7 +563,9 @@ class WebSocketStorageManager {
         final ws = _localWebSockets[connectionId];
         if (ws != null && ws.readyState == WebSocket.open) {
           ws.close(
-              1011, 'Connection health check failed - missing subscription');
+            1011,
+            'Connection health check failed - missing subscription',
+          );
         }
       } catch (_) {
         // Ignore errors during cleanup

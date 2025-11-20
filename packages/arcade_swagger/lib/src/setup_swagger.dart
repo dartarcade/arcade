@@ -27,59 +27,46 @@ void setupSwagger({
       components: Components(
         schemas: {
           ...globalRequestSchemas.map(
-            (key, value) => MapEntry(
-              key,
-              value.content!['application/json']!.schema!,
-            ),
+            (key, value) =>
+                MapEntry(key, value.content!['application/json']!.schema!),
           ),
           ...globalResponseSchemas.map(
-            (key, value) => MapEntry(
-              key,
-              value.content!['application/json']!.schema!,
-            ),
+            (key, value) =>
+                MapEntry(key, value.content!['application/json']!.schema!),
           ),
-          ...?requestSchemas?.map(
-            (key, value) {
-              return MapEntry(
-                key,
-                validatorToSwagger(value),
-              );
-            },
-          ),
+          ...?requestSchemas?.map((key, value) {
+            return MapEntry(key, validatorToSwagger(value));
+          }),
         },
         requestBodies: {
           ...globalRequestSchemas,
-          ...?requestSchemas?.map(
-            (key, value) {
-              return MapEntry(
-                key,
-                RequestBody(
-                  content: {
-                    'application/json': MediaType(
-                      schema: validatorToSwagger(value),
-                    ),
-                  },
-                ),
-              );
-            },
-          ),
+          ...?requestSchemas?.map((key, value) {
+            return MapEntry(
+              key,
+              RequestBody(
+                content: {
+                  'application/json': MediaType(
+                    schema: validatorToSwagger(value),
+                  ),
+                },
+              ),
+            );
+          }),
         },
         responses: {
           ...globalResponseSchemas,
-          ...?responseSchemas?.map(
-            (key, value) {
-              return MapEntry(
-                key,
-                Response(
-                  content: {
-                    'application/json': MediaType(
-                      schema: validatorToSwagger(value),
-                    ),
-                  },
-                ),
-              );
-            },
-          ),
+          ...?responseSchemas?.map((key, value) {
+            return MapEntry(
+              key,
+              Response(
+                content: {
+                  'application/json': MediaType(
+                    schema: validatorToSwagger(value),
+                  ),
+                },
+              ),
+            );
+          }),
         },
         securitySchemes: securitySchemes,
       ),

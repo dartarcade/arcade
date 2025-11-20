@@ -27,8 +27,8 @@ void main() {
           return switch (bodyResult) {
             BodyParseSuccess(value: final value) => value,
             BodyParseFailure(error: final error) => {
-                'error': 'Parse error: $error'
-              },
+              'error': 'Parse error: $error',
+            },
           };
         });
       });
