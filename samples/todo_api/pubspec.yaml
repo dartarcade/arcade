@@ -7,7 +7,7 @@ issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.8.3
 
 dependencies:
   arcade: ^1.2.1
@@ -21,7 +21,7 @@ dependencies:
   hashlib: ^2.0.0
   injectable: ^2.5.0
   json_annotation: ^4.9.0
-  luthor: '>=0.13.1 <1.0.0'
+  luthor: ^0.14.0
   postgres: ^3.5.6
   superclass: ^0.6.0
 

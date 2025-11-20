@@ -5,7 +5,7 @@ catalog:
   issue_tracker: https://github.com/dartarcade/arcade/issues
   repository: https://github.com/dartarcade/arcade/tree/main/DPK_PACKAGE_PATH
   environment:
-    sdk: ^3.5.0
+    sdk: ^3.8.3
 
   dependencies:
     luthor: ^0.14.0
