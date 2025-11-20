@@ -433,6 +433,43 @@ dart run build_runner build --delete-conflicting-outputs
 4. Search existing issues on GitHub
 5. Ask questions by opening a new issue
 
+## GitHub Copilot Instructions
+
+When working with GitHub Copilot on this project:
+
+### Creating Issues
+
+If Copilot is asked to create an issue but cannot do so directly (due to permission limitations), it should provide the complete issue text in a reply comment. The issue text should include:
+
+- **Title**: Clear, concise summary of the issue
+- **Description**: Detailed explanation of what needs to be done
+- **Context**: Any relevant background information
+- **Acceptance Criteria**: Clear definition of when the issue is complete
+- **Labels** (suggested): Appropriate labels for categorization
+
+**Example format:**
+
+```markdown
+**Title:** Update Dart SDK environment constraint to 3.8.3
+
+**Description:**
+Update the Dart SDK environment constraint in all pubspec.yaml files across the workspace to use `^3.8.3`.
+
+**Files to update:**
+- Root pubspec.yaml
+- All package pubspec.yaml files in packages/*
+
+**Context:**
+The project has standardized on Dart SDK 3.8.3 for development.
+
+**Acceptance Criteria:**
+- [ ] All pubspec.yaml files have environment.sdk set to '^3.8.3'
+- [ ] Dependencies are resolved successfully with dpk get
+- [ ] All tests pass
+
+**Labels:** enhancement, dependencies
+```
+
 ## Contributing
 
 When contributing to Arcade:
