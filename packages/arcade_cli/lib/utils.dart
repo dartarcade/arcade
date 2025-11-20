@@ -32,3 +32,35 @@ Future<File> getServerFile() async {
   }
   return file;
 }
+
+/// Finds the package_config.json file by recursively searching parent
+/// directories. This supports Dart workspaces where the package_config.json
+/// may be in a parent directory.
+///
+/// Returns the path to the package_config.json file, or null if not found.
+String? findPackageConfig([String? startDir]) {
+  var dir = Directory(startDir ?? Directory.current.path);
+
+  // Search up to the root directory
+  while (true) {
+    final packageConfigPath = join(
+      dir.path,
+      '.dart_tool',
+      'package_config.json',
+    );
+    final packageConfigFile = File(packageConfigPath);
+
+    if (packageConfigFile.existsSync()) {
+      return packageConfigPath;
+    }
+
+    // Check if we've reached the root directory
+    final parent = dir.parent;
+    if (parent.path == dir.path) {
+      // We've reached the root
+      return null;
+    }
+
+    dir = parent;
+  }
+}

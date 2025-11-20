@@ -19,6 +19,7 @@ class ServeCommand extends Command {
     Process? process;
     final serverFile = await getServerFile();
     final cwd = Directory.current.path;
+    final packageConfig = findPackageConfig();
 
     bool shouldReload(WatchEvent event) {
       return path.isWithin(path.join(cwd, 'bin'), event.path) ||
@@ -27,9 +28,16 @@ class ServeCommand extends Command {
 
     Process.runSync('dart', ['compilation-server', 'start']);
 
+    // Build the dart run arguments, including --packages if found
+    final runArgs = ['run', '-r'];
+    if (packageConfig != null) {
+      runArgs.addAll(['--packages=$packageConfig']);
+    }
+    runArgs.add(serverFile.path);
+
     process = await Process.start(
       'dart',
-      ['run', '-r', serverFile.path],
+      runArgs,
       workingDirectory: cwd,
     );
 
@@ -55,9 +63,17 @@ class ServeCommand extends Command {
             process?.kill();
             process = null;
             final now = DateTime.now();
+
+            // Build the dart run arguments, including --packages if found
+            final runArgs = ['run', '-r'];
+            if (packageConfig != null) {
+              runArgs.addAll(['--packages=$packageConfig']);
+            }
+            runArgs.add(serverFile.path);
+
             process = await Process.start(
               'dart',
-              ['run', '-r', serverFile.path],
+              runArgs,
               workingDirectory: cwd,
             );
             stdoutSubscription = process!.stdout.listen((event) {
