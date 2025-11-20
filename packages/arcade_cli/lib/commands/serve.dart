@@ -14,6 +14,17 @@ class ServeCommand extends Command {
   @override
   String get description => 'Locally serve your app';
 
+  /// Builds the dart run arguments, including --packages flag if package
+  /// config is found.
+  List<String> _buildDartRunArgs(String serverPath, String? packageConfig) {
+    final runArgs = ['run', '-r'];
+    if (packageConfig != null) {
+      runArgs.addAll(['--packages=$packageConfig']);
+    }
+    runArgs.add(serverPath);
+    return runArgs;
+  }
+
   @override
   Future<void> run() async {
     Process? process;
@@ -28,16 +39,9 @@ class ServeCommand extends Command {
 
     Process.runSync('dart', ['compilation-server', 'start']);
 
-    // Build the dart run arguments, including --packages if found
-    final runArgs = ['run', '-r'];
-    if (packageConfig != null) {
-      runArgs.addAll(['--packages=$packageConfig']);
-    }
-    runArgs.add(serverFile.path);
-
     process = await Process.start(
       'dart',
-      runArgs,
+      _buildDartRunArgs(serverFile.path, packageConfig),
       workingDirectory: cwd,
     );
 
@@ -64,16 +68,9 @@ class ServeCommand extends Command {
             process = null;
             final now = DateTime.now();
 
-            // Build the dart run arguments, including --packages if found
-            final runArgs = ['run', '-r'];
-            if (packageConfig != null) {
-              runArgs.addAll(['--packages=$packageConfig']);
-            }
-            runArgs.add(serverFile.path);
-
             process = await Process.start(
               'dart',
-              runArgs,
+              _buildDartRunArgs(serverFile.path, packageConfig),
               workingDirectory: cwd,
             );
             stdoutSubscription = process!.stdout.listen((event) {
