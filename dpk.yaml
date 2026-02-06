@@ -1,13 +1,32 @@
+version: ^0.6.5
+
 mode: project
+
+workspace:
+  - packages/*
+  - packages/*/example
+  - samples/*
 
 catalog:
   resolution: workspace
   issue_tracker: https://github.com/dartarcade/arcade/issues
   repository: https://github.com/dartarcade/arcade/tree/main/DPK_PACKAGE_PATH
   environment:
-    sdk: '>=3.8.0 <4.0.0'
+    sdk: ">=3.8.0 <4.0.0"
 
   dependencies:
+    arcade: ^1.2.1
+    arcade_cache: ^1.2.1
+    arcade_cache_redis: ^1.2.1
+    arcade_cli: ^1.2.1
+    arcade_config: ^1.2.1
+    arcade_logger: ^1.2.1
+    arcade_storage: ^1.2.1
+    arcade_storage_minio: ^1.2.1
+    arcade_swagger: ^1.2.1
+    arcade_test: ^1.2.1
+    arcade_views: ^1.2.1
+
     luthor: ^0.14.0
     prompts: ^2.0.0
     yaml_edit: ^2.2.2

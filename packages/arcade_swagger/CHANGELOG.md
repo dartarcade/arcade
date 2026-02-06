@@ -1,3 +1,7 @@
+## 1.3.0
+
+- **FIX**: package_config.json resolution in pub workspaces
+
 ## 1.2.1
 
 - **FIX**: Track required fields for named schema refs in Swagger generation

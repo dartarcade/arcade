@@ -1,7 +1,7 @@
 name: _
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
+  sdk: ">=3.8.0 <4.0.0"
 
 workspace:
   - packages/arcade
@@ -19,6 +19,7 @@ workspace:
   - samples/todo_api
 
 dependencies:
-  luthor: ^0.14.0
-  prompts: ^2.0.0
-  yaml_edit: ^2.2.2
+  prompts: ^2.0.0 # Configured via catalog
+
+dev_dependencies:
+  yaml_edit: ^2.2.2 # Configured via catalog
