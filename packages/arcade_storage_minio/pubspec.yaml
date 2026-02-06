@@ -1,12 +1,12 @@
 name: arcade_storage_minio
 description: MinIO storage for Arcade
-version: 1.3.1
+version: 1.4.0
 repository: https://github.com/dartarcade/arcade/tree/main/packages/arcade_storage_minio
 issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
 
 environment:
-  sdk: ">=3.8.0 <4.0.0"
+  sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
   arcade_storage: ^1.2.1 # Configured via catalog

@@ -7,7 +7,7 @@ issue_tracker: https://github.com/dartarcade/arcade/issues
 resolution: workspace
 
 environment:
-  sdk: ">=3.8.0 <4.0.0"
+  sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
   arcade: ^1.2.1 # Configured via catalog
@@ -21,9 +21,9 @@ dependencies:
   hashlib: ^2.0.0
   injectable: ^2.5.0
   json_annotation: ^4.9.0
-  luthor: ^0.15.0 # Configured via catalog
+  luthor: ^0.16.0 # Configured via catalog
   postgres: ^3.5.6
-  superclass: ^0.7.0 # Configured via catalog
+  superclass: ^0.8.0 # Configured via catalog
   uuid: ^4.5.1
 
 dev_dependencies:
@@ -34,5 +34,5 @@ dev_dependencies:
   injectable_generator: ^2.7.0
   json_serializable: ^6.9.5
   lint: ^2.8.0
-  luthor_generator: '>=0.13.1 <1.0.0'
-  superclass_generator: ^0.7.0 # Configured via catalog
+  luthor_generator: ^0.16.0 # Configured via catalog
+  superclass_generator: ^0.8.0 # Configured via catalog
