@@ -1,7 +1,5 @@
 version: ^0.6.5
 
-mode: project
-
 workspace:
   - packages/*
   - packages/*/example
@@ -27,8 +25,11 @@ catalog:
     arcade_test: ^1.2.1
     arcade_views: ^1.2.1
 
-    luthor: ^0.14.0
+    luthor: ^0.15.0
+    meta: any
     prompts: ^2.0.0
+    superclass: ^0.7.0
+    superclass_generator: ^0.7.0
     yaml_edit: ^2.2.2
 
 scripts:
