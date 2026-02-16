@@ -229,13 +229,13 @@ route.get('/download/:fileName')
     // Get metadata first
     final metadata = await storage.statObject('uploads', fileName);
 
-    // Set response headers
-    context.responseHeaders.set('content-type', metadata.contentType ?? 'application/octet-stream');
-    context.responseHeaders.set('content-length', metadata.size.toString());
-
-    // Stream the file
-    final stream = await storage.getObject('uploads', fileName);
-    return stream;
+    return StreamResponse(
+      stream: await storage.getObject('uploads', fileName),
+      contentType: ContentType.parse(
+        metadata.contentType ?? 'application/octet-stream',
+      ),
+      contentLength: metadata.size,
+    );
   });
 ```
 

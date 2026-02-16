@@ -72,15 +72,6 @@ route.get('/static/*').handle((context) async {
     throw NotFoundException();
   }
   
-  // Set content type based on file extension
-  final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
-  context.responseHeaders.contentType = ContentType.parse(mimeType);
-  
-  // Set caching headers
-  context.responseHeaders
-    ..add('Cache-Control', 'public, max-age=86400') // 24 hours
-    ..add('ETag', '"${file.lastModifiedSync().millisecondsSinceEpoch}"');
-  
   // Check if-none-match header for caching
   final ifNoneMatch = context.requestHeaders.value('if-none-match');
   final etag = '"${file.lastModifiedSync().millisecondsSinceEpoch}"';
@@ -90,9 +81,18 @@ route.get('/static/*').handle((context) async {
     return null;
   }
   
-  // Stream file to response
-  await file.openRead().pipe(context.rawRequest.response);
-  throw ResponseSentException();
+  // Set content type based on file extension
+  final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
+
+  return StreamResponse(
+    stream: file.openRead(),
+    contentType: ContentType.parse(mimeType),
+    contentLength: await file.length(),
+    headers: {
+      'cache-control': 'public, max-age=86400',
+      'etag': etag,
+    },
+  );
 });
 ```
 
@@ -118,20 +118,23 @@ void configureSPA() {
     }
     
     final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
-    context.responseHeaders.contentType = ContentType.parse(mimeType);
-    
-    await file.openRead().pipe(context.rawRequest.response);
-    throw ResponseSentException();
+
+    return StreamResponse(
+      stream: file.openRead(),
+      contentType: ContentType.parse(mimeType),
+      contentLength: await file.length(),
+    );
   });
   
   // Catch-all route for SPA
   route.any('/*').handle((context) async {
     final indexFile = File('public/index.html');
-    
-    context.responseHeaders.contentType = ContentType.html;
-    
-    await indexFile.openRead().pipe(context.rawRequest.response);
-    throw ResponseSentException();
+
+    return StreamResponse(
+      stream: indexFile.openRead(),
+      contentType: ContentType.html,
+      contentLength: await indexFile.length(),
+    );
   });
 }
 ```
@@ -246,14 +249,14 @@ route.get('/optimized/*').handle((context) async {
   
   final processed = await assetProcessor.processAsset(file);
   
-  context.responseHeaders
-    ..contentType = ContentType.parse(processed.contentType)
-    ..contentLength = processed.content.length
-    ..add('Last-Modified', HttpDate.format(processed.lastModified));
-  
-  context.rawRequest.response.add(processed.content);
-  await context.rawRequest.response.close();
-  throw ResponseSentException();
+  return StreamResponse(
+    stream: Stream.value(processed.content),
+    contentType: ContentType.parse(processed.contentType),
+    contentLength: processed.content.length,
+    headers: {
+      'last-modified': HttpDate.format(processed.lastModified),
+    },
+  );
 });
 ```
 
@@ -322,12 +325,15 @@ route.get('/uploads/:filename')
     
     // Set appropriate headers
     final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
-    context.responseHeaders
-      ..contentType = ContentType.parse(mimeType)
-      ..add('Content-Disposition', 'inline; filename="$filename"');
-    
-    await file.openRead().pipe(context.rawRequest.response);
-    throw ResponseSentException();
+
+    return StreamResponse(
+      stream: file.openRead(),
+      contentType: ContentType.parse(mimeType),
+      contentLength: await file.length(),
+      headers: {
+        'content-disposition': 'inline; filename="$filename"',
+      },
+    );
   });
 ```
 
@@ -351,7 +357,6 @@ route.get('/compressed/*').handle((context) async {
   final supportsGzip = acceptEncoding.contains('gzip');
   
   final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
-  context.responseHeaders.contentType = ContentType.parse(mimeType);
   
   // Compress text-based files
   final shouldCompress = supportsGzip && 
@@ -360,20 +365,22 @@ route.get('/compressed/*').handle((context) async {
     );
   
   if (shouldCompress) {
-    context.responseHeaders.add('Content-Encoding', 'gzip');
-    
     final content = await file.readAsBytes();
     final compressed = gzip.encode(content);
-    
-    context.responseHeaders.contentLength = compressed.length;
-    context.rawRequest.response.add(compressed);
+
+    return StreamResponse(
+      stream: Stream.value(compressed),
+      contentType: ContentType.parse(mimeType),
+      contentLength: compressed.length,
+      headers: {'content-encoding': 'gzip'},
+    );
   } else {
-    context.responseHeaders.contentLength = await file.length();
-    await file.openRead().pipe(context.rawRequest.response);
+    return StreamResponse(
+      stream: file.openRead(),
+      contentType: ContentType.parse(mimeType),
+      contentLength: await file.length(),
+    );
   }
-  
-  await context.rawRequest.response.close();
-  throw ResponseSentException();
 });
 ```
 

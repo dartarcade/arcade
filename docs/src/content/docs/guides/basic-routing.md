@@ -200,11 +200,12 @@ route.get('/uploads/:filename').handle((context) async {
   
   // Set appropriate content type
   final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
-  context.responseHeaders.contentType = ContentType.parse(mimeType);
-  
-  // Stream file to response
-  await file.openRead().pipe(context.rawRequest.response);
-  throw ResponseSentException();
+
+  return StreamResponse(
+    stream: file.openRead(),
+    contentType: ContentType.parse(mimeType),
+    contentLength: await file.length(),
+  );
 });
 ```
 

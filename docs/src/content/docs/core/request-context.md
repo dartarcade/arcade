@@ -252,6 +252,42 @@ route.get('/api/data').handle((context) {
 });
 ```
 
+### Streaming Responses
+
+Return a `StreamResponse` when sending streamed content like files:
+
+```dart
+route.get('/downloads/:fileName').handle((context) async {
+  final fileName = context.pathParameters['fileName']!;
+  final file = File('uploads/$fileName');
+
+  if (!await file.exists()) {
+    throw NotFoundException(message: 'File not found');
+  }
+
+  final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
+
+  return StreamResponse(
+    stream: file.openRead(),
+    contentType: ContentType.parse(mimeType),
+    contentLength: await file.length(),
+    statusCode: HttpStatus.ok,
+    headers: {
+      'content-disposition': 'attachment; filename="$fileName"',
+      'cache-control': 'private, max-age=60',
+    },
+  );
+});
+```
+
+`StreamResponse` fields:
+
+- `stream`: `Stream<List<int>>` (required)
+- `contentType`: `ContentType?`
+- `contentLength`: `int?`
+- `statusCode`: `int` (defaults to `HttpStatus.ok`)
+- `headers`: `Map<String, String>`
+
 ## Route Information
 
 Access information about the matched route:
@@ -327,6 +363,7 @@ route.get('/profile')
 3. **Use type-safe parsing** - Convert to DTOs when possible
 4. **Validate input early** - Check required fields
 5. **Set content types** - Especially for non-JSON responses
+6. **Use `StreamResponse` for streamed output** - Prefer it for files and other large responses
 
 ## Next Steps
 

@@ -448,26 +448,19 @@ class CacheEntry {
 final cache = RequestCache(ttl: Duration(minutes: 5));
 
 route.get('/api/expensive-data')
-  .before((context) {
+  .handle((context) async {
     final cacheKey = cache.generateKey(context);
     final cached = cache.get(cacheKey);
-    
+
     if (cached != null) {
       context.responseHeaders.add('X-Cache', 'HIT');
-      throw ResponseSentException(cached);
+      return cached;
     }
-    
-    context.responseHeaders.add('X-Cache', 'MISS');
-    return context;
-  })
-  .handle((context) async {
+
     final data = await performExpensiveOperation();
+    context.responseHeaders.add('X-Cache', 'MISS');
+    cache.set(cacheKey, data);
     return data;
-  })
-  .after((context, result) {
-    final cacheKey = cache.generateKey(context);
-    cache.set(cacheKey, result);
-    return (context, result);
   });
 ```
 

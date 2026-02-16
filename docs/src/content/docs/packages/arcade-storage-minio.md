@@ -206,14 +206,16 @@ route.get('/files/:fileName')
     try {
       final metadata = await storage.statObject('uploads', fileName);
 
-      // Set response headers
-      context.responseHeaders.set('content-type', metadata.contentType ?? 'application/octet-stream');
-      context.responseHeaders.set('content-length', metadata.size.toString());
-      context.responseHeaders.set('etag', metadata.etag ?? '');
-
-      // Stream the file
-      final stream = await storage.getObject('uploads', fileName);
-      return stream;
+      return StreamResponse(
+        stream: await storage.getObject('uploads', fileName),
+        contentType: ContentType.parse(
+          metadata.contentType ?? 'application/octet-stream',
+        ),
+        contentLength: metadata.size,
+        headers: {
+          'etag': metadata.etag ?? '',
+        },
+      );
     } catch (e) {
       throw NotFoundException('File not found');
     }
@@ -230,10 +232,14 @@ route.get('/images/:imageName')
 
     final metadata = await storage.statObject('images', imageName);
 
-    context.responseHeaders.set('content-type', metadata.contentType ?? 'image/jpeg');
-    context.responseHeaders.set('cache-control', 'public, max-age=31536000');
-
-    return await storage.getObject('images', imageName);
+    return StreamResponse(
+      stream: await storage.getObject('images', imageName),
+      contentType: ContentType.parse(metadata.contentType ?? 'image/jpeg'),
+      contentLength: metadata.size,
+      headers: {
+        'cache-control': 'public, max-age=31536000',
+      },
+    );
   });
 ```
 

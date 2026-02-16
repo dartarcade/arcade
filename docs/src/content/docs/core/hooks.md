@@ -300,20 +300,21 @@ route.registerGlobalAfterHook((ctx, result) {
 ### CORS Hook
 
 ```dart
-BeforeHookHandler corsHook() {
+BeforeHookHandler corsHeadersHook() {
   return (context) {
     context.responseHeaders
       ..add('Access-Control-Allow-Origin', '*')
       ..add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
       ..add('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    if (context.method == HttpMethod.options) {
-      throw ResponseSentException();
-    }
-    
+
     return context;
   };
 }
+
+route.options('/api/*').handle((context) {
+  context.statusCode = 204;
+  return null;
+});
 ```
 
 ### Logging Hook
