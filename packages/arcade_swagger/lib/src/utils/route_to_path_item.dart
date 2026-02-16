@@ -87,11 +87,16 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
       );
 
       if (swagger.request != null) {
+        final requestContentType =
+            validatorContainsFileValidation(swagger.request!)
+            ? 'multipart/form-data'
+            : 'application/json';
+
         late final RequestBody requestBody;
         if (!autoGlobalComponents || swagger.request!.name == null) {
           requestBody = RequestBody(
             content: {
-              'application/json': MediaType(
+              requestContentType: MediaType(
                 schema: validatorToSwagger(swagger.request!),
               ),
             },
@@ -99,14 +104,14 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
         } else {
           globalRequestSchemas[swagger.request!.name!] = RequestBody(
             content: {
-              'application/json': MediaType(
+              requestContentType: MediaType(
                 schema: validatorToSwagger(swagger.request!),
               ),
             },
           );
           requestBody = RequestBody(
             content: {
-              'application/json': MediaType(
+              requestContentType: MediaType(
                 schema: Schema.object(
                   ref: swagger.request!.name,
                 ),

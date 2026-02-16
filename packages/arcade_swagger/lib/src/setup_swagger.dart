@@ -29,7 +29,7 @@ void setupSwagger({
           ...globalRequestSchemas.map(
             (key, value) => MapEntry(
               key,
-              value.content!['application/json']!.schema!,
+              _firstRequestSchema(value),
             ),
           ),
           ...globalResponseSchemas.map(
@@ -51,11 +51,15 @@ void setupSwagger({
           ...globalRequestSchemas,
           ...?requestSchemas?.map(
             (key, value) {
+              final requestContentType = validatorContainsFileValidation(value)
+                  ? 'multipart/form-data'
+                  : 'application/json';
+
               return MapEntry(
                 key,
                 RequestBody(
                   content: {
-                    'application/json': MediaType(
+                    requestContentType: MediaType(
                       schema: validatorToSwagger(value),
                     ),
                   },
@@ -94,4 +98,18 @@ void setupSwagger({
       (packagePath: 'package:arcade_swagger/', viewsPath: 'views'),
     );
   });
+}
+
+Schema _firstRequestSchema(RequestBody requestBody) {
+  final content = requestBody.content;
+  if (content == null || content.isEmpty) {
+    throw StateError('Request body content is empty.');
+  }
+
+  final schema = content.values.first.schema;
+  if (schema == null) {
+    throw StateError('Request body schema is missing.');
+  }
+
+  return schema;
 }

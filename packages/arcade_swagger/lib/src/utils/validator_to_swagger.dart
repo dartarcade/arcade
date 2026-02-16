@@ -10,6 +10,71 @@ Schema validatorToSwagger(Validator validator) {
   return _validationsToSwagger(validator.validations, null, [], [validator])!;
 }
 
+bool validatorContainsFileValidation(
+  Validator validator, {
+  Set<Validator>? visited,
+}) {
+  final visitedValidators = visited ?? <Validator>{};
+  if (visitedValidators.contains(validator)) {
+    return false;
+  }
+  visitedValidators.add(validator);
+
+  for (final validation in validator.validations) {
+    if (_isFileValidation(validation)) {
+      return true;
+    }
+
+    if (validation is SchemaValidation) {
+      for (final nested in validation.validatorSchema.values) {
+        if (validatorContainsFileValidation(
+          nested.resolve(),
+          visited: visitedValidators,
+        )) {
+          return true;
+        }
+      }
+    }
+
+    if (validation is ListValidation) {
+      final validators = validation.validators;
+      if (validators == null || validators.isEmpty) continue;
+
+      for (final nested in validators) {
+        if (validatorContainsFileValidation(
+          nested.resolve(),
+          visited: visitedValidators,
+        )) {
+          return true;
+        }
+      }
+    }
+
+    if (validation is MapValidation) {
+      final keyValidator = validation.keyValidator;
+      final valueValidator = validation.valueValidator;
+
+      if (keyValidator != null &&
+          validatorContainsFileValidation(
+            keyValidator.resolve(),
+            visited: visitedValidators,
+          )) {
+        return true;
+      }
+
+      if (valueValidator != null &&
+          validatorContainsFileValidation(
+            valueValidator.resolve(),
+            visited: visitedValidators,
+          )) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 Schema? _validationsToSwagger(
   List<Validation> validations,
   String? fieldName,
@@ -45,6 +110,13 @@ Schema? _validationsToSwagger(
       requiredKeys.add(fieldName);
     }
     return const Schema.number();
+  }
+
+  if (_isFileValidation(first)) {
+    if (fieldName != null && isRequired) {
+      requiredKeys.add(fieldName);
+    }
+    return const Schema.string(format: StringFormat.binary);
   }
 
   if (first is IntValidation) {
@@ -186,6 +258,7 @@ bool _isNotModifierValidation(Validation validation) {
   return validation is AnyValidation ||
       validation is BoolValidation ||
       validation is DoubleValidation ||
+      _isFileValidation(validation) ||
       validation is IntValidation ||
       validation is ListValidation ||
       validation is MapValidation ||
@@ -193,4 +266,8 @@ bool _isNotModifierValidation(Validation validation) {
       validation is NumberValidation ||
       validation is SchemaValidation ||
       validation is StringValidation;
+}
+
+bool _isFileValidation(Validation validation) {
+  return validation.runtimeType.toString() == 'FileValidation';
 }
