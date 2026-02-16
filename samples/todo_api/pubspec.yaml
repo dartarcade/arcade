@@ -10,8 +10,8 @@ environment:
   sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
-  arcade: ^1.2.1 # Configured via catalog
-  arcade_swagger: ^1.2.1 # Configured via catalog
+  arcade: ^1.5.0 # Configured via catalog
+  arcade_swagger: ^1.5.0 # Configured via catalog
   dart_jsonwebtoken: ^3.2.0
   drift: ^2.27.0
   drift_postgres: ^1.3.1
@@ -21,7 +21,7 @@ dependencies:
   hashlib: ^2.0.0
   injectable: ^2.5.0
   json_annotation: ^4.9.0
-  luthor: ^0.16.0 # Configured via catalog
+  luthor: ^0.17.0 # Configured via catalog
   postgres: ^3.5.6
   superclass: ^0.8.0 # Configured via catalog
   uuid: ^4.5.1
@@ -34,5 +34,5 @@ dev_dependencies:
   injectable_generator: ^2.7.0
   json_serializable: ^6.9.5
   lint: ^2.8.0
-  luthor_generator: ^0.16.0 # Configured via catalog
+  luthor_generator: ^0.17.0 # Configured via catalog
   superclass_generator: ^0.8.0 # Configured via catalog

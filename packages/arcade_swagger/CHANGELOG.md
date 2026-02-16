@@ -1,3 +1,8 @@
+## 1.5.0
+
+- Updated dependencies
+- **FEAT**: support multipart/form-data request bodies and file validation schemas in OpenAPI output
+
 ## 1.4.0
 
 - Updated dependencies

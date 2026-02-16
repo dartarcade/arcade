@@ -1,3 +1,8 @@
+## 1.5.0
+
+- Updated dependencies
+- **FEAT**: add StreamResponse support for return-based HTTP streaming responses
+
 ## 1.4.0
 
 - Updated dependencies
