@@ -224,6 +224,26 @@ Future<void> writeResponse({
   ctx = newCtx;
   result = newResult;
 
+  if (result case StreamResponse()) {
+    response.statusCode = result.statusCode;
+
+    if (result.contentType != null) {
+      response.headers.contentType = result.contentType;
+    }
+
+    if (result.contentLength != null) {
+      response.headers.contentLength = result.contentLength!;
+    }
+
+    for (final MapEntry(:key, :value) in result.headers.entries) {
+      response.headers.set(key, value);
+    }
+
+    await response.addStream(result.stream);
+    await response.close();
+    return;
+  }
+
   if (result is String) {
     response.headers.contentType = ContentType.html;
   } else {

@@ -23,6 +23,7 @@ export 'src/helpers/route_helpers.dart'
 export 'src/http/body_parse_result.dart';
 export 'src/http/request_context.dart';
 export 'src/http/route.dart';
+export 'src/http/stream_response.dart';
 export 'src/server.dart'
     show canServeStaticFiles, isDev, runServer, serverInstance;
 export 'src/ws/ws.dart'
