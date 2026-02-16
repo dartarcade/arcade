@@ -27,7 +27,7 @@ void main(List<String> arguments) async {
         'test',
         'build',
         'ci',
-        'chore'
+        'chore',
       ],
     )
     ..addOption(
@@ -44,7 +44,12 @@ void main(List<String> arguments) async {
     ..addFlag(
       'interactive',
       abbr: 'i',
-      help: 'Run in interactive mode (default if no arguments provided)',
+      help: 'Run in interactive mode',
+      negatable: false,
+    )
+    ..addFlag(
+      'dry-run',
+      help: 'Print planned updates without writing files',
       negatable: false,
     )
     ..addFlag(
@@ -58,19 +63,28 @@ void main(List<String> arguments) async {
 
   if (argResults['help'] as bool) {
     print('Update changelog entries for arcade packages\n');
-    print('Usage: dart update_changelogs.dart [options]\n');
+    print('Usage: dart run bin/update_changelogs.dart [options]\n');
     print(parser.usage);
     return;
   }
 
-  // Determine if we should run in interactive mode
-  final interactive = argResults['interactive'] as bool ||
-      (argResults['type'] == null && argResults['default'] == false);
+  // Determine mode. Non-interactive is default.
+  final interactive = argResults['interactive'] as bool;
+  final dryRun = argResults['dry-run'] as bool;
+
+  if (interactive && !stdin.hasTerminal) {
+    stderr.writeln(
+      'Error: Interactive mode requires a terminal. '
+      'Run without --interactive for non-interactive mode.',
+    );
+    exit(1);
+  }
 
   // Get all package information
   final packages = await getWorkspacePackages();
-  final arcadePackages =
-      packages.where((p) => p.name.startsWith('arcade')).toList();
+  final arcadePackages = packages
+      .where((p) => p.name.startsWith('arcade'))
+      .toList();
 
   if (arcadePackages.isEmpty) {
     print('No arcade packages found.');
@@ -81,13 +95,15 @@ void main(List<String> arguments) async {
   List<PackageInfo> targetPackages = arcadePackages;
   if (argResults['package'] != null) {
     final packageName = argResults['package'] as String;
-    targetPackages =
-        arcadePackages.where((p) => p.name == packageName).toList();
+    targetPackages = arcadePackages
+        .where((p) => p.name == packageName)
+        .toList();
 
     if (targetPackages.isEmpty) {
       stderr.writeln('Error: Package "$packageName" not found.');
       stderr.writeln(
-          'Available packages: ${arcadePackages.map((p) => p.name).join(', ')}');
+        'Available packages: ${arcadePackages.map((p) => p.name).join(', ')}',
+      );
       exit(1);
     }
   }
@@ -117,8 +133,12 @@ void main(List<String> arguments) async {
       final entries = changelogEntries[package.name];
 
       if (entries != null && entries.isNotEmpty) {
-        await updateChangelog(package, entries);
-        print('✓ Updated ${package.path}/CHANGELOG.md');
+        await updateChangelog(package, entries, dryRun: dryRun);
+        print(
+          dryRun
+              ? '✓ [dry-run] Would update ${package.path}/CHANGELOG.md'
+              : '✓ Updated ${package.path}/CHANGELOG.md',
+        );
       }
     }
   } else {
@@ -133,8 +153,9 @@ void main(List<String> arguments) async {
       final prefix = _getPrefix(type);
       entries.add('- $prefix: $message');
     } else {
-      stderr
-          .writeln('Error: In non-interactive mode, you must provide either:');
+      stderr.writeln(
+        'Error: In non-interactive mode, you must provide either:',
+      );
       stderr.writeln('  --default flag for default entry');
       stderr.writeln('  --type and --message for custom entry');
       exit(1);
@@ -142,12 +163,20 @@ void main(List<String> arguments) async {
 
     // Update changelogs for all target packages
     for (final package in targetPackages) {
-      await updateChangelog(package, entries);
-      print('✓ Updated ${package.path}/CHANGELOG.md');
+      await updateChangelog(package, entries, dryRun: dryRun);
+      print(
+        dryRun
+            ? '✓ [dry-run] Would update ${package.path}/CHANGELOG.md'
+            : '✓ Updated ${package.path}/CHANGELOG.md',
+      );
     }
   }
 
-  print('\nDone! Changelogs have been updated.');
+  if (dryRun) {
+    print('\nDone! Dry run completed.');
+  } else {
+    print('\nDone! Changelogs have been updated.');
+  }
 }
 
 Future<List<String>> collectEntriesInteractive(PackageInfo package) async {
@@ -249,9 +278,14 @@ String _getPrefix(String type) {
 
 Future<void> updateChangelog(
   PackageInfo package,
-  List<String> entries,
-) async {
+  List<String> entries, {
+  bool dryRun = false,
+}) async {
   final changelogPath = '${package.path}/CHANGELOG.md';
+  if (dryRun) {
+    return;
+  }
+
   final changelogFile = File(changelogPath);
 
   String content;
@@ -270,8 +304,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   }
 
   // Check if current version already exists
-  final versionRegex =
-      RegExp('^## ${RegExp.escape(package.version)}\$', multiLine: true);
+  final versionRegex = RegExp(
+    '^## ${RegExp.escape(package.version)}\$',
+    multiLine: true,
+  );
 
   if (versionRegex.hasMatch(content)) {
     // Version already exists, append entries to it
@@ -280,10 +316,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
     // Find the end of this version's section (next ## or end of file)
     final nextVersionRegex = RegExp(r'^##\s', multiLine: true);
-    final nextMatch =
-        nextVersionRegex.firstMatch(content.substring(versionIndex));
-    final sectionEnd =
-        nextMatch != null ? versionIndex + nextMatch.start : content.length;
+    final nextMatch = nextVersionRegex.firstMatch(
+      content.substring(versionIndex),
+    );
+    final sectionEnd = nextMatch != null
+        ? versionIndex + nextMatch.start
+        : content.length;
 
     // Extract existing entries
     final existingSection = content.substring(versionIndex, sectionEnd).trim();
@@ -294,13 +332,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         : '\n\n$existingSection\n${entries.join('\n')}';
 
     // Replace the section
-    content = content.substring(0, versionIndex) +
+    content =
+        content.substring(0, versionIndex) +
         updatedSection +
         (nextMatch != null ? '\n\n' : '\n') +
         content.substring(sectionEnd);
   } else {
     // Version doesn't exist, create new section
-    final versionSection = '''
+    final versionSection =
+        '''
 ## ${package.version}
 
 ${entries.join('\n')}
@@ -310,7 +350,8 @@ ${entries.join('\n')}
     if (content.contains('##')) {
       // Find the first version header
       final firstVersionIndex = content.indexOf('##');
-      content = content.substring(0, firstVersionIndex) +
+      content =
+          content.substring(0, firstVersionIndex) +
           versionSection +
           '\n' +
           content.substring(firstVersionIndex);

@@ -477,18 +477,18 @@ packages:
     dependency: transitive
     description:
       name: luthor
-      sha256: "6ef33c41219aec095d18021a0d3a7d5a22526735232a26afbfd5384988e83581"
+      sha256: "0909bfcb3bba9fda658ef7beba66ddb57cba512bea97ee2e461169de006c8de0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.16.0"
+    version: "0.17.0"
   luthor_generator:
     dependency: transitive
     description:
       name: luthor_generator
-      sha256: b82a7727daff298d971de458eb4d30b617e91cec755ec3447a9db77956d7c38e
+      sha256: c524b3481e3bba54d9ff09c62c22f9682e9b2906b94a414be165fda5c5b986be
       url: "https://pub.dev"
     source: hosted
-    version: "0.16.0"
+    version: "0.17.0"
   mason_logger:
     dependency: transitive
     description:
@@ -954,20 +954,12 @@ packages:
     source: hosted
     version: "6.6.1"
   yaml:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: yaml
       sha256: b9da305ac7c39faa3f030eccd175340f968459dae4af175130b3fc47e40d76ce
       url: "https://pub.dev"
     source: hosted
     version: "3.1.3"
-  yaml_edit:
-    dependency: "direct main"
-    description:
-      name: yaml_edit
-      sha256: ec709065bb2c911b336853b67f3732dd13e0336bd065cc2f1061d7610ddf45e3
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.3"
 sdks:
   dart: ">=3.10.0 <4.0.0"
