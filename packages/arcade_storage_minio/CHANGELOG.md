@@ -1,5 +1,9 @@
 
 
+## 1.5.1
+
+- Updated dependencies
+
 ## 1.5.0
 
 - Updated dependencies

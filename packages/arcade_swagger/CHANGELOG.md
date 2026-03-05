@@ -1,8 +1,11 @@
+## 1.5.1
+
+- **FIX**: Reset swagger schema registries and auto-collect named validator schemas
+
 ## 1.5.0
 
 - Updated dependencies
 - **FEAT**: support multipart/form-data request bodies and file validation schemas in OpenAPI output
-- **FIX**: Reset swagger schema registries and auto-collect named validator schemas
 
 ## 1.4.0
 
