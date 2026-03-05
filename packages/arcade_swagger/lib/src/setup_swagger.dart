@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'package:arcade/arcade.dart';
 import 'package:arcade_swagger/arcade_swagger.dart';
 import 'package:arcade_swagger/src/utils/route_to_path_item.dart';
@@ -20,12 +22,25 @@ void setupSwagger({
   bool autoGlobalComponents = true,
 }) {
   final pathItems = getPathItems(autoGlobalComponents: autoGlobalComponents);
+
+  final autoCollectedSchemas = autoGlobalComponents
+      ? _collectNamedSchemas(
+          [
+            ...globalRequestValidators.values,
+            ...globalResponseValidators.values,
+            ...?requestSchemas?.values,
+            ...?responseSchemas?.values,
+          ],
+        )
+      : const <String, Schema>{};
+
   route.get(docPath).handle((context) {
     return OpenApi(
       info: Info(title: title, version: version),
       servers: servers,
       components: Components(
         schemas: {
+          ...autoCollectedSchemas,
           ...globalRequestSchemas.map(
             (key, value) => MapEntry(
               key,
@@ -112,4 +127,63 @@ Schema _firstRequestSchema(RequestBody requestBody) {
   }
 
   return schema;
+}
+
+Map<String, Schema> _collectNamedSchemas(Iterable<Validator> validators) {
+  final schemas = <String, Schema>{};
+  final visited = <Validator>{};
+
+  void visit(Validator validator) {
+    final resolved = validator.resolve();
+    if (!visited.add(resolved)) {
+      return;
+    }
+
+    final canRegisterNamedSchema =
+        resolved.name != null &&
+        resolved.validations.isNotEmpty &&
+        resolved.validations.first is SchemaValidation;
+
+    if (canRegisterNamedSchema) {
+      schemas.putIfAbsent(
+        resolved.name!,
+        () => validatorToSwagger(resolved),
+      );
+    }
+
+    for (final validation in resolved.validations) {
+      if (validation is SchemaValidation) {
+        for (final nestedValidator in validation.validatorSchema.values) {
+          visit(nestedValidator.resolve());
+        }
+        continue;
+      }
+
+      if (validation is ListValidation) {
+        for (final nestedValidator
+            in validation.validators ?? const <ValidatorReference>[]) {
+          visit(nestedValidator.resolve());
+        }
+        continue;
+      }
+
+      if (validation is MapValidation) {
+        final keyValidator = validation.keyValidator;
+        if (keyValidator != null) {
+          visit(keyValidator.resolve());
+        }
+
+        final valueValidator = validation.valueValidator;
+        if (valueValidator != null) {
+          visit(valueValidator.resolve());
+        }
+      }
+    }
+  }
+
+  for (final validator in validators) {
+    visit(validator);
+  }
+
+  return schemas;
 }

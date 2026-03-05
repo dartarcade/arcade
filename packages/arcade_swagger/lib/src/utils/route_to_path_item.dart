@@ -25,6 +25,9 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
   // This handles the case where setupSwagger is called immediately after route definitions
   validatePreviousRouteHasHandler();
 
+  // Rebuild component registries from the current route metadata snapshot.
+  resetGlobalSwaggerSchemas();
+
   final routeMetadata = getRouteMetadata();
   final groupedRoutes = routeMetadata.groupBy((r) => r.path);
   final pathItems = <String, PathItem>{};
@@ -67,6 +70,7 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
               );
             }
 
+            globalResponseValidators[value.name!] = value;
             globalResponseSchemas[value.name!] = Response(
               content: {
                 'application/json': MediaType(schema: schema),
@@ -102,6 +106,7 @@ Map<String, PathItem> getPathItems({required bool autoGlobalComponents}) {
             },
           );
         } else {
+          globalRequestValidators[swagger.request!.name!] = swagger.request!;
           globalRequestSchemas[swagger.request!.name!] = RequestBody(
             content: {
               requestContentType: MediaType(
