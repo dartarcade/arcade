@@ -13,17 +13,17 @@ catalog:
     sdk: ">=3.10.0 <4.0.0"
 
   dependencies:
-    arcade: ^1.5.0
-    arcade_cache: ^1.5.0
-    arcade_cache_redis: ^1.5.0
-    arcade_cli: ^1.5.0
-    arcade_config: ^1.5.0
-    arcade_logger: ^1.5.0
-    arcade_storage: ^1.5.0
-    arcade_storage_minio: ^1.5.0
-    arcade_swagger: ^1.5.0
-    arcade_test: ^1.5.0
-    arcade_views: ^1.5.0
+    arcade: ^1.5.1
+    arcade_cache: ^1.5.1
+    arcade_cache_redis: ^1.5.1
+    arcade_cli: ^1.5.1
+    arcade_config: ^1.5.1
+    arcade_logger: ^1.5.1
+    arcade_storage: ^1.5.1
+    arcade_storage_minio: ^1.5.1
+    arcade_swagger: ^1.5.1
+    arcade_test: ^1.5.1
+    arcade_views: ^1.5.1
 
     luthor: ^0.17.0
     luthor_generator: ^0.17.0
