@@ -22,7 +22,7 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart pub global activate dpk
+        run: dart install dpk
       
       - name: Start Redis with Docker Compose
         uses: hoverkraft-tech/compose-action@v2.0.1
@@ -51,7 +51,7 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart pub global activate dpk
+        run: dart install dpk
       
       - name: Run dpk get
         run: dpk get
@@ -74,7 +74,7 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart pub global activate dpk
+        run: dart install dpk
       
       - name: Start Redis with Docker Compose
         uses: hoverkraft-tech/compose-action@v2.0.1
@@ -103,7 +103,7 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart pub global activate dpk
+        run: dart install dpk
       
       - name: Run dpk get
         run: dpk get
@@ -126,7 +126,7 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart pub global activate dpk
+        run: dart install dpk
       
       - name: Run dpk get
         run: dpk get
@@ -149,7 +149,7 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart pub global activate dpk
+        run: dart install dpk
       
       - name: Run dpk get
         run: dpk get
