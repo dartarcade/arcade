@@ -23,7 +23,8 @@ enum HttpMethod {
   delete('DELETE'),
   patch('PATCH'),
   head('HEAD'),
-  options('OPTIONS');
+  options('OPTIONS')
+  ;
 
   final String methodString;
 

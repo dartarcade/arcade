@@ -11,15 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ['stable', '3.8.3']
+        sdk: ['stable', '3.10.8']
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ matrix.sdk }}
       - name: Install DPK
-        run: dart pub global activate dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       - name: Run dpk get
         run: dpk get
       - name: Run code generation on example app
@@ -31,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ['stable', '3.8.3']
+        sdk: ['stable', '3.10.8']
     steps:
       - uses: actions/checkout@v2
       - name: Setup Dart
@@ -39,7 +41,9 @@ jobs:
         with:
           sdk: ${{ matrix.sdk }}
       - name: Install DPK
-        run: dart pub global activate dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       - name: Run dpk get
         run: dpk get
       - name: Format

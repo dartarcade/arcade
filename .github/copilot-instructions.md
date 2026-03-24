@@ -64,7 +64,7 @@ Before you begin, ensure you have the following installed:
    - Verify: `dart --version`
 
 2. **DPK (Dartpack)** - Workspace management tool
-   - Installation: `dart pub global activate dpk`
+   - Installation: `dart install dpk`
    - Verify: `dpk --version`
 
 3. **Docker & Docker Compose** (for services like Redis)
@@ -95,7 +95,7 @@ This command will:
 - Create a single `pubspec.lock` file at the root (Dart pub workspace)
 - Download required packages
 
-### 3. Start Docker Services (Optional, but required for some tests)
+### 3. Start Docker Services (Optional but required for some tests)
 
 ```bash
 # Start Redis and other services
@@ -141,7 +141,7 @@ This runs `dart format --set-exit-if-changed .` to ensure consistent code style.
 dpk run analyze
 ```
 
-This runs `dart analyze --fatal-infos --fatal-warnings` to catch potential issues. All warnings and infos must be resolved.
+This runs `dart analyze --fatal-infos --fatal-warnings` to catch potential issues. All warnings and info must be resolved.
 
 #### Combined FFA (Fix, Format, Analyze)
 
@@ -149,7 +149,7 @@ This runs `dart analyze --fatal-infos --fatal-warnings` to catch potential issue
 dpk run ffa
 ```
 
-This runs all three checks in sequence - recommended before committing.
+This runs all three checks in sequence – recommended before committing.
 
 ### Building
 
@@ -266,7 +266,7 @@ Steps:
 2. Setup Dart SDK
 3. Install DPK
 4. Run `dpk get`
-5. Build example app
+5. Build the example app
 6. Run analysis and format checks
 
 ### Test Workflow (`.github/workflows/test.yml`)
@@ -310,7 +310,7 @@ Each test job:
 
 - Use `///` for public API documentation
 - Include examples in doc comments where appropriate
-- Keep README.md files up-to-date in each package
+- Keep README.md files up to date in each package
 
 ## Version Management
 
@@ -386,7 +386,7 @@ git push origin feature/my-feature
 Ensure DPK is in your PATH:
 
 ```bash
-dart pub global activate dpk
+dart install dpk
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 ```
 
@@ -412,7 +412,7 @@ dart run build_runner build --delete-conflicting-outputs
 ### Test Failures
 
 1. Ensure Docker services are running (if needed)
-2. Check that dependencies are up-to-date: `dpk get`
+2. Check that dependencies are up to date: `dpk get`
 3. Run tests with detailed stack traces: `dart test --chain-stack-traces`
 4. Check CI logs for additional context
 
@@ -430,7 +430,7 @@ dart run build_runner build --delete-conflicting-outputs
 1. Check existing documentation in `/docs`
 2. Review package-specific README files in `/packages`
 3. Look at example applications in `/samples`
-4. Search existing issues on GitHub
+4. Search for existing issues on GitHub
 5. Ask questions by opening a new issue
 
 ## GitHub Copilot Instructions
