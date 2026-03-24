@@ -84,8 +84,9 @@ class TodoService {
         _db.todos.id.equals(UuidValue.fromString(id)) &
             _db.todos.user.equals(UuidValue.fromString(userId)),
       );
-    final foundTodoId =
-        await findQuery.map((row) => row.read(_db.todos.id)).getSingleOrNull();
+    final foundTodoId = await findQuery
+        .map((row) => row.read(_db.todos.id))
+        .getSingleOrNull();
     if (foundTodoId == null) {
       throw const NotFoundException(message: 'Todo not found');
     }

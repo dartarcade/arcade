@@ -23,10 +23,13 @@ Uri? _resolvePackageUri(Uri packageUri) {
   // Walk up from current directory to find .dart_tool/package_config.json
   var dir = Directory.current;
   while (dir.path != dir.parent.path) {
-    final configFile = File(join(dir.path, '.dart_tool', 'package_config.json'));
+    final configFile = File(
+      join(dir.path, '.dart_tool', 'package_config.json'),
+    );
     if (configFile.existsSync()) {
       try {
-        final config = jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
+        final config =
+            jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
         final packages = config['packages'] as List<dynamic>?;
         if (packages != null) {
           final packageName = packageUri.pathSegments.first;
@@ -40,7 +43,9 @@ Uri? _resolvePackageUri(Uri packageUri) {
                   resolvedRoot = Uri.parse(rootUri);
                 } else {
                   // Relative path - resolve relative to package_config.json location
-                  resolvedRoot = Uri.file(normalize(join(dir.path, '.dart_tool', rootUri)));
+                  resolvedRoot = Uri.file(
+                    normalize(join(dir.path, '.dart_tool', rootUri)),
+                  );
                 }
                 // Combine root with packageUri (usually 'lib/')
                 final libPath = join(resolvedRoot.toFilePath(), packageUriStr);
