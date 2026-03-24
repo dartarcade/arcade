@@ -19,7 +19,9 @@ jobs:
         with:
           sdk: ${{ matrix.sdk }}
       - name: Install DPK
-        run: dart install dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       - name: Run dpk get
         run: dpk get
       - name: Run code generation on example app
@@ -39,7 +41,9 @@ jobs:
         with:
           sdk: ${{ matrix.sdk }}
       - name: Install DPK
-        run: dart install dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       - name: Run dpk get
         run: dpk get
       - name: Format

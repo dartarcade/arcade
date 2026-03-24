@@ -22,7 +22,9 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart install dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       
       - name: Start Redis with Docker Compose
         uses: hoverkraft-tech/compose-action@v2.0.1
@@ -51,7 +53,9 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart install dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       
       - name: Run dpk get
         run: dpk get
@@ -74,7 +78,9 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart install dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       
       - name: Start Redis with Docker Compose
         uses: hoverkraft-tech/compose-action@v2.0.1
@@ -103,7 +109,9 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart install dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       
       - name: Run dpk get
         run: dpk get
@@ -126,7 +134,9 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart install dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       
       - name: Run dpk get
         run: dpk get
@@ -149,7 +159,9 @@ jobs:
           sdk: ${{ matrix.sdk }}
       
       - name: Install DPK
-        run: dart install dpk
+        run: |
+          dart install dpk
+          echo "$HOME/.local/state/Dart/install/bin" >> "$GITHUB_PATH"
       
       - name: Run dpk get
         run: dpk get
