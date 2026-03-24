@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ['stable', '3.8.3']
+        sdk: ['stable', '3.10.8']
     steps:
       - uses: actions/checkout@v4
       
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ['stable', '3.8.3']
+        sdk: ['stable', '3.10.8']
     steps:
       - uses: actions/checkout@v4
       
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ['stable', '3.8.3']
+        sdk: ['stable', '3.10.8']
     steps:
       - uses: actions/checkout@v4
       
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ['stable', '3.8.3']
+        sdk: ['stable', '3.10.8']
     steps:
       - uses: actions/checkout@v4
       
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ['stable', '3.8.3']
+        sdk: ['stable', '3.10.8']
     steps:
       - uses: actions/checkout@v4
       
@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ['stable', '3.8.3']
+        sdk: ['stable', '3.10.8']
     steps:
       - uses: actions/checkout@v4
       
