@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.34.4",
-    "astro": "^5.15.9",
+    "astro": "^6.1.6",
     "starlight-theme-flexoki": "^0.1.0"
   }
 }
